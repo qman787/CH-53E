@@ -228,14 +228,14 @@ public:
 		if (current_or_max == -1) { //MAX
 			for (int i = 0; i < Helicopter::number_of_engines; i++) {
 				pwr += Helicopter::engine_max_power[i];
-				pwr = pwr / Helicopter::number_of_engines;
 			}
+			pwr = pwr / Helicopter::number_of_engines;
 		}
 		else if (current_or_max == 0) { //current
 			for (int i = 0; i < Helicopter::number_of_engines; i++) {
 				pwr += Helicopter::engine_current_power[i];
-				pwr = pwr / Helicopter::number_of_engines;
 			}
+			pwr = pwr / Helicopter::number_of_engines;
 		}
 
 		return pwr;
@@ -265,7 +265,8 @@ public:
 		// Nr  100% : Torque = (Horsepower/100) * 3.3
 		
 		// torque available
-		torque = ((throttleInput * (getEnginePowerAvg(0) * 1.35962)) / 100) * 3.3;	// table is in SHP 1.35962 is KW to shp conversion.output is percent, so it's all good
+		double Q_available;
+		Q_available = ((throttleInput * (getEnginePowerTotal(0) * 1.35962)) / 100) * 3.3;	// table is in SHP 1.35962 is KW to shp conversion.output is percent, so it's all good
 
 		// as I increase the collective, the pwr required to maintain 100% rpm increases
 
@@ -274,22 +275,36 @@ public:
 		// DA (ft) = PresAlt.(ft) + 118.8 * ( OAT(°C) - ISA(°C) )  eg. -47ft + (118.8 * (20 - 14.8)) = 570.76 ft
 
 		// torque_required from chart
-		LagrangeData function[] = { {0,66}, {10,102}, {20,148}}; // Natops 23-2 hover at 10 ft  DA=8000 ft, weight=65000lbs  torque should be 96%
-		double torque_required = LagrangeInterpolate(function, 8, 3);
+		//LagrangeData function[] = { {0,66}, {10,102}, {20,148}}; // Natops 23-2 hover at 10 ft  DA=8000 ft, weight=65000lbs  torque should be 96%
+		//double torque_required = LagrangeInterpolate(function, 8, 3);
 
 		// torque from 'rough' calculation
+		// Q_max: if the collective is pulled all the way up and the blades are at max angle.
 		double Q_max = (Helicopter::blade_pitch_max / 10000)
 			* 0.5 * 1.225
 			* (3.14159 * (rotor_blade_length * rotor_blade_length))
 			* ((getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length) * (getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length))
-			* rotor_blade_length;
+			* rotor_blade_length;	// in Newton meters
 
+		//  (blade_pitch_angle / 10000) is a fudge.. it should be from a curve: https://aviation.stackexchange.com/questions/49167/what-is-the-relationship-between-speed-torque-and-pitch-in-a-helicopter/67197#67197
 		double Q = (blade_pitch_angle / 10000) 
 			* 0.5 * 1.225 
 			* (3.14159 * (rotor_blade_length * rotor_blade_length)) 
 			* ((getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length) * (getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length))
-			* rotor_blade_length;
+			* rotor_blade_length; // in Newton meters
 
+		double power_reqd = Q * (getCoreRelatedRPM() * 185 * 0.1047198); // torque * RPM (in rad/s)
+		double power_available = getEnginePowerTotal(0) * 1000;
+
+		if (power_reqd > power_available) {
+			// theres a problem.
+			// engine is being over torqed?
+			// too long and bad things happen
+			// the govenor is asking the engine to increase power to keep it rotor at 185 RPM
+			// if it cant then RPM will decrease til power_reqd=power_available !?
+			N2_RPM--;
+		}
+		
 		torque = (Q / Q_max) * 100; // torque as a percent of total torque (total torque is when blade is at 23 deg)
 
 		// 

@@ -309,6 +309,11 @@ double limit(double input, double lower_limit, double upper_limit)
 	}
 }
 
+
+double deg2rad(double deg) {
+	return deg * (3.15159 / 180);
+}
+
 std::ofstream log_file;
 
 void InitLogFile() {

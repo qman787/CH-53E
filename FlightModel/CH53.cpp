@@ -617,7 +617,7 @@ double ed_fm_get_param(unsigned param_enum)
 	switch (param_enum)
 	{
 	case ED_FM_PROPELLER_0_RPM:	// this is neccesary for rotor sound, 470 rpm seems to be from AH-6.lua rotor_RPM definition
-		return (Helicopter::Engine.N2_RPM/100) * 231;
+		return (Helicopter::Engine.N2_RPM/100) * Helicopter::rpm_100_percent;
 	case ED_FM_PROPELLER_0_PITCH:  // propeller blade pitch
 	case ED_FM_PROPELLER_0_TILT:   // for helicopter
 	case ED_FM_PROPELLER_0_INTEGRITY_FACTOR:   // for 0 to 1 , 0 is fully broken 

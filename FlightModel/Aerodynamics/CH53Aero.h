@@ -684,12 +684,12 @@ namespace Helicopter
 			weight_factor = 1 + ((mass_kg - mass_aerodata) / (mass_mtow - mass_aerodata) * .7); //  (33000 -32000) / (73000 - 32000) = 1000/41000 = 0.02 // 0.02 <-> 1
 			
 			/*  Cx_tot		force out nose (-drag)*/
-			Cx_total =  Xu * airspeedx + Xw * airspeedz + Xq * pitchRate + Xv * airspeedy + Xp * rollRate + Xr * yawRate + (rotorIntegrity * ((Xdc * CollectiveInput)+ Xdb * PitchInput + Xda * RollInput) + Xdp * PedalInput * tailRotorIntegrity) * rpm;
+			Cx_total =  Xu * airspeedx + Xw * airspeedz + Xq * pitchRate + Xv * airspeedy + Xp * rollRate + Xr * yawRate + (rotorIntegrity * ((Xdc * CollectiveInput * (1+(sin(deg2rad(rotor_tilt)) * 1 )))+ Xdb * PitchInput + Xda * RollInput) + Xdp * PedalInput * tailRotorIntegrity) * rpm;
 			
 			
 
 			/*  Cz_tot		force out bottom (lift)*/  
-			Cz_total = (Zu * airspeedx + Zw * airspeedz + Zq * pitchRate + Zv * airspeedy + Zp * rollRate + Zr * yawRate + (rotorIntegrity * ((Zdc * CollectiveInput) + Zdb * PitchInput + Zda * RollInput) + Zdp * PedalInput * tailRotorIntegrity) * rpm) * groundEffectFactor * bladePitchFactor / weight_factor;
+			Cz_total = (Zu * airspeedx + Zw * airspeedz + Zq * pitchRate + Zv * airspeedy + Zp * rollRate + Zr * yawRate + (rotorIntegrity * ((Zdc * CollectiveInput * cos(deg2rad(rotor_tilt))) + Zdb * PitchInput + Zda * RollInput) + Zdp * PedalInput * tailRotorIntegrity) * rpm) * groundEffectFactor * bladePitchFactor / weight_factor;
 			
 			
 

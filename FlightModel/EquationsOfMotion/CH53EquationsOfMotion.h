@@ -139,7 +139,7 @@ namespace Helicopter
 			common_force.y += Force.y;
 			common_force.z += Force.z;
 
-			Vec3 delta_pos(Force_pos.x - center_of_gravity.x,
+			Vec3 delta_pos(Force_pos.x - (center_of_gravity.x-0.37),
 						   Force_pos.y - center_of_gravity.y,
 						   Force_pos.z - center_of_gravity.z);
 

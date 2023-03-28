@@ -21,6 +21,7 @@ namespace Helicopter
 
 	static const double rpm_125_percent = 231;
 	static const double rpm_100_percent = 185;
+	static const double rotor_tilt = 5; // 5 deg fwd
 	static const double torq_in_ground_effect_hover_empty = 0.40;  //  40% torq
 	static const int    number_of_engines = 3;	// natops
 	static const double engine_max_power[3] = {3270.0,3270.0,3270.0 };   //4,380 shp (3,270 kW)

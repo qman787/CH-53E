@@ -21,6 +21,13 @@ enum CH53InputCommands
 	LeftThrottleAxis		= 3013,
 	RightThrottleAxis		= 3014,
 
+	pidPUp = 3015,
+	pidPDown = 3016,
+	pidIUp = 3017,
+	pidIDown = 3018,
+	pidDUp = 3019,
+	pidDDown = 3020,
+
 
 	// joystick axis commands
 	JoystickPitch		= 2001,	

@@ -300,7 +300,7 @@ public:
 			// theres a problem.
 			// engine is being over torqed?
 			// too long and bad things happen
-			// the govenor is asking the engine to increase power to keep it rotor at 185 RPM
+			// the govenor is asking the engine to increase power to keep its rotor at 185 RPM
 			// if it cant then RPM will decrease til power_reqd=power_available !?
 			N2_RPM--;
 		}

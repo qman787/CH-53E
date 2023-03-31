@@ -139,8 +139,8 @@ namespace Helicopter
 			common_force.y += Force.y;
 			common_force.z += Force.z;
 
-			Vec3 delta_pos(Force_pos.x - (center_of_gravity.x-0.37),
-						   Force_pos.y - center_of_gravity.y,
+			Vec3 delta_pos(Force_pos.x - (center_of_gravity.x+Helicopter::center_of_gravity_x),
+						   Force_pos.y - (center_of_gravity.y + Helicopter::center_of_gravity_y),
 						   Force_pos.z - center_of_gravity.z);
 
 			Vec3 delta_moment = cross(delta_pos, Force);
@@ -306,14 +306,21 @@ namespace Helicopter
 		//----------------------------------------------------------------
 		// All forces calculated in newtons.  All  moments calculated in N*m
 		//----------------------------------------------------------------
-		void updateAeroForces(const double Cx_total, const double Cz_total, const double Cm_total, const double Cy_total, const double Cl_total, const double Cn_total)
+		void updateAeroForces(const double Cx_total, const double Cx_total_no_mass, const double Cz_total, const double Cm_total, const double Cy_total, const double Cl_total, const double Cn_total)
 		{
 			
 			// Longitudinal forces
-			// Cx force out the nose in Newtons
+			// Cx force out the nose in Newtons (not including force from rotor)
 			Vec3 cx_force(Cx_total * mass_kg, 0, 0 );		
 			Vec3 cx_force_pos(0,0,0);
 			add_local_force(cx_force ,cx_force_pos);
+
+			// Longitudinal forces
+			// force from rotor
+			Vec3 cx_force_no_mass(Cx_total_no_mass, 0, 0);
+			Vec3 cx_force_pos_no_mass(0, 0, 0);
+			add_local_force(cx_force_no_mass, cx_force_pos_no_mass);
+
 			
 			// Cz force down the bottom of the aircraft in Newtons
 			Vec3 cz_force(0.0,  -Cz_total * mass_kg, 0.0 );	

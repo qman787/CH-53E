@@ -25,7 +25,7 @@ namespace Helicopter
 	static const double torq_in_ground_effect_hover_empty = 0.40;  //  40% torq
 	static const int    number_of_engines = 3;	// natops
 	static const double engine_max_power[3] = {3270.0,3270.0,3270.0 };   //4,380 shp (3,270 kW)
-	static const double engine_current_power[3] = {3270.0,3270.0,3270.0 }; // not really a constant ?!
+	static double		engine_current_power[3] = {3270.0,3270.0,3270.0 }; // not really a constant ?!
 	static const double blade_pitch_min = -1;	// guessed
 	static const double blade_pitch_max = 24.4;	// guessed   this also matches the collective full travel  of 25.4 cm :)
 	static const double mass_empty = 33226 / 2.2;  //  33226 lbs.  in Kgs
@@ -37,6 +37,8 @@ namespace Helicopter
 	static const double fom = 0.6;  //  figure of merit (no units) https://www.quora.com/Will-the-Disk-Loading-tell-me-the-power-required-to-make-the-helicopter-hover  benchmark plot
 	static const double solidity = 0.122;  // (total blade area/ disk area) = ((7 * (12.03 * 0.66))/ (2 * 3.1416 * (12.03 * 12.03))   https://aviation.stackexchange.com/questions/49167/what-is-the-relationship-between-speed-torque-and-pitch-in-a-helicopter
 
+	static double center_of_gravity_x = -0.37;  // 0.37;
+	static double center_of_gravity_y = 0.0;// -0.99;  // 0.37;
 	// 12=0.001 = Cp = Cq
 	// rho  =1.225
 	// A = 450
@@ -45,5 +47,5 @@ namespace Helicopter
 	// Q = Cq * 1/2 * rho * A * ((omega * R) ^2)  * R  = 1251 Nm
 	// P= Q * omega 
 
-
+	unsigned __int64 last_now=0;
 }

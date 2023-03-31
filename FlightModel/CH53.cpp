@@ -39,6 +39,8 @@
 // the Y and the Z and reverse the Y prior to output to DCS World
 //---------------------------------------------------------------------------
 #include "stdafx.h"
+#include <cmath>
+
 
 // ED's API
 #include "Include/Cockpit/CockpitAPI_Declare.h" // Provides param handle interfacing for use in lua
@@ -59,6 +61,7 @@
 #include "EquationsOfMotion/CH53EquationsOfMotion.h"
 #include "Engine/CH53Gear.h"						//Gear model functions
 #include "PID/pid.h"						//Gear model functions
+#include <chrono>
 
 
 //-------------------------------------------------------
@@ -86,6 +89,8 @@ namespace Helicopter
 	double pidPValue = 0.0;
 	double pidIValue = 0.0;
 	double pidDValue = 0.0;
+	int autopilotState = 0;
+	double autopilot_target_heading = -1.0;	// set to -1 so that I know it was turned off
 
 	double		ay_world			= 0.0;	// World referenced up/down acceleration (m/s^2)
 	double		accz				= 0.0;	// Az (per normal direction convention) out the bottom of the a/c (m/s^2)
@@ -152,6 +157,17 @@ void* TEST_PARAM_BODY_YAW = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_BO
 void* TEST_PARAM_AUTOPILOT_YAW = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_AUTOPILOT_YAW");
 void* TEST_PARAM_AUTOPILOT_INC = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_AUTOPILOT_INC");
 
+void* TEST_PARAM_PID_P = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_P");
+void* TEST_PARAM_PID_I = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_I");
+void* TEST_PARAM_PID_D = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_D");
+
+void* TEST_PARAM_CX = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_CX");
+void* TEST_PARAM_CY = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_CY");
+void* TEST_PARAM_CZ = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_CZ");
+void* TEST_PARAM_CL = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_CL");
+void* TEST_PARAM_CM = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_CM");
+void* TEST_PARAM_CN = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_CN");
+
 // These are used for the controls indicator
 void* PITCH_INPUT = Helicopter::cockpitAPI.getParamHandle("PITCH_INPUT");
 void* ROLL_INPUT = Helicopter::cockpitAPI.getParamHandle("ROLL_INPUT");
@@ -167,6 +183,8 @@ void* COLLECTIVE_INPUT = Helicopter::cockpitAPI.getParamHandle("COLLECTIVE_INPUT
 void ed_fm_simulate(double dt)
 {
 	
+	unsigned __int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	unsigned __int64 time_diff = now - Helicopter::last_now;
 	// Very important! clear out the forces and moments before you start calculated
 	// a new set for this run frame
 	Helicopter::Motion.clear();
@@ -186,41 +204,60 @@ void ed_fm_simulate(double dt)
 	
 	// AFCS
 	//
-	
-	double target_heading = 270.0;
-	double target_yaw = (360- target_heading)-90;
-	if (target_yaw < 0) target_yaw += 360;
-	if (target_yaw >360) target_yaw -= 360;
-	double target_yaw_diff = target_yaw - (Helicopter::Motion.yaw * (180 / 3.14159));
-	PID pid_yaw = PID(0.06, Helicopter::pidPValue*5, Helicopter::pidPValue *-5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-	double inc_yaw = pid_yaw.calculate(0, target_yaw_diff);
-	Helicopter::autopilot_yaw_differential = inc_yaw;
-	if ((Helicopter::PedalInput > 0.3) || (Helicopter::PedalInput < -0.3)) {
-		Helicopter::autopilot_yaw_differential = 0;
-	}
-	
-
-	double target_roll = 0;
-	double target_roll_diff = -(target_roll - (Helicopter::Motion.roll * (180 / 3.14159)));
-	//PID pid_roll = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-	PID pid_roll = PID(0.06, 0.09 * 5, 0.09 * -5, 0.09, 0.16, 0);
-	double inc_roll = pid_roll.calculate(0, target_roll_diff);
-	Helicopter::autopilot_roll_differential = inc_roll;
-	if ((Helicopter::RollInput > 0.3) || (Helicopter::RollInput < -0.3)) {
-		Helicopter::autopilot_roll_differential = 0;
-	}
-
-	
-	double target_pitch = 0;
-	double target_pitch_diff = -(target_pitch - (Helicopter::Motion.pitch * (180 / 3.14159)));
-	//PID pid_pitch = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-	PID pid_pitch = PID(0.06, 0.9 * 5, 0.9 * -5, 0.9, -0.16, 0);
-	double inc_pitch = pid_pitch.calculate(0, target_pitch_diff);
-	Helicopter::autopilot_pitch_differential = inc_pitch;
-	if ((Helicopter::PitchInput > 0.3) || (Helicopter::PitchInput < -0.3)) {
+	if (Helicopter::autopilotState == 0) {
 		Helicopter::autopilot_pitch_differential = 0;
+		Helicopter::autopilot_roll_differential = 0;
+		Helicopter::autopilot_yaw_differential = 0;
+		Helicopter::autopilot_target_heading = -1;	// set to -1 so that I know it was turned off
 	}
-	
+	else if (Helicopter::autopilotState == 1) {
+		
+		
+		double current_heading = fmod(360 - (Helicopter::Motion.yaw * (180 / 3.14159)), 360);	// this is wierd AF. its like Helicopter::Motion.yaw is flipped on the 0 - 180 axis..but not then rotated 90 degrees like normal?
+		if (Helicopter::autopilot_target_heading == -1) {
+			Helicopter::autopilot_target_heading = current_heading;
+		}
+		double target_heading = Helicopter::autopilot_target_heading;
+		double heading_diff = target_heading - current_heading; // this will make heading_diff +/- 180 max.
+
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_2, current_heading);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, heading_diff);
+		//PID pid_yaw = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+		PID pid_yaw = PID(0.06, 1, -1, 0.200, 0.012, 0.036);
+		double inc_yaw = pid_yaw.calculate(0, heading_diff);
+		Helicopter::autopilot_yaw_differential = inc_yaw;
+		if ((Helicopter::PedalInput > 0.3) || (Helicopter::PedalInput < -0.3)) {
+			Helicopter::autopilot_yaw_differential = 0;
+		}
+
+
+		double target_roll = 0;
+		double target_roll_diff = -(target_roll - (Helicopter::Motion.roll * (180 / 3.14159)));
+		//PID pid_roll = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+		PID pid_roll = PID(0.06, 3, -3, 0.202, 0.002, 0.020);
+		double inc_roll = pid_roll.calculate(0, target_roll_diff);
+		Helicopter::autopilot_roll_differential = inc_roll;
+		if ((Helicopter::RollInput > 0.3) || (Helicopter::RollInput < -0.3)) {
+			Helicopter::autopilot_roll_differential = 0;
+		}
+
+
+		double target_pitch = 0;
+		double target_pitch_diff = (target_pitch - (Helicopter::Motion.pitch * (180 / 3.14159)));
+		PID pid_pitch = PID(0.012, 90, -90, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+		//PID pid_pitch = PID(0.006, 90, -90, 0.090, 0.025, 0.001);
+		double inc_pitch = pid_pitch.calculate(0, target_pitch_diff);
+		Helicopter::autopilot_pitch_differential = inc_pitch;
+		if ((Helicopter::PitchInput > 0.3) || (Helicopter::PitchInput < -0.3)) {
+			Helicopter::autopilot_pitch_differential = 0;
+		}
+
+	}
+
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_P, Helicopter::pidPValue);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_I, Helicopter::pidIValue);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_D, Helicopter::pidDValue);
+
 	//printf("(%d) current_roll:% 7.3f inc:% 7.3f\n", i, current_roll, inc);
 	//current_roll += inc;
 
@@ -233,11 +270,11 @@ void ed_fm_simulate(double dt)
 
 	
 	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_INC, inc);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_yaw_differential);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_pitch_differential);
 	//-----CONTROL DYNAMICS------------------------
 	// the four control constants seen here are the physical delfection amount in cm from the NASA report.
 	Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim + (limit(Helicopter::autopilot_roll_differential, -1, 1))), -1, 1) * (22.61/2.0);
-	Helicopter::PitchControl = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + (limit(Helicopter::autopilot_pitch_differential, -1, 1))), -1, 1) * (31.04 / 2.0)) ;
+	Helicopter::PitchControl = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + (Helicopter::autopilot_pitch_differential)), -1, 1) * (31.04 / 2.0)) ;
 	Helicopter::PedalControl = (Helicopter::PedalInput + (Helicopter::autopilot_yaw_differential)) * (12.95 / 2.0) ;
 
 	Helicopter::CollectiveControl = ((Helicopter::CollectiveInput * (Helicopter::blade_pitch_max-Helicopter::blade_pitch_min))+Helicopter::blade_pitch_min ) ;
@@ -249,8 +286,8 @@ void ed_fm_simulate(double dt)
 	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::CollectiveInput);
 	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::Motion.airspeed.z);
 
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_2, Helicopter::pidPValue);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::pidIValue);
+	
+	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::pidIValue);
 	
 	// CT, a bit like CL, depends on several geometrical factors and trade-off, 
 	// but in general its maximum value is within the range 0.008 and 0.028, 
@@ -303,15 +340,25 @@ void ed_fm_simulate(double dt)
 	Helicopter::pitchRate_RPS, Helicopter::rollRate_RPS, Helicopter::yawRate_RPS,
 	Helicopter::CollectiveControl, Helicopter::PitchControl, Helicopter::RollControl, Helicopter::PedalControl, Helicopter::Motion.airspeed_KTS, Helicopter::Engine.getCoreRelatedRPM(), Helicopter::Airframe.rotorIntegrityFactor, Helicopter::Airframe.tailRotorIntegrityFactor);
 
-	Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal() );
+	
+	Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal() );
 
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::Aero.weight_factor * 100);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, thrust);	//thrust available
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::Motion.getWeightN());	//thrust available
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_PRODUCED, Helicopter::Aero.getCzTotal());
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, Helicopter::Aero.weight_factor * 100);
+	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, thrust);	//thrust available
+	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::Aero.getCmTotal());	//thrust available
+	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_PRODUCED, Helicopter::Aero.getCxTotal());
 
 	
+	
+	Helicopter::last_now = now;
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, (Helicopter::Motion.pitch* (180 / 3.14159)));
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, 0);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, time_diff);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::pitchTrim);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, 0);
+	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::autopilot_pitch_differential);
 
+	
 
 	Helicopter::Motion.updateFuelUsageMass(Helicopter::Fuel.getUsageSinceLastFrame(), 0, 0, 0);
 	Helicopter::Fuel.clearUsageSinceLastFrame();
@@ -458,7 +505,7 @@ void ed_fm_set_command(int command, float value)
 		break;
 
 	case JoystickThrottle:
-		Helicopter::CollectiveInput = limit(((-value + 1.0) / 2.0) , 0.0, 1.0);
+		Helicopter::CollectiveInput = limit(((-value + 1.0) / 2.0), 0.0, 1.0);
 		break;
 
 	case trimUp:
@@ -474,22 +521,47 @@ void ed_fm_set_command(int command, float value)
 		Helicopter::rollTrim += 0.0015;
 		break;
 	case pidPUp:
-		Helicopter::pidPValue += 0.01;
+		Helicopter::pidPValue += 0.001;
+		//Helicopter::center_of_gravity_x += 0.001;
 		break;
 	case pidPDown:
-		Helicopter::pidPValue -= 0.01;
+		Helicopter::pidPValue -= 0.001;
+		//Helicopter::center_of_gravity_x -= 0.001;
 		break;
 	case pidIUp:
-		Helicopter::pidIValue += 0.01;
+		Helicopter::pidIValue += 0.0001;
+		//Helicopter::center_of_gravity_y += 0.001;
 		break;
 	case pidIDown:
-		Helicopter::pidIValue -= 0.01;
+		Helicopter::pidIValue -= 0.0001;
+		//Helicopter::center_of_gravity_y -= 0.001;
 		break;
 	case pidDUp:
-		Helicopter::pidDValue += 0.01;
+		Helicopter::pidDValue += 0.0001;
 		break;
 	case pidDDown:
-		Helicopter::pidDValue -= 0.01;
+		Helicopter::pidDValue -= 0.0001;
+		break;
+	case autopilotOff:
+		Helicopter::autopilotState = 0;
+		break;
+	case autopilotLevel1:
+		Helicopter::autopilotState = 1;
+		break;
+	case autopilotLevel2:
+		Helicopter::autopilotState = 2;
+		break;
+	case autopilotLevelChangeUp:
+		Helicopter::autopilotState -= 1;
+		if (Helicopter::autopilotState <0) {
+			Helicopter::autopilotState = 0;
+		}
+		break;
+	case autopilotLevelChangeDown:
+		Helicopter::autopilotState += 1;
+		if (Helicopter::autopilotState > 2) {
+			Helicopter::autopilotState = 2;
+		}
 		break;
 	case starterButton:
 		Helicopter::Engine.setStarterButton(value);

@@ -47,5 +47,6 @@ namespace Helicopter
 	// Q = Cq * 1/2 * rho * A * ((omega * R) ^2)  * R  = 1251 Nm
 	// P= Q * omega 
 
-	unsigned __int64 last_now=0;
+	unsigned __int64 time_now_millis_last =0;
+	double td = 0.006;
 }

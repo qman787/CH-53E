@@ -99,6 +99,7 @@ namespace Helicopter
 	double autopilot_yaw_differential = 0.0;
 	double autopilot_roll_differential = 0.0;
 	double autopilot_pitch_differential = 0.0;
+	double autopilot_collective_differential = 0.0;
 
 	CH53Engine Engine;
 	CH53FuelSystem Fuel;
@@ -183,186 +184,205 @@ void* COLLECTIVE_INPUT = Helicopter::cockpitAPI.getParamHandle("COLLECTIVE_INPUT
 void ed_fm_simulate(double dt)
 {
 	
-	unsigned __int64 now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-	unsigned __int64 time_diff = now - Helicopter::last_now;
-	// Very important! clear out the forces and moments before you start calculated
-	// a new set for this run frame
-	Helicopter::Motion.clear();
+	unsigned __int64 time_now_millis = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	unsigned __int64 time_diff = time_now_millis - Helicopter::time_now_millis_last;
 
-	// Get the total absolute velocity acting on the aircraft with wind included
-	// using english units so airspeed is in feet/second here
-	Helicopter::Motion.updateFrame(dt);
+	double inc_radalt = 0;
 
+	if (true) {
+		// Very important! clear out the forces and moments before you start calculated
+		// a new set for this run frame
+		Helicopter::Motion.clear();
 
-	// update amount of fuel used and change in mass
-	Helicopter::Fuel.update(Helicopter::Engine.getCoreRelatedRPM(), dt); // note, still uses fuel when sim is paused
-	Helicopter::Engine.update(dt, Helicopter::Fuel.isFuelFlow, Helicopter::Electrics.isDC_busPowered, Helicopter::OutsideAirTemp, Helicopter::CollectiveInput);
-
-	Helicopter::Electrics.update(dt, Helicopter::Engine.N1_RPM);
-	Helicopter::Airframe.updateFrame(dt);
-
-	
-	// AFCS
-	//
-	if (Helicopter::autopilotState == 0) {
-		Helicopter::autopilot_pitch_differential = 0;
-		Helicopter::autopilot_roll_differential = 0;
-		Helicopter::autopilot_yaw_differential = 0;
-		Helicopter::autopilot_target_heading = -1;	// set to -1 so that I know it was turned off
-	}
-	else if (Helicopter::autopilotState == 1) {
-		
-		
-		double current_heading = fmod(360 - (Helicopter::Motion.yaw * (180 / 3.14159)), 360);	// this is wierd AF. its like Helicopter::Motion.yaw is flipped on the 0 - 180 axis..but not then rotated 90 degrees like normal?
-		if (Helicopter::autopilot_target_heading == -1) {
-			Helicopter::autopilot_target_heading = current_heading;
-		}
-		double target_heading = Helicopter::autopilot_target_heading;
-		double heading_diff = target_heading - current_heading; // this will make heading_diff +/- 180 max.
-
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_2, current_heading);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, heading_diff);
-		//PID pid_yaw = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-		PID pid_yaw = PID(0.06, 1, -1, 0.200, 0.012, 0.036);
-		double inc_yaw = pid_yaw.calculate(0, heading_diff);
-		Helicopter::autopilot_yaw_differential = inc_yaw;
-		if ((Helicopter::PedalInput > 0.3) || (Helicopter::PedalInput < -0.3)) {
-			Helicopter::autopilot_yaw_differential = 0;
-		}
+		// Get the total absolute velocity acting on the aircraft with wind included
+		// using english units so airspeed is in feet/second here
+		Helicopter::Motion.updateFrame(dt);
 
 
-		double target_roll = 0;
-		double target_roll_diff = -(target_roll - (Helicopter::Motion.roll * (180 / 3.14159)));
-		//PID pid_roll = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-		PID pid_roll = PID(0.06, 3, -3, 0.202, 0.002, 0.020);
-		double inc_roll = pid_roll.calculate(0, target_roll_diff);
-		Helicopter::autopilot_roll_differential = inc_roll;
-		if ((Helicopter::RollInput > 0.3) || (Helicopter::RollInput < -0.3)) {
-			Helicopter::autopilot_roll_differential = 0;
-		}
+		// update amount of fuel used and change in mass
+		Helicopter::Fuel.update(Helicopter::Engine.getCoreRelatedRPM(), dt); // note, still uses fuel when sim is paused
+		Helicopter::Engine.update(dt, Helicopter::Fuel.isFuelFlow, Helicopter::Electrics.isDC_busPowered, Helicopter::OutsideAirTemp, Helicopter::CollectiveInput);
+
+		Helicopter::Electrics.update(dt, Helicopter::Engine.N1_RPM);
+		Helicopter::Airframe.updateFrame(dt);
 
 
-		double target_pitch = 0;
-		double target_pitch_diff = (target_pitch - (Helicopter::Motion.pitch * (180 / 3.14159)));
-		PID pid_pitch = PID(0.012, 90, -90, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-		//PID pid_pitch = PID(0.006, 90, -90, 0.090, 0.025, 0.001);
-		double inc_pitch = pid_pitch.calculate(0, target_pitch_diff);
-		Helicopter::autopilot_pitch_differential = inc_pitch;
-		if ((Helicopter::PitchInput > 0.3) || (Helicopter::PitchInput < -0.3)) {
+		// AFCS
+		//
+		if (Helicopter::autopilotState == 0) {
 			Helicopter::autopilot_pitch_differential = 0;
+			Helicopter::autopilot_roll_differential = 0;
+			Helicopter::autopilot_yaw_differential = 0;
+			Helicopter::autopilot_target_heading = -1;	// set to -1 so that I know it was turned off
+		}
+		else if (Helicopter::autopilotState == 1) {
+
+
+			double current_heading = fmod(360 - (Helicopter::Motion.yaw * (180 / 3.14159)), 360);	// this is wierd AF. its like Helicopter::Motion.yaw is flipped on the 0 - 180 axis..but not then rotated 90 degrees like normal?
+			if (Helicopter::autopilot_target_heading == -1) {
+				Helicopter::autopilot_target_heading = current_heading;
+			}
+			double target_heading = Helicopter::autopilot_target_heading;
+			double heading_diff = target_heading - current_heading; // this will make heading_diff +/- 180 max.
+
+			//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_2, current_heading);
+			//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, heading_diff);
+			//PID pid_yaw = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_yaw = PID(0.2, 1, -1, 0.200, 0.012, 0.036);
+			double inc_yaw = pid_yaw.calculate(0, heading_diff);
+			Helicopter::autopilot_yaw_differential = inc_yaw;
+			if ((Helicopter::PedalInput > 0.3) || (Helicopter::PedalInput < -0.3)) {
+				Helicopter::autopilot_yaw_differential = 0;
+			}
+
+
+			double target_roll = 0;
+			double target_roll_diff = -(target_roll - (Helicopter::Motion.roll * (180 / 3.14159)));
+			//PID pid_roll = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_roll = PID(0.2, 3, -3, 0.202, 0.002, 0.020);
+			double inc_roll = pid_roll.calculate(0, target_roll_diff);
+			Helicopter::autopilot_roll_differential = inc_roll;
+			if ((Helicopter::RollInput > 0.3) || (Helicopter::RollInput < -0.3)) {
+				Helicopter::autopilot_roll_differential = 0;
+			}
+
+
+			double target_pitch = -1.3;
+			double target_pitch_diff = (target_pitch - (Helicopter::Motion.pitch * (180 / 3.14159)));
+			//PID pid_pitch = PID(time_diff / 1000, 90, -90, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_pitch = PID(0.2, 90, -90, 0.090, 0.025, 0.001);
+			double inc_pitch = pid_pitch.calculate(0, target_pitch_diff);
+			Helicopter::autopilot_pitch_differential = inc_pitch;
+			//Helicopter::pitchTrim = inc_pitch;
+			if ((Helicopter::PitchInput > 0.3) || (Helicopter::PitchInput < -0.3)) {
+				Helicopter::autopilot_pitch_differential = 0;
+			}
+
+
+			double target_radalt = 50;
+			double target_radalt_diff = (target_radalt - Helicopter::Motion.altitudeAGL);
+			//PID pid_radalt = PID(0.2, 100, -100, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_radalt = PID(0.2, 100, -100, 1.0, 0.03, 0.05);
+			inc_radalt = pid_radalt.calculate(0, target_radalt_diff);
+			Helicopter::autopilot_collective_differential = -limit((inc_radalt/ 10),-1,1);
+			//Helicopter::pitchTrim = inc_pitch;
+			if (Helicopter::CollectiveInput > 0.9) {
+				Helicopter::autopilot_collective_differential = 0;
+			}
+
 		}
 
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_P, Helicopter::pidPValue);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_I, Helicopter::pidIValue);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_D, Helicopter::pidDValue);
+
+		//printf("(%d) current_roll:% 7.3f inc:% 7.3f\n", i, current_roll, inc);
+		//current_roll += inc;
+
+		//PID pid = PID(0.1, 1, -1, 0.1, 0.01, 0.5);
+		//double inc = pid.calculate(target_roll, current_roll);
+
+
+
+
+
+
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_INC, inc);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_pitch_differential);
+		//-----CONTROL DYNAMICS------------------------
+		// the four control constants seen here are the physical delfection amount in cm from the NASA report.
+		Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim + Helicopter::autopilot_roll_differential), -1, 1) * (22.61 / 2.0);
+		Helicopter::PitchControl = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + Helicopter::autopilot_pitch_differential), -1, 1) * (31.04 / 2.0));
+		Helicopter::PedalControl = (Helicopter::PedalInput + Helicopter::autopilot_yaw_differential) * (12.95 / 2.0);
+
+		Helicopter::CollectiveControl = (((Helicopter::CollectiveInput + Helicopter::autopilot_collective_differential) * (Helicopter::blade_pitch_max - Helicopter::blade_pitch_min)) + Helicopter::blade_pitch_min);
+
+		Helicopter::cockpitAPI.setParamNumber(PITCH_INPUT, limit((Helicopter::PitchInput + Helicopter::pitchTrim + Helicopter::autopilot_pitch_differential), -1, 1));
+		Helicopter::cockpitAPI.setParamNumber(ROLL_INPUT, limit((Helicopter::RollInput + Helicopter::rollTrim + Helicopter::autopilot_roll_differential), -1, 1));
+		Helicopter::cockpitAPI.setParamNumber(PEDAL_INPUT, Helicopter::PedalInput + Helicopter::autopilot_yaw_differential);
+		Helicopter::cockpitAPI.setParamNumber(COLLECTIVE_INPUT, Helicopter::CollectiveInput + Helicopter::autopilot_collective_differential);
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::CollectiveInput);
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::Motion.airspeed.z);
+
+
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::pidIValue);
+
+		// CT, a bit like CL, depends on several geometrical factors and trade-off, 
+		// but in general its maximum value is within the range 0.008 and 0.028, 
+		// according to how much optimised the rotor is.
+
+		//Thrust =  1/2 * rho * (omega*R) ^2  * (piR^2) * CT
+		double rho = 1.225;
+		double omega = 185 * 0.1047198 * Helicopter::Engine.getCoreRelatedRPM(); // RPM in rad/s
+		double R = 12.04; // radius
+		double CT = 0.02;	//Coefficient of Torque
+		double blade_pitch = ((Helicopter::CollectiveInput * (Helicopter::blade_pitch_max - Helicopter::blade_pitch_min)) + Helicopter::blade_pitch_min);
+
+		double thrust = 0.5 * rho * ((omega * R) * (omega * R)) * (3.14159 * (R * R)) * CT;
+		// so max thrust is: 153,291  at 100% rpm
+
+		Helicopter::Aero.setMassKg(Helicopter::Motion.getMassKg());
+		Helicopter::Aero.setBladePitchFactor(Helicopter::CollectiveInput);  // inputs 0-1
+		Helicopter::Engine.setBladePitchAngle(blade_pitch);
+		Helicopter::Engine.setRotorBladeLength(Helicopter::rotor_blade_length);
+
+
+		// set for ground effect simulation, rotor diameter AH6 is 8.33m --22.3 ch53
+		Helicopter::Aero.setAltitudeAGL(Helicopter::Motion.altitudeAGL);
+		double rotor_radius = Helicopter::main_rotor_diameter / 2;
+		if (Helicopter::Motion.altitudeAGL <= rotor_radius)
+		{
+			// using linear dropoff (but a graph i saw showed that it should be exponential)
+			//Helicopter::Aero.setGroundEffectFactor(1 - Helicopter::Motion.altitudeAGL / 22.3);
+			/*
+			At a rotor height of one-half rotor diameter, the thrust is increased about 7 percent.
+			At rotor heights above one rotor diameter, the thrust increase is small and decreases to zero at a height of about 1 1/4 rotor diameters.
+			Maximum ground effect is accomplished when hovering over smooth paved surfaces.
+			While hovering over tall grass, rough terrain, revetments, or water, ground effect may be seriously reduced.
+			This phenomena is due to the partial breakdown and cancellation of ground effect and the return of large vortex patterns with increased downwash angles.
+			*/
+			// Trying a simple curve LCW
+			// https://www.transum.org/Maths/Activity/Graph/Desmos.asp
+			//  y= (1/22.3) * (x-22.3) ^2
+
+			double y = (1 / rotor_radius) * ((Helicopter::Motion.altitudeAGL - rotor_radius) * (Helicopter::Motion.altitudeAGL - rotor_radius));
+			double y_normalized = (y / rotor_radius);
+			Helicopter::Aero.setGroundEffectFactor(y_normalized);
+		}
+		else
+		{
+			Helicopter::Aero.setGroundEffectFactor(0);
+		}
+
+		Helicopter::Aero.computeTotals(Helicopter::Motion.airspeed.x, Helicopter::Motion.airspeed.y, Helicopter::Motion.airspeed.z,
+			Helicopter::pitchRate_RPS, Helicopter::rollRate_RPS, Helicopter::yawRate_RPS,
+			Helicopter::CollectiveControl, Helicopter::PitchControl, Helicopter::RollControl, Helicopter::PedalControl, Helicopter::Motion.airspeed_KTS, Helicopter::Engine.getCoreRelatedRPM(), Helicopter::Airframe.rotorIntegrityFactor, Helicopter::Airframe.tailRotorIntegrityFactor);
+
+
+		Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal());
+
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, Helicopter::Aero.weight_factor * 100);
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, thrust);	//thrust available
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::Aero.getCmTotal());	//thrust available
+		//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_PRODUCED, Helicopter::Aero.getCxTotal());
+
+
+
+
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, Helicopter::Motion.altitudeAGL);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, inc_radalt);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, 50 - Helicopter::Motion.altitudeAGL);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, 0);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, 0);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::autopilot_collective_differential);
+
+
+
+		Helicopter::Motion.updateFuelUsageMass(Helicopter::Fuel.getUsageSinceLastFrame(), 0, 0, 0);
+		Helicopter::Fuel.clearUsageSinceLastFrame();
+
 	}
-
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_P, Helicopter::pidPValue);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_I, Helicopter::pidIValue);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_D, Helicopter::pidDValue);
-
-	//printf("(%d) current_roll:% 7.3f inc:% 7.3f\n", i, current_roll, inc);
-	//current_roll += inc;
-
-	//PID pid = PID(0.1, 1, -1, 0.1, 0.01, 0.5);
-	//double inc = pid.calculate(target_roll, current_roll);
-	
-	
-
-	
-
-	
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_INC, inc);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_pitch_differential);
-	//-----CONTROL DYNAMICS------------------------
-	// the four control constants seen here are the physical delfection amount in cm from the NASA report.
-	Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim + (limit(Helicopter::autopilot_roll_differential, -1, 1))), -1, 1) * (22.61/2.0);
-	Helicopter::PitchControl = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + (Helicopter::autopilot_pitch_differential)), -1, 1) * (31.04 / 2.0)) ;
-	Helicopter::PedalControl = (Helicopter::PedalInput + (Helicopter::autopilot_yaw_differential)) * (12.95 / 2.0) ;
-
-	Helicopter::CollectiveControl = ((Helicopter::CollectiveInput * (Helicopter::blade_pitch_max-Helicopter::blade_pitch_min))+Helicopter::blade_pitch_min ) ;
-
-	Helicopter::cockpitAPI.setParamNumber(PITCH_INPUT, limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1));
-	Helicopter::cockpitAPI.setParamNumber(ROLL_INPUT, limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1));
-	Helicopter::cockpitAPI.setParamNumber(PEDAL_INPUT, Helicopter::PedalInput);
-	Helicopter::cockpitAPI.setParamNumber(COLLECTIVE_INPUT, Helicopter::CollectiveInput);
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::CollectiveInput);
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM, Helicopter::Motion.airspeed.z);
-
-	
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::pidIValue);
-	
-	// CT, a bit like CL, depends on several geometrical factors and trade-off, 
-	// but in general its maximum value is within the range 0.008 and 0.028, 
-	// according to how much optimised the rotor is.
-
-	//Thrust =  1/2 * rho * (omega*R) ^2  * (piR^2) * CT
-	double rho = 1.225;
-	double omega = 185 * 0.1047198 * Helicopter::Engine.getCoreRelatedRPM(); // RPM in rad/s
-	double R = 12.04; // radius
-	double CT = 0.02;	//Coefficient of Torque
-	double blade_pitch = ((Helicopter::CollectiveInput * (Helicopter::blade_pitch_max - Helicopter::blade_pitch_min)) + Helicopter::blade_pitch_min);
-
-	double thrust = 0.5 * rho * ((omega * R) * (omega * R)) * (3.14159 * (R * R)) * CT;
-	// so max thrust is: 153,291  at 100% rpm
-
-	Helicopter::Aero.setMassKg(Helicopter::Motion.getMassKg());
-	Helicopter::Aero.setBladePitchFactor(Helicopter::CollectiveInput);  // inputs 0-1
-	Helicopter::Engine.setBladePitchAngle(blade_pitch);
-	Helicopter::Engine.setRotorBladeLength(Helicopter::rotor_blade_length);
-	
-
-	// set for ground effect simulation, rotor diameter AH6 is 8.33m --22.3 ch53
-	Helicopter::Aero.setAltitudeAGL(Helicopter::Motion.altitudeAGL);
-	double rotor_radius = Helicopter::main_rotor_diameter / 2;
-	if (Helicopter::Motion.altitudeAGL <= rotor_radius)
-	{
-		// using linear dropoff (but a graph i saw showed that it should be exponential)
-		//Helicopter::Aero.setGroundEffectFactor(1 - Helicopter::Motion.altitudeAGL / 22.3);
-		/*
-		At a rotor height of one-half rotor diameter, the thrust is increased about 7 percent.
-		At rotor heights above one rotor diameter, the thrust increase is small and decreases to zero at a height of about 1 1/4 rotor diameters.
-		Maximum ground effect is accomplished when hovering over smooth paved surfaces. 
-		While hovering over tall grass, rough terrain, revetments, or water, ground effect may be seriously reduced. 
-		This phenomena is due to the partial breakdown and cancellation of ground effect and the return of large vortex patterns with increased downwash angles. 
-		*/
-		// Trying a simple curve LCW
-		// https://www.transum.org/Maths/Activity/Graph/Desmos.asp
-		//  y= (1/22.3) * (x-22.3) ^2
-		
-		double y = (1 / rotor_radius) * ((Helicopter::Motion.altitudeAGL - rotor_radius) * (Helicopter::Motion.altitudeAGL - rotor_radius));
-		double y_normalized = (y / rotor_radius);
-		Helicopter::Aero.setGroundEffectFactor(y_normalized);
-	}
-	else
-	{
-		Helicopter::Aero.setGroundEffectFactor(0);
-	}
-	
-	Helicopter::Aero.computeTotals(Helicopter::Motion.airspeed.x, Helicopter::Motion.airspeed.y, Helicopter::Motion.airspeed.z,
-	Helicopter::pitchRate_RPS, Helicopter::rollRate_RPS, Helicopter::yawRate_RPS,
-	Helicopter::CollectiveControl, Helicopter::PitchControl, Helicopter::RollControl, Helicopter::PedalControl, Helicopter::Motion.airspeed_KTS, Helicopter::Engine.getCoreRelatedRPM(), Helicopter::Airframe.rotorIntegrityFactor, Helicopter::Airframe.tailRotorIntegrityFactor);
-
-	
-	Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal() );
-
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, Helicopter::Aero.weight_factor * 100);
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, thrust);	//thrust available
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, Helicopter::Aero.getCmTotal());	//thrust available
-	//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_PRODUCED, Helicopter::Aero.getCxTotal());
-
-	
-	
-	Helicopter::last_now = now;
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, (Helicopter::Motion.pitch* (180 / 3.14159)));
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, 0);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, time_diff);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::pitchTrim);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, 0);
-	Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::autopilot_pitch_differential);
-
-	
-
-	Helicopter::Motion.updateFuelUsageMass(Helicopter::Fuel.getUsageSinceLastFrame(), 0, 0, 0);
-	Helicopter::Fuel.clearUsageSinceLastFrame();
-
+	Helicopter::time_now_millis_last = time_now_millis;
 }
 
 /*
@@ -521,10 +541,12 @@ void ed_fm_set_command(int command, float value)
 		Helicopter::rollTrim += 0.0015;
 		break;
 	case pidPUp:
+		//Helicopter::td += 0.001;
 		Helicopter::pidPValue += 0.001;
 		//Helicopter::center_of_gravity_x += 0.001;
 		break;
 	case pidPDown:
+		//Helicopter::td -= 0.001;
 		Helicopter::pidPValue -= 0.001;
 		//Helicopter::center_of_gravity_x -= 0.001;
 		break;

@@ -14,9 +14,13 @@ protected:
 
 	EDPARAM cockpitAPI;
 
+	
+
 public:
 	bool isDC_busPowered;
 	bool isAC_busPowered;
+
+	int autopilotState = 0;
 
 	CH53ElectricSystem() 
 		: isBatteryOn(false)
@@ -42,6 +46,8 @@ public:
 		batteryVoltage = 24;
 		isDC_busPowered = false;
 		isAC_busPowered = false;
+		autopilotState = 0;
+		
 	}
 	void initHot()
 	{
@@ -52,6 +58,8 @@ public:
 		batteryVoltage = 24;
 		isDC_busPowered = true;
 		isAC_busPowered = true;
+		autopilotState = 0;
+		
 	}
 
 	void setBatteryOn(const float value)

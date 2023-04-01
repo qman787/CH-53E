@@ -89,8 +89,9 @@ namespace Helicopter
 	double pidPValue = 0.0;
 	double pidIValue = 0.0;
 	double pidDValue = 0.0;
-	int autopilotState = 0;
+	
 	double autopilot_target_heading = -1.0;	// set to -1 so that I know it was turned off
+	double autopilot_target_radalt = -1.0; // set to -1 so that I know it was turned off
 
 	double		ay_world			= 0.0;	// World referenced up/down acceleration (m/s^2)
 	double		accz				= 0.0;	// Az (per normal direction convention) out the bottom of the a/c (m/s^2)
@@ -209,13 +210,16 @@ void ed_fm_simulate(double dt)
 
 		// AFCS
 		//
-		if (Helicopter::autopilotState == 0) {
+		if (Helicopter::Electrics.autopilotState == 0) {
+			Helicopter::autopilot_collective_differential = 0;
 			Helicopter::autopilot_pitch_differential = 0;
 			Helicopter::autopilot_roll_differential = 0;
 			Helicopter::autopilot_yaw_differential = 0;
 			Helicopter::autopilot_target_heading = -1;	// set to -1 so that I know it was turned off
+			Helicopter::autopilot_target_radalt = -1;	// set to -1 so that I know it was turned off
+
 		}
-		else if (Helicopter::autopilotState == 1) {
+		else if (Helicopter::Electrics.autopilotState == 1) {
 
 
 			double current_heading = fmod(360 - (Helicopter::Motion.yaw * (180 / 3.14159)), 360);	// this is wierd AF. its like Helicopter::Motion.yaw is flipped on the 0 - 180 axis..but not then rotated 90 degrees like normal?
@@ -227,8 +231,8 @@ void ed_fm_simulate(double dt)
 
 			//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_2, current_heading);
 			//Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, heading_diff);
-			//PID pid_yaw = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_yaw = PID(0.2, 1, -1, 0.200, 0.012, 0.036);
+			//PID pid_yaw = PID(0.2, 1, -1, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_yaw = PID(30, 1, -1, 0.200, 0.012, 0.036);
 			double inc_yaw = pid_yaw.calculate(0, heading_diff);
 			Helicopter::autopilot_yaw_differential = inc_yaw;
 			if ((Helicopter::PedalInput > 0.3) || (Helicopter::PedalInput < -0.3)) {
@@ -238,8 +242,8 @@ void ed_fm_simulate(double dt)
 
 			double target_roll = 0;
 			double target_roll_diff = -(target_roll - (Helicopter::Motion.roll * (180 / 3.14159)));
-			//PID pid_roll = PID(0.06, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_roll = PID(0.2, 3, -3, 0.202, 0.002, 0.020);
+			//PID pid_roll = PID(0.2, Helicopter::pidPValue * 5, Helicopter::pidPValue * -5, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_roll = PID(50, 1, -1, 0.202, 0.002, 0.020);
 			double inc_roll = pid_roll.calculate(0, target_roll_diff);
 			Helicopter::autopilot_roll_differential = inc_roll;
 			if ((Helicopter::RollInput > 0.3) || (Helicopter::RollInput < -0.3)) {
@@ -247,10 +251,12 @@ void ed_fm_simulate(double dt)
 			}
 
 
-			double target_pitch = -1.3;
+			double target_pitch = 0;// -1.3;
 			double target_pitch_diff = (target_pitch - (Helicopter::Motion.pitch * (180 / 3.14159)));
-			//PID pid_pitch = PID(time_diff / 1000, 90, -90, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_pitch = PID(0.2, 90, -90, 0.090, 0.025, 0.001);
+			//PID pid_pitch = PID(25, 1, -1, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_pitch = PID(50, 1, -1, 0.06, 0.0, 0.000);
+			//PID pid_pitch = PID(0.2, 90, -90, 0.005, 1.125, 0.740);
+			//PID pid_pitch = PID(0.05, 90, -90, 1.15, 0.56, 0.16);
 			double inc_pitch = pid_pitch.calculate(0, target_pitch_diff);
 			Helicopter::autopilot_pitch_differential = inc_pitch;
 			//Helicopter::pitchTrim = inc_pitch;
@@ -259,12 +265,16 @@ void ed_fm_simulate(double dt)
 			}
 
 
-			double target_radalt = 50;
+			double current_radalt = Helicopter::Motion.altitudeAGL;	// this is wierd AF. its like Helicopter::Motion.yaw is flipped on the 0 - 180 axis..but not then rotated 90 degrees like normal?
+			if (Helicopter::autopilot_target_radalt == -1) {
+				Helicopter::autopilot_target_radalt = current_radalt;
+			}
+			double target_radalt = Helicopter::autopilot_target_radalt;
 			double target_radalt_diff = (target_radalt - Helicopter::Motion.altitudeAGL);
 			//PID pid_radalt = PID(0.2, 100, -100, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_radalt = PID(0.2, 100, -100, 1.0, 0.03, 0.05);
+			PID pid_radalt = PID(60, 1, -1, 0.050, 0.0, 0.0);
 			inc_radalt = pid_radalt.calculate(0, target_radalt_diff);
-			Helicopter::autopilot_collective_differential = -limit((inc_radalt/ 10),-1,1);
+			Helicopter::autopilot_collective_differential = -inc_radalt; // -limit((inc_radalt / 10), -1, 1);
 			//Helicopter::pitchTrim = inc_pitch;
 			if (Helicopter::CollectiveInput > 0.9) {
 				Helicopter::autopilot_collective_differential = 0;
@@ -371,8 +381,8 @@ void ed_fm_simulate(double dt)
 
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, Helicopter::Motion.altitudeAGL);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, inc_radalt);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, 50 - Helicopter::Motion.altitudeAGL);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, 0);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, Helicopter::autopilot_target_radalt - Helicopter::Motion.altitudeAGL);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::autopilot_target_radalt);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, 0);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::autopilot_collective_differential);
 
@@ -565,24 +575,24 @@ void ed_fm_set_command(int command, float value)
 		Helicopter::pidDValue -= 0.0001;
 		break;
 	case autopilotOff:
-		Helicopter::autopilotState = 0;
+		Helicopter::Electrics.autopilotState = 0;
 		break;
 	case autopilotLevel1:
-		Helicopter::autopilotState = 1;
+		Helicopter::Electrics.autopilotState = 1;
 		break;
 	case autopilotLevel2:
-		Helicopter::autopilotState = 2;
+		Helicopter::Electrics.autopilotState = 2;
 		break;
 	case autopilotLevelChangeUp:
-		Helicopter::autopilotState -= 1;
-		if (Helicopter::autopilotState <0) {
-			Helicopter::autopilotState = 0;
+		Helicopter::Electrics.autopilotState -= 1;
+		if (Helicopter::Electrics.autopilotState <0) {
+			Helicopter::Electrics.autopilotState = 0;
 		}
 		break;
 	case autopilotLevelChangeDown:
-		Helicopter::autopilotState += 1;
-		if (Helicopter::autopilotState > 2) {
-			Helicopter::autopilotState = 2;
+		Helicopter::Electrics.autopilotState += 1;
+		if (Helicopter::Electrics.autopilotState > 2) {
+			Helicopter::Electrics.autopilotState = 2;
 		}
 		break;
 	case starterButton:

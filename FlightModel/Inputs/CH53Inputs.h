@@ -29,10 +29,16 @@ enum CH53InputCommands
 	pidDDown = 3020,
 
 	autopilotOff = 3021,
-	autopilotLevel1 = 3022,
-	autopilotLevel2 = 3023,
-	autopilotLevelChangeUp = 3024,
-	autopilotLevelChangeDown = 3025,
+	autopilotAFCS = 3022,
+	autopilotRADALT = 3023,
+	autopilotBARALT = 3024,
+	autopilotHDGHOLD = 3025,
+	autopilotRADALT_INC = 3026,
+	autopilotRADALT_DEC = 3027,
+	autopilotBARALT_INC = 3028,
+	autopilotBARALT_DEC = 3029,
+	autopilotHDGHOLD_INC = 3030,
+	autopilotHDGHOLD_DEC = 3031,
 
 	// joystick axis commands
 	JoystickPitch		= 2001,	

@@ -21,6 +21,13 @@ public:
 	bool isAC_busPowered;
 
 	int autopilotState = 0;
+	bool autopilot_afcs_on = false;
+	bool autopilot_radalt_on = false;
+	bool autopilot_baralt_on = false;
+	bool autopilot_hdghold_on = false;
+	double autopilot_radalt_target = 200; // meters
+	double autopilot_baralt_target = 200; // meters
+	double autopilot_hdghold_target = 0; // compass degrees
 
 	CH53ElectricSystem() 
 		: isBatteryOn(false)

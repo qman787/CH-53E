@@ -86,6 +86,7 @@ namespace Helicopter
 	double		pitchTrim			= 0.0;
 	double		OutsideAirTemp		= 0.0;	// deg C, for temp gauge
 
+	double pidTimeValue = 0.6;
 	double pidPValue = 0.0;
 	double pidIValue = 0.0;
 	double pidDValue = 0.0;
@@ -179,6 +180,7 @@ void* TEST_PARAM_BODY_YAW = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_BO
 void* TEST_PARAM_AUTOPILOT_YAW = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_AUTOPILOT_YAW");
 void* TEST_PARAM_AUTOPILOT_INC = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_AUTOPILOT_INC");
 
+void* TEST_PARAM_PID_TIME = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_TIME");
 void* TEST_PARAM_PID_P = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_P");
 void* TEST_PARAM_PID_I = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_I");
 void* TEST_PARAM_PID_D = Helicopter::cockpitAPI.getParamHandle("TEST_PARAM_PID_D");
@@ -265,7 +267,7 @@ void ed_fm_simulate(double dt)
 			*/
 			double target_rollrate_diff = Helicopter::rollRate_RPS * (180 / 3.14159); // probably not neccessary to convert to deg.
 			//PID pid_pitch = PID(25, 1, -1, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_rollrate = PID(50, 1, -1, 0.06, 0.0, 0.000);
+			PID pid_rollrate = PID(25, 1, -1, 0.05, 0.0, 0.000);
 			double inc_rollrate = pid_rollrate.calculate(0, target_rollrate_diff);
 			Helicopter::autopilot_roll_differential = inc_rollrate;
 
@@ -286,16 +288,16 @@ void ed_fm_simulate(double dt)
 
 			double target_pitchrate_diff = Helicopter::pitchRate_RPS * (180 / 3.14159); // probably not neccessary to convert to deg.
 			//PID pid_pitchrate = PID(25, 1, -1, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_pitchrate = PID(25, 1, -1, 0.45, 0.0, 0.000);
+			PID pid_pitchrate = PID(25, 1, -1, 0.05, 0.0, 0.000);
 			double inc_pitchrate = pid_pitchrate.calculate(0, target_pitchrate_diff);
 			Helicopter::autopilot_pitch_differential = -inc_pitchrate;
 			
 
 			double target_yawrate_diff = Helicopter::yawRate_RPS * (180 / 3.14159); // probably not neccessary to convert to deg.
-			//PID pid_pitch = PID(25, 1, -1, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
-			PID pid_yawrate = PID(25, 1, -1, 0.7, 0.0, 0.000);
-			double inc_yawrate = pid_yawrate.calculate(0, target_yawrate_diff);
-			Helicopter::autopilot_yaw_differential = -inc_yawrate;
+			//PID pid_yawrate = PID(Helicopter::pidTimeValue, 1, -1, Helicopter::pidPValue, Helicopter::pidIValue, Helicopter::pidDValue);
+			PID pid_yawrate = PID(25, 1, -1, 0.05, 0.0, 0.000);
+			double inc_yawrate = pid_yawrate.calculate(0.007, target_yawrate_diff);
+			Helicopter::autopilot_yaw_differential = -(inc_yawrate);
 		}
 
 
@@ -346,7 +348,7 @@ void ed_fm_simulate(double dt)
 
 
 
-
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_TIME, Helicopter::pidTimeValue);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_P, Helicopter::pidPValue);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_I, Helicopter::pidIValue);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_D, Helicopter::pidDValue);
@@ -447,9 +449,9 @@ void ed_fm_simulate(double dt)
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, Helicopter::PitchInput);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, Helicopter::RollInput);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, Helicopter::PedalInput);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::Electrics.autopilot_radalt_target);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, 0);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::autopilot_radalt_collective_differential);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::pitchRate_RPS);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, Helicopter::rollRate_RPS);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::yawRate_RPS);
 
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AP_1, Helicopter::Electrics.autopilot_afcs_on);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AP_2, Helicopter::Electrics.autopilot_radalt_on);
@@ -618,6 +620,12 @@ void ed_fm_set_command(int command, float value)
 		break;
 	case trimRight:
 		Helicopter::rollTrim += 0.0015;
+		break;
+	case pidTimeUp:
+		Helicopter::pidTimeValue += 0.1;
+		break;
+	case pidTimeDown:
+		Helicopter::pidTimeValue -= 0.1;
 		break;
 	case pidPUp:
 		//Helicopter::td += 0.001;

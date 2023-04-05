@@ -63,6 +63,29 @@
 #include "PID/pid.h"						//Gear model functions
 #include <chrono>
 
+///
+/// AFCS NOTES
+/// Rudder pedal returns to a nuetral position if power to the system is lost
+/// LBA extends/retracts to provid pilot better pitch stability at high speeds. as the speed gets higher the LBA extends and you need more pitch cyclic to make the helo pitch up or down
+/// FAS does cyclic dampening, cyclic pitch trim, pitch autopilot (airspeed or altitude hold)
+/// 
+/// AFCS On = Compter pwr on and (Servo 1 or Servo 2 ON)
+/// Push AFCS ON -> SAS on pitch,roll,yaw rate gyros. about a 10% affect
+///				 -> Hover augmentation is active when airspeed < 60kts and pitch between 4.4 nose down and  and 13.3 nose up.  dampens lateral and longtitudanl force. ie.. if helo moves left then cyclic moves right to counter act it ( a bit)
+///				 -> Gust augmentaion is Pitch and roll vertical axis? (so stops it bouncing up and down?) and is about 55% affective (seems to be always on with SAS anyway?)
+///	Desensitizers not implimented.. stops affects of pilot input at certain engine freqs
+/// Turn coordination... depending on roll rate and lateral force..add a little yaw
+/// Trim and trim save functions seem to be available?
+/// Roll attitude HOLD  can rereferance (ie set it to a new value) by hiting a trim release button.. or using roll trim..which auto does it
+/// Pitch attitude HOLD same as roll trim excpet for pitch and only les than 60 kts
+/// Airspeed HOLD. above 60 kts, roll less than 35 degs. Adjust pitch cyclic to maintain speed. pitch trim can be used to adjust the speed.
+/// Heading HOLD
+/// Auto Turn ??!?
+/// Auto BANK allows for re-refernce of roll at speeds > 60 kts
+/// RADALT HOLD  +/- 7 ft
+/// BARALT HOLD	 +/- 25 ft
+/// 
+//	
 
 //-------------------------------------------------------
 // Start of Simulation Variables
@@ -109,6 +132,12 @@ namespace Helicopter
 
 	double autopilot_yaw_differential = 0.0;
 	
+	//  LATERAL
+	double autopilot_lat_differential = 0.0;
+
+	//  LONGITUDINAL
+	double autopilot_long_differential = 0.0;
+
 	// ROLL
 	double autopilot_roll_differential = 0.0;
 	double autopilot_target_roll=0.0;
@@ -254,6 +283,29 @@ void ed_fm_simulate(double dt)
 				Helicopter::autopilot_target_pitch = (Helicopter::Motion.pitch * (180 / 3.14159));
 			}
 
+			// Hover dampening
+			
+			if (Helicopter::Motion.airspeed_KTS < 60) {
+				if (time_diff > 0) {
+					// LATERAL	
+					double target_latrate_diff = (Helicopter::Motion.airspeed.y - Helicopter::Motion.airspeed_last.y) / time_diff; // this should give me lateral acceleration.
+					PID pid_latrate = PID(10, 1, -1, 0.05, 0.0, 0.000);
+					double inc_latrate = pid_latrate.calculate(0, target_latrate_diff);
+					Helicopter::autopilot_lat_differential = inc_latrate;
+
+					// LONGITUDINAL	
+					double target_longrate_diff = (Helicopter::Motion.airspeed.x - Helicopter::Motion.airspeed_last.x) / time_diff; // this should give me lateral acceleration.
+					PID pid_longrate = PID(10, 1, -1, 0.05, 0.0, 0.000);
+					double inc_longrate = pid_longrate.calculate(0, target_longrate_diff);
+					Helicopter::autopilot_long_differential = inc_longrate;
+				}
+			}
+			else {
+				Helicopter::autopilot_lat_differential = 0.0;
+				Helicopter::autopilot_long_differential = 0.0;
+			}
+
+
 			// ROLL
 			/*
 			if ((Helicopter::RollInput > 0.075) || (Helicopter::RollInput < -0.075)) {
@@ -368,8 +420,8 @@ void ed_fm_simulate(double dt)
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_pitch_differential);
 		//-----CONTROL DYNAMICS------------------------
 		// the four control constants seen here are the physical delfection amount in cm from the NASA report.
-		Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim + Helicopter::autopilot_roll_differential), -1, 1) * (22.61 / 2.0);
-		Helicopter::PitchControl = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + Helicopter::autopilot_pitch_differential), -1, 1) * (31.04 / 2.0));
+		Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim + Helicopter::autopilot_roll_differential + Helicopter::autopilot_lat_differential), -1, 1) * (22.61 / 2.0);
+		Helicopter::PitchControl = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + Helicopter::autopilot_pitch_differential + Helicopter::autopilot_long_differential), -1, 1) * (31.04 / 2.0));
 		Helicopter::PedalControl = (Helicopter::PedalInput + Helicopter::autopilot_yaw_differential) * (12.95 / 2.0);
 
 		Helicopter::CollectiveControl = (((Helicopter::CollectiveInput + Helicopter::autopilot_radalt_collective_differential + Helicopter::autopilot_baralt_collective_differential) * (Helicopter::blade_pitch_max - Helicopter::blade_pitch_min)) + Helicopter::blade_pitch_min);
@@ -446,12 +498,12 @@ void ed_fm_simulate(double dt)
 
 
 
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, Helicopter::PitchInput);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, Helicopter::RollInput);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, Helicopter::PedalInput);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::pitchRate_RPS);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, Helicopter::rollRate_RPS);
-		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::yawRate_RPS);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CX, Helicopter::Motion.airspeed.y);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CY, Helicopter::Motion.airspeed_last.y);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CZ, time_diff);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CL, Helicopter::autopilot_lat_differential);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CM, Helicopter::autopilot_long_differential);
+		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_CN, Helicopter::Motion.airspeed_KTS);
 
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AP_1, Helicopter::Electrics.autopilot_afcs_on);
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AP_2, Helicopter::Electrics.autopilot_radalt_on);

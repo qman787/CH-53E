@@ -78,6 +78,8 @@ namespace Helicopter
 		// Get the total absolute velocity acting on the aircraft with wind included
 		// using english units so airspeed is in feet/second here
 		Vec3	airspeed;
+		Vec3	airspeed_last;
+
 		double		ambientTemperature_DegK;	// Ambient temperature (kelvin)
 		double		ambientDensity_KgPerM3;		// Ambient density (kg/m^3)
 		double		dynamicPressure_LBFT2;		// Dynamic pressure (lb/ft^2)
@@ -280,6 +282,10 @@ namespace Helicopter
 
 			// Get the total absolute velocity acting on the aircraft with wind included m/s
 			// y and z acis corrected for normal aerodynamic usage
+			airspeed_last.x = airspeed.x;
+			airspeed_last.y = airspeed.y;
+			airspeed_last.z = airspeed.z;
+
 			airspeed.x = velocity_world_cs.x - wind.x;
 			airspeed.y = velocity_world_cs.z - wind.z;
 			airspeed.z = -(velocity_world_cs.y - wind.y);

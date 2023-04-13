@@ -283,17 +283,19 @@ public:
 		double Q_max = (Helicopter::blade_pitch_max / 10000)
 			* 0.5 * 1.225
 			* (3.14159 * (rotor_blade_length * rotor_blade_length))
-			* ((getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length) * (getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length))
+			* ((getCoreRelatedRPM() * Helicopter::rpm_100_percent * 0.1047198 * rotor_blade_length) * (getCoreRelatedRPM() * Helicopter::rpm_100_percent * 0.1047198 * rotor_blade_length))
 			* rotor_blade_length;	// in Newton meters
+
+		//double x=(Helicopter::blade_pitch_max /20000)* 0.5 * 1.225 * (3.14159 * (12.03 * 12.03))* ((1.09 * 185 * 0.1047198 * 12.03) * (1.09 * 185 * 0.1047198 * 12.03)) * 12.03;
 
 		//  (blade_pitch_angle / 10000) is a fudge.. it should be from a curve: https://aviation.stackexchange.com/questions/49167/what-is-the-relationship-between-speed-torque-and-pitch-in-a-helicopter/67197#67197
 		double Q = (blade_pitch_angle / 10000) 
 			* 0.5 * 1.225 
 			* (3.14159 * (rotor_blade_length * rotor_blade_length)) 
-			* ((getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length) * (getCoreRelatedRPM() * 185 * 0.1047198 * rotor_blade_length))
+			* ((getCoreRelatedRPM() * Helicopter::rpm_100_percent * 0.1047198 * rotor_blade_length) * (getCoreRelatedRPM() * Helicopter::rpm_100_percent * 0.1047198 * rotor_blade_length))
 			* rotor_blade_length; // in Newton meters
 
-		double power_reqd = Q * (getCoreRelatedRPM() * 185 * 0.1047198); // torque * RPM (in rad/s)
+		double power_reqd = Q * (getCoreRelatedRPM() * Helicopter::rpm_100_percent * 0.1047198); // torque * RPM (in rad/s)
 		double power_available = getEnginePowerTotal(0) * 1000;
 
 		if (power_reqd > power_available) {

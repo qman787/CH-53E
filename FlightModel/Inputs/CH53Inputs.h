@@ -40,8 +40,11 @@ enum CH53InputCommands
 	autopilotHDGHOLD_INC = 3030,
 	autopilotHDGHOLD_DEC = 3031,
 	
-	pidTimeUp = 3032,
-	pidTimeDown = 3033,
+	autopilotBANKHOLD = 3032,
+	autopilotSPEEDHOLD = 3033,
+
+	pidTimeUp = 3034,
+	pidTimeDown = 3035,
 
 	// joystick axis commands
 	JoystickPitch		= 2001,	

@@ -25,9 +25,13 @@ public:
 	bool autopilot_radalt_on = false;
 	bool autopilot_baralt_on = false;
 	bool autopilot_hdghold_on = false;
+	bool autopilot_bankhold_on = false;
+	bool autopilot_speedhold_on = false;
 	double autopilot_radalt_target = 200; // meters
 	double autopilot_baralt_target = 200; // meters
 	double autopilot_hdghold_target = 0; // compass degrees
+	double autopilot_speedhold_target = 0.0; //  kts
+	double autopilot_bankhold_target = 0.0; //  kts
 
 	CH53ElectricSystem() 
 		: isBatteryOn(false)
@@ -54,6 +58,13 @@ public:
 		isDC_busPowered = false;
 		isAC_busPowered = false;
 		autopilotState = 0;
+		autopilot_afcs_on = false;
+		autopilot_radalt_on = false;
+		autopilot_baralt_on = false;
+		autopilot_hdghold_on = false;
+		autopilot_bankhold_on = false;
+		autopilot_speedhold_on = false;
+
 		
 	}
 	void initHot()
@@ -66,7 +77,12 @@ public:
 		isDC_busPowered = true;
 		isAC_busPowered = true;
 		autopilotState = 0;
-		
+		autopilot_afcs_on = false;
+		autopilot_radalt_on = false;
+		autopilot_baralt_on = false;
+		autopilot_hdghold_on = false;
+		autopilot_bankhold_on = false;
+		autopilot_speedhold_on = false;
 	}
 
 	void setBatteryOn(const float value)

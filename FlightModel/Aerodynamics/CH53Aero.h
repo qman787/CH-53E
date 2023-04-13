@@ -682,7 +682,7 @@ namespace Helicopter
 			// so I increase the Cz by a 'factor' depending on the mass to 'fudge' a different result.
 			//  certainly far from perfect... barely even ok :(
 
-			weight_factor = 1 + ((mass_kg - mass_aerodata) / (mass_mtow - mass_aerodata) * 0.1); //  (33000 -32000) / (73000 - 32000) = 1000/41000 = 0.02 // 0.02 <-> 1
+			weight_factor = 1 + ((mass_kg - mass_aerodata) / (mass_mtow - mass_aerodata)); //  (33000 -32000) / (73000 - 32000) = 1000/41000 = 0.02 // 0.02 <-> 1
 			
 			/*  Cx_tot		force out nose (-drag)*/
 			/*

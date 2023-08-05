@@ -46,6 +46,8 @@ enum CH53InputCommands
 	pidTimeUp = 3034,
 	pidTimeDown = 3035,
 
+	collectiveIncrease = 3036,
+	collectiveDecrease = 3037,
 	// joystick axis commands
 	JoystickPitch		= 2001,	
 	JoystickRoll		= 2002,

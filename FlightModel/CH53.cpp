@@ -164,6 +164,7 @@ namespace Helicopter
 	bool autopilot_speed_first_use = true;
 	bool autopilot_heading_first_use = true;
 
+	double collective_value = 0.0;
 	CH53Engine Engine;
 	CH53FuelSystem Fuel;
 	CH53Airframe Airframe;
@@ -323,13 +324,13 @@ void ed_fm_simulate(double dt)
 			if (Helicopter::Motion.airspeed_KTS < 60) {
 				if (time_diff > 0) {
 					// LATERAL	
-					double target_latrate_diff = (Helicopter::Motion.airspeed.y - Helicopter::Motion.airspeed_last.y) / time_diff; // this should give me lateral acceleration.
+					double target_latrate_diff = (Helicopter::Motion.airspeed.y - Helicopter::Motion.airspeed_last.y) / time_diff; // this should give me LATERAL acceleration.
 					PID pid_latrate = PID(10, 1, -1, 0.05, 0.0, 0.000);
 					double inc_latrate = pid_latrate.calculate(0, target_latrate_diff);
 					Helicopter::autopilot_lat_differential = inc_latrate;
 
 					// LONGITUDINAL	
-					double target_longrate_diff = (Helicopter::Motion.airspeed.x - Helicopter::Motion.airspeed_last.x) / time_diff; // this should give me lateral acceleration.
+					double target_longrate_diff = (Helicopter::Motion.airspeed.x - Helicopter::Motion.airspeed_last.x) / time_diff; // this should give me LONGITUDINAL acceleration.
 					PID pid_longrate = PID(10, 1, -1, 0.05, 0.0, 0.000);
 					double inc_longrate = pid_longrate.calculate(0, target_longrate_diff);
 					Helicopter::autopilot_long_differential = inc_longrate;
@@ -722,6 +723,8 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
 // Command = Command Index (See Export.lua), Value = Signal Value (-1 to 1 for Joystick Axis)
 void ed_fm_set_command(int command, float value)
 {
+	float collective_val = 0.0;
+
 	if (value > 1) // if the command comes from clickabledata.lua, it adds the device id to the value and changes the value
 	{
 		float device_id;
@@ -746,7 +749,20 @@ void ed_fm_set_command(int command, float value)
 	case JoystickThrottle:
 		Helicopter::CollectiveInput = limit(((-value + 1.0) / 2.0), 0.0, 1.0);
 		break;
-
+	case collectiveIncrease:
+		Helicopter::collective_value += 0.001;
+		if (Helicopter::collective_value > 1.0) {
+			Helicopter::collective_value = 1.0;
+		}
+		Helicopter::CollectiveInput = limit(((-Helicopter::collective_value + 1.0) / 2.0), 0.0, 1.0);
+		break;
+	case collectiveDecrease:
+		Helicopter::collective_value -= 0.001;
+		if (Helicopter::collective_value < -1.0) {
+			Helicopter::collective_value = -1.0;
+		}
+		Helicopter::CollectiveInput = limit(((-Helicopter::collective_value + 1.0) / 2.0), 0.0, 1.0);
+		break;
 	case trimUp:
 		Helicopter::pitchTrim += 0.0015;
 		break;

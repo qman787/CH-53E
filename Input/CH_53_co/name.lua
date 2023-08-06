@@ -1,0 +1,1 @@
+return _('CH_53 CoPilot')

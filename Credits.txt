@@ -1,0 +1,11 @@
+﻿This project (Sikorsky Ch53) was undertaken by FreddyStoned.
+
+The EFM Flight Model was used from CptSmiley (F22Demo) and Nibbylots (AH6) models and 
+crudely converted to the CH53 by FreddyStoned.
+
+The original FlightGear Ch53 model was used (with kind permission) from the authors:
+Pierre Duval, Josh Babcock, RedTwo, StuartC (FGUK), Voodoo da Vinci, and Richard Harrison.
+
+Other contributers
+Hawkeye60, Ogre, MAV MAC, Gonzalodesanta, Silverbullet_238, DenisAlbu (soldier model)
+

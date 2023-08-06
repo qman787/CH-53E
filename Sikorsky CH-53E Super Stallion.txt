@@ -1,0 +1,237 @@
+Sikorsky CH-53E Super Stallion
+From Wikipedia, the free encyclopedia
+Jump to navigation
+Jump to search
+CH-53E Super Stallion
+MH-53E Sea Dragon
+A CH-53E Super Stallion with the 22nd Marine Expeditionary Unit.jpg
+A CH-53E Super Stallion with the 22nd Marine Expeditionary Unit
+Role 	Heavy-lift cargo helicopter
+National origin 	United States
+Manufacturer 	Sikorsky Aircraft
+First flight 	1 March 1974
+Introduction 	1981
+Status 	In service
+Primary users 	United States Marine Corps
+United States Navy
+Japan Maritime Self-Defense Force
+Produced 	1978–1980s[citation needed]
+Number built 	234[citation needed]
+Developed from 	Sikorsky CH-53 Sea Stallion
+Developed into 	Sikorsky CH-53K King Stallion
+
+The Sikorsky CH-53E Super Stallion is a heavy-lift helicopter operated by the United States military. As the Sikorsky S-80, it was developed from the CH-53 Sea Stallion, mainly by adding a third engine, adding a seventh blade to the main rotor, and canting the tail rotor 20°. It was built by Sikorsky Aircraft for the United States Marine Corps. The less common MH-53E Sea Dragon fills the United States Navy's need for long-range minesweeping or airborne mine countermeasures missions, and perform heavy-lift duties for the Navy. Under development is the Sikorsky CH-53K King Stallion, which has new engines, new composite rotor blades, and a wider aircraft cabin; this is to replace the CH-53E.
+Contents
+
+    1 Development
+        1.1 Background
+        1.2 H-53E
+        1.3 CH-53K
+    2 Design
+    3 Operational history
+        3.1 1980s
+        3.2 1990s
+        3.3 2000s
+    4 Variants
+    5 Operators
+    6 Accidents
+        6.1 Summary
+        6.2 Major accidents
+    7 Specifications (CH-53E)
+    8 Notable appearances in media
+    9 See also
+    10 References
+    11 External links
+
+Development
+Background
+
+The CH-53 was the product of the U.S. Marines' "Heavy Helicopter Experimental" (HH(X)) competition begun in 1962. Sikorsky's S-65 was selected over Boeing Vertol's modified CH-47 Chinook version. The prototype YCH-53A first flew on 14 October 1964.[1] The helicopter was designated "CH-53A Sea Stallion" and delivery of production helicopters began in 1966.[2] The first CH-53As were powered by two General Electric T64-GE-6 turboshaft engines with 2,850 shp (2,125 kW) and had a maximum gross weight of 46,000 lb (20,865 kg), including 20,000 lb (9,072 kg) in payload.
+
+Variants of the original CH-53A Sea Stallion include the RH-53A/D, HH-53B/C, CH-53D, CH-53G, and MH-53H/J/M. The RH-53A and RH-53D were used by the US Navy for minesweeping. The CH-53D included a more powerful version of the General Electric T64 engine, used in all H-53 variants, and external fuel tanks. The CH-53G was a version of the CH-53D produced in West Germany for the German Army.[1]
+
+The U.S. Air Force's HH-53B/C "Super Jolly Green Giant" were for special operations and combat rescue, and were first deployed during the Vietnam War. The Air Force's MH-53H/J/M Pave Low helicopters were the last of the twin-engined H-53s, and were equipped with extensive avionics upgrades for all-weather operation.
+H-53E
+
+In October 1967, the US Marine Corps issued a requirement for a helicopter with a lifting capacity 1.8 times that of the CH-53D that would fit on amphibious warfare ships. The US Navy and US Army were also seeking similar helicopters at the time. Before issue of the requirement, Sikorsky had been working on an enhancement to the CH-53D, under the company designation "S-80", featuring a third turboshaft engine and a more powerful rotor system. Sikorsky proposed the S-80 design to the Marines in 1968. The Marines liked the idea, since it promised to deliver a good solution quickly, and funded development of a testbed helicopter for evaluation.[3]
+The YCH-53E on its first flight, 1 March 1974
+
+In 1970, against pressure by the US Defense Secretary to take the Boeing Vertol XCH-62 being developed for the Army, the Navy and Marines were able to show the Army's helicopter was too large to operate on landing ships and were allowed to pursue their helicopter.[3] Prototype testing investigated the addition of a third engine and a larger rotor system with a seventh blade in the early 1970s. In 1974, the initial YCH-53E first flew.[4]
+
+Changes on the CH-53E also include a stronger transmission and a fuselage stretched 6 feet 2 inches (1.88 m). The main rotor blades were changed to a titanium-fiberglass composite.[3] The tail configuration was also changed. The low-mounted, symmetrical, horizontal tail was replaced by a larger, vertical tail, and the tail rotor tilted from the vertical to provide some lift in hover while counteracting the main rotor torque. Also added was a new automatic flight control system.[4] The digital flight control system prevented the pilot from overstressing the aircraft.[3]
+
+YCH-53E testing showed that it could lift 17.8 tons (to a 50-foot (15 m) wheel height), and without an external load, could reach 170 knots (310 km/h) at a 56,000 pound gross weight. This led to two preproduction aircraft and a static test article being ordered. At this time, the tail was redesigned to include a high-mounted, horizontal surface opposite the rotor with an inboard section perpendicular to the tail rotor then at the strut connection cants 20° to horizontal.[4] This helps with tilt at high speed.[citation needed]
+A production CH-53E during flight demonstration showing the three engines and the tail rotor pylon
+
+The initial production contract was awarded in 1978, and service introduction followed in February 1981.[3] The first production CH-53E flew in December 1980.[4] The US Navy acquired the CH-53E in small numbers for shipboard resupply. The Marines and Navy acquired a total of 177.[3]
+
+The Navy requested a version of the CH-53E for the airborne mine countermeasures role, designated "MH-53E Sea Dragon". It has enlarged sponsons to provide substantially greater fuel storage and endurance. It also retained the in-flight refueling probe, and could be fitted with up to seven 300-US-gallon (1136-liter) ferry tanks internally. The MH-53E digital flight-control system includes features specifically designed to help tow minesweeping gear.[3] The prototype MH-53E made its first flight on 23 December 1981. MH-53E was used by the Navy beginning in 1986. The MH-53E is capable of in-flight refueling and can be refueled at hover.[4]
+A MH-53E Sea Dragon from HM-15 during a minesweeping exercise, 2007
+
+Additionally, a number of MH-53E helicopters were exported to Japan as the S-80-M-1 for the Japan Maritime Self-Defense Force.
+
+The base-model CH-53E serves both the US Navy and Marines in the heavy-lift transport role. It is capable of lifting heavy equipment, including the eight-wheeled LAV-25 light armored vehicle and the M198 155 mm Howitzer with ammunition and crew. The Super Stallion can recover aircraft up to its size, which includes all Marine Corps aircraft except for the KC-130.
+
+The 53E needs 40 maintenance hours per flight hour due to aging parts, lack of available new replacement parts, and the extension of the overall airframe lifetime.[5]
+CH-53K
+Main article: Sikorsky CH-53K King Stallion
+Ambox current red Americas.svg
+	
+This section needs to be updated. Please update this article to reflect recent events or newly available information. (December 2019)
+
+The US Marine Corps had been planning to upgrade most of their CH-53Es to keep them in service, but this plan stalled. Sikorsky then proposed a new version, originally the "CH-53X", and in April 2006, the USMC signed a contract for 156 aircraft as the "CH-53K".[6][7] The Marines planned to start retiring CH-53Es in 2009 and needed new helicopters quickly.[8] In August 2007, the USMC increased its CH-53K order to 227 helicopters.[9] Their first flight was planned for November 2011.[10]
+Design
+View of the CH-53E's cockpit during an in-flight refueling operation with an Air Force HC-130 Hercules
+
+Although dimensionally similar, the three-engined CH-53E Super Stallion is a much more powerful aircraft than the original Sikorsky S-65 twin-engined CH-53A Sea Stallion. The CH-53E also added a larger main rotor system with a seventh blade.
+
+The CH-53E was designed for transporting up to 55 troops with the installation of seats along the cabin center line or 30,000 lb (13,610 kg) of cargo, and can carry externally slung loads up to 36,000 lb (16,330 kg).[3] The CH-53E has incorporated the same crash-attenuating seats as the MV-22B to increase survivability of passengers, but reduced its troop transport capacity to 30.[citation needed] The Super Stallion has a cruise speed of 173 mph (278 km/h) and a range of 621 miles (1,000 km).[11] The helicopter is fitted with a forward-extendable in-flight refueling probe. It can carry three machine guns, one at the starboard side crew door; one at the port window, just behind the copilot; and a firing position on the tail ramp.[citation needed] The CH-53E also has chaff-flare dispensers.[3]
+A CH-53 sling loads a HMMWV during a Marine Air-Ground Task Force demonstration
+
+The MH-53E features enlarged side-mounted fuel sponsons, and is rigged for towing various minesweeping and hunting gear from above the dangerous naval mines. The Sea Dragon can be equipped for minesweeping and cargo and passenger transportation. Its digital flight-control system includes features specifically designed to help towing minesweeping gear.[3]
+
+In addition, the CH-53E has been upgraded to include the helicopter night vision system, improved .50 BMG (12.7 mm) GAU-21/A and M3P machine guns, and AAQ-29A forward-looking infrared imager.[3]
+
+The CH-53E and the MH-53E are the largest helicopters in the Western world, while the CH-53K now being developed will be even larger. They are fourth in the world to the Russian Mil Mi-26 Halo single-rotor helicopter and the enormous, twin transverse-rotored Mil V-12 Homer, which can lift more than 22 tons (20 tonnes) and 44 tons (40 tonnes), respectively and the Mi-26's single-rotor predecessor Mil Mi-6, which has less payload (12 tonnes), but is bigger and has a higher MTOW at 42 tonnes.[citation needed]
+Operational history
+	
+This section needs additional citations for verification. Please help improve this article by adding citations to reliable sources. Unsourced material may be challenged and removed. (March 2015) (Learn how and when to remove this template message)
+A pair of Super Stallion helicopters receive fuel from a KC-130 Hercules while transporting Humvees over the Gulf of Aden
+USMC CH-53E recovering a disabled US Army CH-47 Chinook in eastern Afghanistan, 2010.
+1980s
+
+The Super Stallion variant first entered service with the creation of Heavy Marine Helicopter Squadron 464 at Marine Corps Air Station New River, North Carolina. Two more squadrons were created at Marine Corps Air Station Tustin, California over the next several years, HMH-465 and HMH-466. In addition, one West Coast training squadron, HMT-301, was given Super Stallions as was one more East Coast squadron, HMH-772, out of a reserve base at NASJRB Willow Grove, Pennsylvania. Since then, other Marine heavy-lift squadrons have retired their CH-53As and Ds, replacing them with Es.
+
+The Marine Corps CH-53E had its first shipboard deployment in 1983 when four CH-53E helicopters from HMH-464 deployed aboard USS Iwo Jima as part of the 24th Marine Amphibious Unit (24th MAU).[citation needed] During this deployment, Marines were sent ashore in Beirut, Lebanon, as peace keepers, and established perimeters at and near the Beirut International Airport. On 23 October 1983, a truck bomb detonated by terrorists destroyed the Marine barracks in Beirut, killing nearly 240 service members as they slept. CH-53E helicopters from the 24th MAU provided critical combat support during this operation.
+1990s
+
+In 1991, two CH-53Es, along with several CH-46 Sea Knight helicopters, were sent to evacuate U.S. and foreign nationals from the U.S. embassy in Mogadishu, Somalia—Operation Eastern Exit—as violence enveloped the city during the Somalian Civil War.[12]
+
+During Operation Desert Storm, MH-53E shipboard-based Sea Dragons were used for mineclearing operations in the Persian Gulf off Kuwait.
+
+On 8 June 1995, Captain Scott O'Grady, an F-16 Fighting Falcon pilot shot down over Bosnia, was rescued by two CH-53Es.[13]
+2000s
+
+On 26 October 2001, three CH-53Es aboard USS Peleliu and three CH-53Es aboard USS Bataan flew 550 miles (890 km) to secure the first land base in Afghanistan, Camp Rhino, with 1100 troops at its peak.[14] This amphibious raid is the longest amphibious raid in history. The long-range capability of the CH-53Es enabled Marines to establish a southern base in Afghanistan, putting the war on the ground.[citation needed]
+
+Super Stallions again played a major role in the 2003 invasion of Iraq. They were critical to moving supplies and ammunition to the most forward Marine units, and also assisted in moving casualties back to the rear for follow-on care. Marine CH-53Es and CH-46Es carried US Army Rangers and Special Operations troops in a mission to rescue captured Army Private Jessica Lynch on 1 April 2003.[15]
+
+Currently, about 150 CH-53E helicopters are in service with the Marines and another 28 MH-53Es are in service with the U.S Navy. The CH-53 requires 44 maintenance hours per flight hour. A flight hour costs about $20,000.[16]
+Variants
+	
+This section needs additional citations for verification. Please help improve this article by adding citations to reliable sources. Unsourced material may be challenged and removed. (March 2015) (Learn how and when to remove this template message)
+CH-53E during Exercise RIMPAC (2014)
+
+YCH-53E
+    United States military designation for two Sikorsky S-65E (later S-80E) prototypes
+CH-53E Super Stallion
+    United States military designation for the S-80E heavy lift transport variant for the United States Navy and Marine Corps, 170 built.
+MH-53E Sea Dragon
+    United States military designation for the S-80M mine-countermeasures variant for the United States Navy, 50 built
+VH-53F
+    Proposed presidential transport variant, not built
+S-80E
+    Export variant of the heavy lift transport variant, not built
+S-80M
+    Export variant of the mine-countermeasures variant, 11 built for Japan; the last were retired in 2017.[17][18]
+
+Operators
+High-speed, low-level pass during demonstration at the National Test Pilot School, Mojave, California
+A Japan Maritime Self-Defense Force MH-53E Sea Dragon lands aboard USS Tortuga in 2011.
+
+ United States
+
+    United States Marine Corps[19]
+        HMH-361[20]
+        HMH-366[21]
+        HMH-461[22]
+        HMH-462[23]
+        HMH-464[24]
+        HMH-465[25]
+        HMH-466[26]
+        HMH-769[27]
+        HMH-772[28]
+        HMHT-302 training squadron
+    United States Navy[19]
+        HM-12
+        HM-14[29]
+        HM-15[30]
+
+ Japan
+
+    Japan Maritime Self-Defense Force[19]
+        Air Development Squadron 51
+
+Accidents
+Summary
+
+Between 1969 and 1990, more than 200 servicemen were killed in accidents involving the CH-53A, CH-53D, and CH-53E.[31]
+
+The MH-53E Sea Dragon is the U.S. Navy's helicopter most prone to accidents, with 27 deaths from 1984 to 2008. During that time, its rate of class A mishaps, meaning serious damage or loss of life, was 5.96 per 100,000 flight hours, more than twice the Navy helicopter average of 2.26.[32] An independent investigation reported that between 1984 and 2019, 132 people died in accidents on the Navy and Marine versions of this helicopter.[33] A 2005 lawsuit alleged that since 1993, at least 16 in-flight fires or thermal incidents involved the number-two engine on Super Stallion helicopters. The suit claimed that proper changes were not made, nor were crews instructed on emergency techniques.[34][35]
+Major accidents
+
+    On 1 June 1984, a CH-53E based at Tustin was lifting a truck from the deck of a ship during an exercise when a sling attached to the truck broke. This sent a shock wave into the aircraft and caused major damage. Four crew members died in the accident.[36]
+    On 19 November 1984, a CH-53E on a routine training mission at Camp Lejeune, NC, was lifting a seven-ton howitzer before it crashed. Six people were killed, and 11 injured.[36] It experienced a loss of tail-rotor function, lost control, and hit the ground. The cabin area was quickly consumed by the ensuing fire.[37]
+    On 13 July 1985, a CH-53E from a Tustin squadron was on a flight in Okinawa, when it struck a logging cable and exploded. Four people were killed.[36]
+    On 25 August 1985, a CH-53E from New River, NC, was flying a routine supply and passenger run from Tustin to Twentynine Palms during a training operation when it caught fire and crashed in Laguna Hills. One of the three crew members was killed and the aircraft was a total loss.[36][38]
+    On 9 May 1986, a CH-53E crashed during training exercises near Twentynine Palms, killing four Marines and injuring another. The accident was the Super Stallion's fifth crash in two-year period.[39]
+    On 8 January 1987, a Marine Corps CH-53E crashed while practicing night landings for troop deployment at the Salton Sea Test Range. All five crew members were killed.[40]
+    On 18 July 1988, a Navy MH-53E from HM-15 crashed at sea about 10 miles off the San Francisco coast killing the eight man crew. It was reported to have caught fire and exploded while towing a mine-countermeasures sled. This was the first MH-53E to crash.[41]
+    On 20 March 1989, a CH-53E crashed at Pohang, Republic of Korea. Eighteen Marines and one Sailor were killed. Another ten Marines were severely injured. The cause was determined to be a combination of pilot error, failure to follow safety standards, and mechanical problems.[citation needed]
+    On 9 May 1996, a CH-53E crashed at Sikorsky's Stratford plant, killing four employees on board. This led to the Navy grounding all CH-53Es and MH-53Es.[34]
+    On 10 August 2000, a MH-53E Sea Dragon crashed in the Gulf of Mexico near Corpus Christi and resulted in the deaths of four of the six crew members. The helicopters were later returned to service with improved swash-plate duplex bearings and new warning systems for the bearings.[42][43]
+    On 20 January 2002, a CH-53E crash in Afghanistan killed two crew members and injured five others. Defense Department officials said the early-morning crash was the result of mechanical problems with the helicopter.[44]
+    On 2 April 2002, a Navy MH-53E (BuNo 163051) of HM-14 crashed on the runway at Bahrain International Airport. All 18 people on board survived with only a few cases of minor injuries.[45]
+    On 27 June 2002, a Navy MH-53E Sea Dragon of Helicopter Combat Support Squadron 4 (HC-4) "Black Stallions" crashed in a hard landing at NAS Sigonella, Sicily. No one was injured, but the aircraft was written off.[45][46]
+    On 16 July 2003, a Navy MH-53E Sea Dragon of HC-4 "Black Stallions" crashed near the town of Palagonia, about 10 miles west-southwest of Naval Air Station Sigonella, killing the four member crew. The flight was on a routine training mission.[46][47]
+    On 26 January 2005, a CH-53E carrying 30 Marines and one Navy corpsman crashed in Al-Anbar province near Rutbah, Iraq, killing all 31 on board.[48][49] A sandstorm was determined as the cause of the accident. The crash was part of the deadliest day of the Iraq War in terms of US fatalities.[50]
+    On 16 February 2005, an MH-53E from HC-4, based at Naval Air Station Sigonella, Sicily, crashed on the base, injuring the four crew members.[51]
+    On 17 February 2006, two CH-53Es carrying a combined U.S. Marine Corps and Air Force crew collided during a training mission over the Gulf of Aden, resulting in 10 deaths and two injuries.[52][53]
+    On 16 January 2008, a Navy MH-53E on a routine training mission crashed about 4 miles south of Corpus Christi, Texas. Three crew members died in the crash, and one crew member was treated at a local hospital.[54]
+    On 29 June 2012, a Navy MH-53E from HM-14 made an emergency landing 5 miles northeast of Pohang, South Korea, due to an in-flight fire. Though the pilots and aircrew were uninjured, the aircraft was heavily damaged by the fire.[55]
+    On 19 July 2012 a Navy MH-53E crashed 58 miles south of Muscat, Oman, during a heavy-lift operation, resulting in two deaths.[56]
+    On 8 January 2014, a US Navy MH-53E Sea Dragon crashed in the Atlantic 18 nautical miles east of Cape Henry, Virginia, with five crew members on board. Three crew members perished in the mishap.[57][58][59]
+    On 1 September 2014, a US Marine CH-53E of the 22nd Marine Expeditionary Unit crashed in the Gulf of Aden while attempting to land on the USS Mesa Verde following training operations in Djibouti. All 17 Marines and 8 sailors on board were rescued.[60]
+    On 14 January 2016, two US Marine CH-53Es on a night training exercise off the coast of Hawaii collided with each other, resulting in the loss of both aircraft and death of their 12 crew members; each CH-53E was carrying a crew of six.[61]
+    On 11 October 2017, a US Marine Corps CH-53E based at Marine Corps Air Station Futenma crashed in the Takae district of Higashi village in Okinawa. A fire broke out in one of the helicopter's engines, forcing a crash landing 300 m from homes. After the landing, the helicopter was destroyed by fire. No one was injured in the accident.[62][63] This led the US military to ground CH-53E aircraft in Japan, and for the Japanese government to call for an indefinite grounding.[64][65] This caused anger among some local people[66] and displeasure from the Japanese government after flights were resumed a week later.[67]
+    On 3 April 2018, a USMC CH-53E of the 3rd Marine Aircraft Wing crashed near Plaster City, California, killing four Marines.[68][69]
+
+Specifications (CH-53E)
+CH-53E Drawing.svg
+The CH-53E rotor and exhaust assembly in detail
+A MH-53E towing the MK105 minesweeping sled.
+
+Data from U.S. Navy history,[70] International Directory,[2] World Aircraft[71]
+
+General characteristics
+
+    Crew: 5: 2 pilots, 1 crew chief/right gunner, 1 left gunner, 1 tail gunner (combat crew)
+    Capacity: 37 troops with default folding canvas seats, 55 troops with center row added, and 31 with new crash attenuating seats.
+    Internal payload: 32,000 lb (14,515 kg); External payload: 36,000 lb (16,329 kg)[72]
+    Length: 99 ft 0.5 in (30.188 m)
+    Height: 27 ft 9 in (8.46 m)
+    Empty weight: 33,226 lb (15,071 kg)
+    Max takeoff weight: 73,500 lb (33,339 kg)
+    Powerplant: 3 × General Electric T64-GE-416 / GE-416A / GE-419 turboshaft engines, 4,380 shp (3,270 kW) each
+    Main rotor diameter: 79 ft 0 in (24.08 m)
+    Main rotor area: 4,900 sq ft (460 m2) Sikorsky SC1095[73]
+
+Performance
+
+    Maximum speed: 150 kn (170 mph, 280 km/h) [74]
+    Cruise speed: 120 kn (140 mph, 220 km/h)
+    Never exceed speed: 150 kn (170 mph, 280 km/h)
+    Range: 540 nmi (620 mi, 1,000 km)
+    Combat range: 180 nmi (210 mi, 330 km)
+    Ferry range: 990 nmi (1,140 mi, 1,830 km)
+    Service ceiling: 18,500 ft (5,600 m)
+    Rate of climb: 2,500 ft/min (13 m/s)
+
+Armament
+
+    Guns:
+        2× .50 BMG (12.7 x 99 mm) window-mounted GAU-21 machine guns
+        1× .50 BMG (12.7 x 99 mm) ramp mounted weapons system, GAU-21 (M3M mounted machine gun)
+    Other: Chaff and flare dispensers
+
+Notable appearances in media

@@ -27,8 +27,8 @@ keyCommands = {
 	{combos = {{key = '.', reformers = {'RCtrl'}}}, pressed = EFM_commands.trimDown, name = _('Cyclic Trim Down'), category = _('Systems')},
 	{combos = {{key = ',', reformers = {'RCtrl'}}}, pressed = EFM_commands.trimLeft, name = _('Cyclic Trim Left'), category = _('Systems')},
 	{combos = {{key = '/', reformers = {'RCtrl'}}}, pressed = EFM_commands.trimRight, name = _('Cyclic Trim Right'), category = _('Systems')},
-	{combos = {{key = 'M', reformers = {'RCtrl'}}}, pressed = EFM_commands.trimReset, name = _('Cyclic Trim Reset'), category = _('Systems')},
-	{combos = {{key = 'L', reformers = {'LCtrl'}}}, pressed = EFM_commands.trimSave, name = _('Cyclic Trim Save'), category = _('Systems')},
+	{combos = {{key = 'M', reformers = {'RCtrl'}}}, down = EFM_commands.trimReset, name = _('Cyclic Trim Reset'), category = _('Systems')},
+	{combos = {{key = 'L', reformers = {'LCtrl'}}}, down = EFM_commands.trimSave, name = _('Cyclic Trim Save'), category = _('Systems')},
 
 	{combos = {{key = 'C',	 reformers = {'LCtrl'}}}, down = Keys.PlanePilotDoor,	 name = _('Toggle Open/Close Pilot Door'), category = _('General')},
 	{combos = {{key = 'C',	 reformers = {'RCtrl'}}}, down = Keys.PlanecoPilotDoor,	 name = _('Toggle Open/Close coPilot Door'), category = _('General')},

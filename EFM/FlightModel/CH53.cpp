@@ -522,8 +522,8 @@ void ed_fm_simulate(double dt)
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_pitch_differential);
 		//-----CONTROL DYNAMICS------------------------
 		// the four control constants seen here are the physical delfection amount in cm from the NASA report.
-		double control_roll = limit((Helicopter::RollInput + Helicopter::rollTrim + Helicopter::autopilot_roll_differential + Helicopter::autopilot_lat_differential + Helicopter::autopilot_bank_differential), -1, 1);
-		double control_pitch = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + Helicopter::autopilot_pitch_differential + Helicopter::autopilot_long_differential + Helicopter::autopilot_speed_pitch_differential), -1, 1));
+		double control_roll = limit((Helicopter::RollControl + Helicopter::autopilot_roll_differential + Helicopter::autopilot_lat_differential + Helicopter::autopilot_bank_differential), -1, 1);
+		double control_pitch = (limit((Helicopter::PitchControl + Helicopter::autopilot_pitch_differential + Helicopter::autopilot_long_differential + Helicopter::autopilot_speed_pitch_differential), -1, 1));
 		double control_pedal = limit((Helicopter::PedalInput + Helicopter::autopilot_yaw_differential + Helicopter::autopilot_hdg_differential),-1,1) ;
 		double control_collective = limit((Helicopter::CollectiveInput + Helicopter::autopilot_radalt_collective_differential + Helicopter::autopilot_baralt_collective_differential),0,1) ;
 
@@ -1030,8 +1030,8 @@ void ed_fm_set_draw_args(EdDrawArgument * drawargs, size_t size)
 {
 	drawargs[500].f = (float)-Helicopter::PedalInput;
 	drawargs[9].f = (float)Helicopter::CollectiveInput;
-	drawargs[11].f = (float)limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
-	drawargs[15].f = (float)-limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
+    drawargs[11].f = (float)limit((Helicopter::RollControl), -1, 1);
+    drawargs[15].f = (float)-limit((Helicopter::PitchControl), -1, 1);
 	drawargs[37].f = (float)Helicopter::Engine.rotorPosition;
 	
 }
@@ -1040,8 +1040,8 @@ void ed_fm_set_draw_args(EdDrawArgument * drawargs, size_t size)
 void ed_fm_set_fc3_cockpit_draw_args (EdDrawArgument * drawargs,size_t size)
 {
 	
-	drawargs[1].f = (float)-limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
-	drawargs[2].f = (float)limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
+    drawargs[1].f = (float)-limit((Helicopter::PitchControl), -1, 1);
+    drawargs[2].f = (float)limit((Helicopter::RollControl), -1, 1);
 	drawargs[3].f = (float)Helicopter::CollectiveInput;
 	drawargs[118].f = (float)Helicopter::Engine.getCoreRelatedRPM();
 	double placeHolder;
@@ -1164,7 +1164,7 @@ double ed_fm_get_param(unsigned param_enum)
 		return 0;
 
 	case ED_FM_STICK_FORCE_CENTRAL_PITCH:  // i.e. trimmered position where force feeled by pilot is zero
-		return Helicopter::pitchTrim;//Trim values you programmed to trim aircraft out (0 to 1)
+		return Helicopter::PitchControl;//Trim values you programmed to trim aircraft out (0 to 1)
 	case ED_FM_STICK_FORCE_FACTOR_PITCH:
 		return 1.0;//Force factor range from 0 to 1. Make it 1 and rather change the force factor in your aircraft setup controls menu (0 - 100 percent).
 	case ED_FM_STICK_FORCE_SHAKE_AMPLITUDE_PITCH:
@@ -1172,7 +1172,7 @@ double ed_fm_get_param(unsigned param_enum)
 		return 0;
 
 	case ED_FM_STICK_FORCE_CENTRAL_ROLL:   // i.e. trimmered position where force feeled by pilot is zero
-		return Helicopter::rollTrim;//Trim values you programmed to trim aircraft out (0 to 1)
+		return Helicopter::RollControl;//Trim values you programmed to trim aircraft out (0 to 1)
 	case ED_FM_STICK_FORCE_FACTOR_ROLL:
 		return 1.0;//Force factor range from 0 to 1. Make it 1 and rather change the force factor in your aircraft setup controls menu (0 - 100 percent).
 	case ED_FM_STICK_FORCE_SHAKE_AMPLITUDE_ROLL:

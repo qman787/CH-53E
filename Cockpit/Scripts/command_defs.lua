@@ -158,6 +158,8 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 
 	collectiveIncrease = 3036,
 	collectiveDecrease = 3037,
+	pedalsLeft          = 3038,
+	pedalsRight         = 3039,
 
 	debugCommand_1		= 9000,
 }

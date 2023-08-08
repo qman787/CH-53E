@@ -92,27 +92,27 @@
 //-------------------------------------------------------
 namespace Helicopter
 {
-	double		alpha_DEG				= 0.0;	// Angle of attack (deg)
-	double		beta_DEG				= 0.0;	// Slideslip angle (deg)
-	double		rollRate_RPS			= 0.0;	// Body roll rate (rad/sec)
-	double		pitchRate_RPS			= 0.0;	// Body pitch rate (rad/sec)
-	double		yawRate_RPS				= 0.0;	// Body yaw rate (rad/sec)
-	double		CollectiveInput			= 0.0;	// Raw collective input
-	double		PedalInput				= 0.0;	// Raw pedal input	
-	double		PitchInput				= 0.0;	// Raw pitch input
-	double		RollInput				= 0.0;	// Raw roll input
-	double		CollectiveControl		= 0.0;	// collective input adjusted for control
-	double		PedalControl			= 0.0;	// pedal input adjusted for control	
-	double		PitchControl			= 0.0;	// pitch input adjusted for control
-	double		RollControl				= 0.0;	// roll input adjusted for control
-	double		rollTrim				= 0.0;
-	double		pitchTrim				= 0.0;
-    double      cyclicTrimUpdateTimer   = 0.0;
-	double		OutsideAirTemp		    = 0.0;	// deg C, for temp gauge
-	double		pidTimeValue            = 0.6;
-	double		pidPValue               = 0.0;
-	double		pidIValue               = 0.0;
-	double		pidDValue               = 0.0;
+	double		alpha_DEG			= 0.0;	// Angle of attack (deg)
+	double		beta_DEG			= 0.0;	// Slideslip angle (deg)
+	double		rollRate_RPS		= 0.0;	// Body roll rate (rad/sec)
+	double		pitchRate_RPS		= 0.0;	// Body pitch rate (rad/sec)
+	double		yawRate_RPS			= 0.0;	// Body yaw rate (rad/sec)
+	double		CollectiveInput		= 0.0;	// Raw collective input
+	double		PedalInput			= 0.0;	// Raw pedal input	
+	double		PitchInput			= 0.0;	// Raw pitch input
+	double		RollInput			= 0.0;	// Raw roll input
+	double		CollectiveControl	= 0.0;	// collective input adjusted for control
+	double		PedalControl		= 0.0;	// pedal input adjusted for control	
+	double		PitchControl		= 0.0;	// pitch input adjusted for control
+	double		RollControl			= 0.0;	// roll input adjusted for control
+	double		rollTrim			= 0.0;
+	double		pitchTrim			= 0.0;
+	double		OutsideAirTemp		= 0.0;	// deg C, for temp gauge
+
+	double pidTimeValue = 0.6;
+	double pidPValue = 0.0;
+	double pidIValue = 0.0;
+	double pidDValue = 0.0;
 	
 	//bool autopilot_heading_hold = false;
 
@@ -294,34 +294,6 @@ void ed_fm_simulate(double dt)
 		Helicopter::Electrics.update(dt, Helicopter::Engine.N1_RPM);
 		Helicopter::Airframe.updateFrame(dt);
 
-		//-----CYCLIC TRIM UPDATE------------------------
-		if (Helicopter::cyclicTrimUpdateTimer > -1.0)
-		{
-			if (Helicopter::cyclicTrimUpdateTimer < 0.3)
-			{
-				// Timer running (Override cyclic input with trimmed value)
-				Helicopter::RollControl = limit(Helicopter::rollTrim, -1, 1);
-				Helicopter::PitchControl = limit(Helicopter::pitchTrim, -1, 1);
-				//Helicopter::RollControl = limit(1, -1, 1);
-				//Helicopter::PitchControl = limit(1, -1, 1);
-				// Update timer
-				Helicopter::cyclicTrimUpdateTimer += dt;
-			}
-			else
-			{
-				// Timer expired (Apply full cyclic input with trimmed value)
-				Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
-				Helicopter::PitchControl = limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
-				// Stop timer
-				Helicopter::cyclicTrimUpdateTimer = -1.0;
-			}
-		}
-		else
-		{
-			// Apply full cyclic input with trimmed value
-			Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
-			Helicopter::PitchControl = limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
-		}
 
 		// AFCS
 		//
@@ -791,12 +763,6 @@ void ed_fm_set_command(int command, float value)
 		}
 		Helicopter::CollectiveInput = limit(((-Helicopter::collective_value + 1.0) / 2.0), 0.0, 1.0);
 		break;
-    case pedalsLeft:
-        Helicopter::PedalInput = limit((Helicopter::PedalInput + 0.0025), -1.0, 1.0);
-        break;
-    case pedalsRight:
-        Helicopter::PedalInput = limit((Helicopter::PedalInput - 0.0025), -1.0, 1.0);
-        break;
 	case trimUp:
 		Helicopter::pitchTrim += 0.0015;
 		break;
@@ -809,13 +775,6 @@ void ed_fm_set_command(int command, float value)
 	case trimRight:
 		Helicopter::rollTrim += 0.0015;
 		break;
-    case trimSave:
-        // Save cyclic trim
-        Helicopter::pitchTrim = limit(Helicopter::pitchTrim + Helicopter::PitchInput, -1.0, 1.0);
-        Helicopter::rollTrim  = limit(Helicopter::rollTrim  + Helicopter::RollInput,  -1.0, 1.0);
-        // Start timer
-        Helicopter::cyclicTrimUpdateTimer = 0;
-        break;
 	case pidTimeUp:
 		Helicopter::pidTimeValue += 0.1;
 		break;

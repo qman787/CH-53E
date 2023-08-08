@@ -57,16 +57,14 @@ function SetCommand(command,value)
 
 --local gearhandlepos = get_cockpit_draw_argument_value(8) -- 1=down 0=up
 
-	if command == device_commands.PlaneGearsw then
-		gearhandlepos = value
+			if command == device_commands.PlaneGearsw then
+				gearhandlepos = value
 				
-	elseif command == Keys.PlaneGear then
-		dev:performClickableAction(device_commands.PlaneGearsw, (1-gearhandlepos), true) -- makes the switch inside cockpit move
-	elseif command == Keys.PlaneGearUp then
-		dev:performClickableAction(device_commands.PlaneGearsw, 0, true) -- makes the switch inside cockpit move
-	elseif command == Keys.PlaneGearDown then
-		dev:performClickableAction(device_commands.PlaneGearsw, 1, true) -- makes the switch inside cockpit move
-	end
+			elseif command == Keys.PlaneGear then
+			dev:performClickableAction(device_commands.PlaneGearsw, (1-gearhandlepos),true) -- makes the switch inside cockpit move
+			
+
+end
 end
 
 

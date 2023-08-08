@@ -3,6 +3,12 @@
 // Used in ed_fm_set_command() 
 enum CH53InputCommands
 {
+	//Yaw
+    rudderleft          = 201,
+    rudderleftend       = 202,
+    rudderright         = 203,
+    rudderrightend      = 204,
+
 	// commands from command_defs.lua
 	starterButton 		= 3000,
 	throttleIdleCutoff	= 3001,
@@ -48,6 +54,9 @@ enum CH53InputCommands
 
 	collectiveIncrease = 3036,
 	collectiveDecrease = 3037,
+	pedalsLeft          = 3038,
+	pedalsRight         = 3039,  
+	
 	// joystick axis commands
 	JoystickPitch		= 2001,	
 	JoystickRoll		= 2002,

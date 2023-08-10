@@ -76,6 +76,12 @@ namespace Helicopter
 
         void getLocalForceComponent(double& force_x, double& force_y, double& force_z, double& pos_x, double& pos_y, double& pos_z)
         {
+            force_x = 0;
+            force_y = 0;
+            force_z = 0;
+            pos_x = 0;
+            pos_y = 0;
+            pos_z = 0;
         }
     };
 

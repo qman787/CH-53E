@@ -210,17 +210,17 @@ bool ed_fm_add_local_force_component (double & x,double &y,double &z,double & po
 			Helicopter::TailRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
 			break;
 		case Helicopter::ForceComponents::TAIL_STABILIZER:
-			Helicopter::TailRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			Helicopter::TailStabilizer.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
 			break;
-		case Helicopter::ForceComponents::GEARS_C:
-			Helicopter::Gears.nose.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
-			break;
-		case Helicopter::ForceComponents::GEARS_L:
-			Helicopter::Gears.left.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
-			break;
-		case Helicopter::ForceComponents::GEARS_R:
-			Helicopter::Gears.right.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
-			break;
+		//case Helicopter::ForceComponents::GEARS_C:
+		//	Helicopter::Gears.nose.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+		//	break;
+		//case Helicopter::ForceComponents::GEARS_L:
+		//	Helicopter::Gears.left.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+		//	break;
+		//case Helicopter::ForceComponents::GEARS_R:
+		//	Helicopter::Gears.right.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+		//	break;
 		default:
 			break;
 		}

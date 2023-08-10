@@ -13,9 +13,9 @@ namespace Helicopter
 		MAIN_ROTOR      = 0,
 		TAIL_ROTOR,
 		TAIL_STABILIZER,
-		GEARS_C,
-		GEARS_L,
-		GEARS_R,
+		//GEARS_C,
+		//GEARS_L,
+		//GEARS_R,
 		MAX,
 	};
 

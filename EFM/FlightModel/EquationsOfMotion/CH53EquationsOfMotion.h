@@ -193,6 +193,11 @@ namespace Helicopter
 			inertia.z = moment_of_inertia_z;
 		}
 
+		double getMassState() const
+		{
+			return mass_kg;
+		}
+
 		void getLocalForce(double &x,double &y,double &z,double &pos_x,double &pos_y,double &pos_z)
 		{
 			x = common_force.x;
@@ -319,7 +324,7 @@ namespace Helicopter
 			// Cx force out the nose in Newtons (not including force from rotor)
 			Vec3 cx_force(Cx_total * mass_kg, 0, 0 );		
 			Vec3 cx_force_pos(0,0,0);
-			add_local_force(cx_force ,cx_force_pos);
+			add_local_force(cx_force, cx_force_pos);
 
 			// Longitudinal forces
 			// force from rotor
@@ -331,17 +336,17 @@ namespace Helicopter
 			// Cz force down the bottom of the aircraft in Newtons
 			Vec3 cz_force(0.0,  -Cz_total * mass_kg, 0.0 );	
 			Vec3 cz_force_pos(0,0,0);
-			add_local_force(cz_force ,cz_force_pos);
-
-			// Cm	pitching moment in N*m
-			Vec3 cm_moment(0.0, 0.0, Cm_total * inertia.y );
-			add_local_moment(cm_moment);
+			//add_local_force(cz_force ,cz_force_pos);
 
 			// Lateral forces
 			// Cy	force out the right wing in Newtons 
 			Vec3 cy_force(0.0, 0.0, Cy_total * mass_kg);		 
 			Vec3 cy_force_pos(0,0,0); 
 			add_local_force(cy_force ,cy_force_pos);
+
+			// Cm	pitching moment in N*m
+			Vec3 cm_moment(0.0, 0.0, Cm_total * inertia.y);
+			add_local_moment(cm_moment);
 
 			// Cl	rolling moment in N*m
 			Vec3 cl_moment(Cl_total * inertia.x, 0.0,  0.0);

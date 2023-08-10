@@ -644,8 +644,13 @@ void ed_fm_simulate(double dt)
 			Helicopter::pitchRate_RPS, Helicopter::rollRate_RPS, Helicopter::yawRate_RPS,
 			Helicopter::CollectiveControl, Helicopter::PitchControl, Helicopter::RollControl, Helicopter::PedalControl, Helicopter::Motion.airspeed_KTS, Helicopter::Engine.getCoreRelatedRPM(), Helicopter::Airframe.rotorIntegrityFactor, Helicopter::Airframe.tailRotorIntegrityFactor);
 
-
 		Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal());
+
+
+		// Main rotor torque
+		Helicopter::MainRotor.updateAeroForce(Helicopter::Motion.getMassState(), Helicopter::PitchControl*(2.0/31.04), Helicopter::RollControl*(2.0/22.61),
+                                              Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), 
+                                              Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal());
 
 
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_TIME, 0);

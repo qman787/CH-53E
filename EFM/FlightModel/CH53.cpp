@@ -92,27 +92,31 @@
 //-------------------------------------------------------
 namespace Helicopter
 {
-	double		alpha_DEG			= 0.0;	// Angle of attack (deg)
-	double		beta_DEG			= 0.0;	// Slideslip angle (deg)
-	double		rollRate_RPS		= 0.0;	// Body roll rate (rad/sec)
-	double		pitchRate_RPS		= 0.0;	// Body pitch rate (rad/sec)
-	double		yawRate_RPS			= 0.0;	// Body yaw rate (rad/sec)
-	double		CollectiveInput		= 0.0;	// Raw collective input
-	double		PedalInput			= 0.0;	// Raw pedal input	
-	double		PitchInput			= 0.0;	// Raw pitch input
-	double		RollInput			= 0.0;	// Raw roll input
-	double		CollectiveControl	= 0.0;	// collective input adjusted for control
-	double		PedalControl		= 0.0;	// pedal input adjusted for control	
-	double		PitchControl		= 0.0;	// pitch input adjusted for control
-	double		RollControl			= 0.0;	// roll input adjusted for control
-	double		rollTrim			= 0.0;
-	double		pitchTrim			= 0.0;
-	double		OutsideAirTemp		= 0.0;	// deg C, for temp gauge
+	constexpr double cyclicTrimUpdateTimerOff     = -1.0;
+	constexpr double cyclicTrimUpdateTimerOn      = 0.0;
+	constexpr double cyclicTrimUpdateTimerTimeout = 0.3;
 
-	double pidTimeValue = 0.6;
-	double pidPValue = 0.0;
-	double pidIValue = 0.0;
-	double pidDValue = 0.0;
+    double			alpha_DEG                     = 0.0;	// Angle of attack (deg)
+    double			beta_DEG                      = 0.0;	// Slideslip angle (deg)
+    double			rollRate_RPS                  = 0.0;	// Body roll rate (rad/sec)
+    double			pitchRate_RPS                 = 0.0;	// Body pitch rate (rad/sec)
+    double			yawRate_RPS                   = 0.0;	// Body yaw rate (rad/sec)
+    double			CollectiveInput               = 0.0;	// Raw collective input
+    double			PedalInput                    = 0.0;	// Raw pedal input	
+    double			PitchInput                    = 0.0;	// Raw pitch input
+    double			RollInput                     = 0.0;	// Raw roll input
+    double			CollectiveControl             = 0.0;	// collective input adjusted for control
+    double			PedalControl                  = 0.0;	// pedal input adjusted for control	
+    double			PitchControl                  = 0.0;	// pitch input adjusted for control
+    double			RollControl                   = 0.0;	// roll input adjusted for control
+    double			rollTrim                      = 0.0;
+    double			pitchTrim                     = 0.0;
+    double			cyclicTrimUpdateTimer         = 0.0;
+    double			OutsideAirTemp                = 0.0;	// deg C, for temp gauge
+    double			pidTimeValue                  = 0.6;
+    double			pidPValue                     = 0.0;
+    double			pidIValue                     = 0.0;
+    double			pidDValue                     = 0.0;
 	
 	//bool autopilot_heading_hold = false;
 
@@ -294,6 +298,32 @@ void ed_fm_simulate(double dt)
 		Helicopter::Electrics.update(dt, Helicopter::Engine.N1_RPM);
 		Helicopter::Airframe.updateFrame(dt);
 
+		//-----CYCLIC TRIM UPDATE------------------------
+		if (Helicopter::cyclicTrimUpdateTimer > Helicopter::cyclicTrimUpdateTimerOff)
+		{
+			if (Helicopter::cyclicTrimUpdateTimer < Helicopter::cyclicTrimUpdateTimerTimeout)
+			{
+				// Timer running (Override cyclic input with trimmed value)
+				Helicopter::RollControl = limit(Helicopter::rollTrim, -1, 1);
+				Helicopter::PitchControl = limit(Helicopter::pitchTrim, -1, 1);
+				// Update timer
+				Helicopter::cyclicTrimUpdateTimer += dt;
+			}
+			else
+			{
+				// Timer expired (Apply full cyclic input with trimmed value)
+				Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
+				Helicopter::PitchControl = limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
+				// Stop timer
+				Helicopter::cyclicTrimUpdateTimer = Helicopter::cyclicTrimUpdateTimerOff;
+			}
+		}
+		else
+		{
+			// Apply full cyclic input with trimmed value
+			Helicopter::RollControl = limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
+			Helicopter::PitchControl = limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
+		}
 
 		// AFCS
 		//
@@ -494,8 +524,8 @@ void ed_fm_simulate(double dt)
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, Helicopter::autopilot_pitch_differential);
 		//-----CONTROL DYNAMICS------------------------
 		// the four control constants seen here are the physical delfection amount in cm from the NASA report.
-		double control_roll = limit((Helicopter::RollInput + Helicopter::rollTrim + Helicopter::autopilot_roll_differential + Helicopter::autopilot_lat_differential + Helicopter::autopilot_bank_differential), -1, 1);
-		double control_pitch = (limit((Helicopter::PitchInput + Helicopter::pitchTrim + Helicopter::autopilot_pitch_differential + Helicopter::autopilot_long_differential + Helicopter::autopilot_speed_pitch_differential), -1, 1));
+		double control_roll = limit((Helicopter::RollControl + Helicopter::autopilot_roll_differential + Helicopter::autopilot_lat_differential + Helicopter::autopilot_bank_differential), -1, 1);
+		double control_pitch = (limit((Helicopter::PitchControl + Helicopter::autopilot_pitch_differential + Helicopter::autopilot_long_differential + Helicopter::autopilot_speed_pitch_differential), -1, 1));
 		double control_pedal = limit((Helicopter::PedalInput + Helicopter::autopilot_yaw_differential + Helicopter::autopilot_hdg_differential),-1,1) ;
 		double control_collective = limit((Helicopter::CollectiveInput + Helicopter::autopilot_radalt_collective_differential + Helicopter::autopilot_baralt_collective_differential),0,1) ;
 
@@ -763,6 +793,12 @@ void ed_fm_set_command(int command, float value)
 		}
 		Helicopter::CollectiveInput = limit(((-Helicopter::collective_value + 1.0) / 2.0), 0.0, 1.0);
 		break;
+    case pedalsLeft:
+        Helicopter::PedalInput = limit((Helicopter::PedalInput + 0.0025), -1.0, 1.0);
+        break;
+    case pedalsRight:
+        Helicopter::PedalInput = limit((Helicopter::PedalInput - 0.0025), -1.0, 1.0);
+        break;
 	case trimUp:
 		Helicopter::pitchTrim += 0.0015;
 		break;
@@ -775,6 +811,13 @@ void ed_fm_set_command(int command, float value)
 	case trimRight:
 		Helicopter::rollTrim += 0.0015;
 		break;
+    case trimSave:
+        // Save cyclic trim
+        Helicopter::pitchTrim = limit(Helicopter::pitchTrim + Helicopter::PitchInput, -1.0, 1.0);
+        Helicopter::rollTrim  = limit(Helicopter::rollTrim  + Helicopter::RollInput,  -1.0, 1.0);
+        // Start timer
+        Helicopter::cyclicTrimUpdateTimer = Helicopter::cyclicTrimUpdateTimerOn;
+        break;
 	case pidTimeUp:
 		Helicopter::pidTimeValue += 0.1;
 		break;
@@ -989,8 +1032,8 @@ void ed_fm_set_draw_args(EdDrawArgument * drawargs, size_t size)
 {
 	drawargs[500].f = (float)-Helicopter::PedalInput;
 	drawargs[9].f = (float)Helicopter::CollectiveInput;
-	drawargs[11].f = (float)limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
-	drawargs[15].f = (float)-limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
+    drawargs[11].f = (float)limit((Helicopter::RollControl), -1, 1);
+    drawargs[15].f = (float)-limit((Helicopter::PitchControl), -1, 1);
 	drawargs[37].f = (float)Helicopter::Engine.rotorPosition;
 	
 }
@@ -999,8 +1042,8 @@ void ed_fm_set_draw_args(EdDrawArgument * drawargs, size_t size)
 void ed_fm_set_fc3_cockpit_draw_args (EdDrawArgument * drawargs,size_t size)
 {
 	
-	drawargs[1].f = (float)-limit((Helicopter::PitchInput + Helicopter::pitchTrim), -1, 1);
-	drawargs[2].f = (float)limit((Helicopter::RollInput + Helicopter::rollTrim), -1, 1);
+    drawargs[1].f = (float)-limit((Helicopter::PitchControl), -1, 1);
+    drawargs[2].f = (float)limit((Helicopter::RollControl), -1, 1);
 	drawargs[3].f = (float)Helicopter::CollectiveInput;
 	drawargs[118].f = (float)Helicopter::Engine.getCoreRelatedRPM();
 	double placeHolder;
@@ -1123,7 +1166,7 @@ double ed_fm_get_param(unsigned param_enum)
 		return 0;
 
 	case ED_FM_STICK_FORCE_CENTRAL_PITCH:  // i.e. trimmered position where force feeled by pilot is zero
-		return Helicopter::pitchTrim;//Trim values you programmed to trim aircraft out (0 to 1)
+		return Helicopter::PitchControl;//Trim values you programmed to trim aircraft out (0 to 1)
 	case ED_FM_STICK_FORCE_FACTOR_PITCH:
 		return 1.0;//Force factor range from 0 to 1. Make it 1 and rather change the force factor in your aircraft setup controls menu (0 - 100 percent).
 	case ED_FM_STICK_FORCE_SHAKE_AMPLITUDE_PITCH:
@@ -1131,7 +1174,7 @@ double ed_fm_get_param(unsigned param_enum)
 		return 0;
 
 	case ED_FM_STICK_FORCE_CENTRAL_ROLL:   // i.e. trimmered position where force feeled by pilot is zero
-		return Helicopter::rollTrim;//Trim values you programmed to trim aircraft out (0 to 1)
+		return Helicopter::RollControl;//Trim values you programmed to trim aircraft out (0 to 1)
 	case ED_FM_STICK_FORCE_FACTOR_ROLL:
 		return 1.0;//Force factor range from 0 to 1. Make it 1 and rather change the force factor in your aircraft setup controls menu (0 - 100 percent).
 	case ED_FM_STICK_FORCE_SHAKE_AMPLITUDE_ROLL:

@@ -49,6 +49,7 @@
 #include "include/ED_FM_Utility.h"		// Provided utility functions that were in the initial EFM example
 #include "include/UtilityFunctions.h"
 
+#include "CH53.h"
 #include "include/CH53Constants.h"		// Common constants used throughout this DLL
 #include "Inputs/CH53Inputs.h"			// just list of inputs: can get potentially long list
 
@@ -56,6 +57,9 @@
 #include "Engine/CH53Engine.h"					//Engine model functions
 #include "Engine/CH53FuelSystem.h"				//Fuel usage and tank usage functions
 #include "Airframe/CH53Airframe.h"				//Canopy, dragging chute, refuel slot, section damages..
+#include "Airframe/CH53MainRotor.h"				//Main Rotor dynamics impl.
+#include "Airframe/CH53TailRotor.h"				//Tail Rotor dynamics impl.
+#include "Airframe/CH53TailStabilizer.h"		//Tail Stabilizer dynamics impl.
 #include "Electrics/CH53ElectricSystem.h"		//Generators, battery etc.
 #include "Aerodynamics/CH53Aero.h"				//Aerodynamic model functions
 #include "EquationsOfMotion/CH53EquationsOfMotion.h"
@@ -171,7 +175,11 @@ namespace Helicopter
 	double collective_value = 0.0;
 	CH53Engine Engine;
 	CH53FuelSystem Fuel;
+	CH53GearSystem Gears;
 	CH53Airframe Airframe;
+	CH53MainRotor MainRotor;
+	CH53TailRotor TailRotor;
+	CH53TailStabilizer TailStabilizer;
 	CH53Aero Aero;
 	CH53Motion Motion;
 	CH53ElectricSystem Electrics;
@@ -188,7 +196,48 @@ void ed_fm_add_local_force(double &x,double &y,double &z,double &pos_x,double &p
 // same but in component form , return value bool : function will be called until return value is true
 bool ed_fm_add_local_force_component (double & x,double &y,double &z,double & pos_x,double & pos_y,double & pos_z)
 {
-	return false;
+	bool boResult = false;
+	static unsigned uiCurForceComponentIndex = 0;
+
+	if (uiCurForceComponentIndex < Helicopter::ForceComponents::MAX)
+	{
+		switch (uiCurForceComponentIndex)
+		{
+		case Helicopter::ForceComponents::MAIN_ROTOR:
+			Helicopter::MainRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::TAIL_ROTOR:
+			Helicopter::TailRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::TAIL_STABILIZER:
+			Helicopter::TailRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::GEARS_C:
+			Helicopter::Gears.nose.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::GEARS_L:
+			Helicopter::Gears.left.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::GEARS_R:
+			Helicopter::Gears.right.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+			break;
+		default:
+			break;
+		}
+
+		//logSimData("i=%d f=(%09d,%09d,%09d) fp=(%09d,%09d,%09d)\r\n", uiCurModuleIndex, (int)force_x, (int)force_y, (int)force_z, (int)pos_x, (int)pos_y, (int)pos_z);
+
+		uiCurForceComponentIndex++;
+		// Continue sequential calls to this function
+		boResult = true;
+	}
+	else
+	{
+		// End up sequential calls to this function 
+		uiCurForceComponentIndex = 0;
+		boResult = false;
+	}
+	return boResult;
 }
 
 // This is where the simulation send the accumulated moments to the DCS Simulation

@@ -75,7 +75,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ED_FM_TEMPLATE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ED_FM_TEMPLATE_EXPORTS;FM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -129,6 +129,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Airframe\CH53Airframe.h" />
+    <ClInclude Include="Airframe\CH53MainRotor.h" />
+    <ClInclude Include="Airframe\CH53TailRotor.h" />
+    <ClInclude Include="Airframe\CH53TailStabilizer.h" />
+    <ClInclude Include="CH53.h" />
     <ClInclude Include="Electrics\CH53ElectricSystem.h" />
     <ClInclude Include="Engine\CH53Engine.h" />
     <ClInclude Include="Engine\CH53FuelSystem.h" />

@@ -199,7 +199,7 @@ bool ed_fm_add_local_force_component (double & x,double &y,double &z,double & po
 	bool boResult = false;
 	static unsigned uiCurForceComponentIndex = 0;
 
-	if (uiCurForceComponentIndex < Helicopter::ForceComponents::MAX)
+	if (uiCurForceComponentIndex < Helicopter::ForceComponents::MAX_FORCE_COMPONENT)
 	{
 		switch (uiCurForceComponentIndex)
 		{
@@ -250,7 +250,33 @@ void ed_fm_add_local_moment(double &x,double &y,double &z)
 // same but in component form , return value bool : function will be called until return value is true
 bool ed_fm_add_local_moment_component (double & x,double &y,double &z)
 {
-	return false;
+	bool boResult = false;
+	static unsigned uiCurMomentComponentIndex = 0;
+
+	if (uiCurMomentComponentIndex < Helicopter::MomentComponents::MAX_MOMENT_COMPONENT)
+	{
+		switch (uiCurMomentComponentIndex)
+		{
+		case Helicopter::MomentComponents::MAIN_ROTOR_MOMENT:
+			Helicopter::MainRotor.getLocalMomentComponent(x, y, z);
+			break;
+		default:
+			break;
+		}
+
+		//logSimData("i=%d f=(%09d,%09d,%09d) fp=(%09d,%09d,%09d)\r\n", uiCurModuleIndex, (int)force_x, (int)force_y, (int)force_z, (int)pos_x, (int)pos_y, (int)pos_z);
+
+		uiCurMomentComponentIndex++;
+		// Continue sequential calls to this function
+		boResult = true;
+	}
+	else
+	{
+		// End up sequential calls to this function 
+		uiCurMomentComponentIndex = 0;
+		boResult = false;
+	}
+	return boResult;
 }
 
 
@@ -647,10 +673,14 @@ void ed_fm_simulate(double dt)
 		Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal());
 
 
-		// Main rotor torque
-		Helicopter::MainRotor.updateAeroForce(Helicopter::Motion.getMassState(), Helicopter::PitchControl*(2.0/31.04), Helicopter::RollControl*(2.0/22.61),
-                                              Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), 
-                                              Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal());
+		// Main rotor thrust/torque
+		Helicopter::MainRotor.vSimulate(Helicopter::PitchControl*(2.0/31.04), Helicopter::RollControl*(2.0/22.61), Helicopter::CollectiveControl,
+			                            Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCzTotal(), Helicopter::Engine.getCoreRelatedRPM(),
+			                            Helicopter::Motion.getAirDensity());
+		// Tail rotor thrust/torque
+		Helicopter::TailRotor.vSimulate(Helicopter::PedalControl*(2.0/12.95), Helicopter::CollectiveControl,
+			                            Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCzTotal(), Helicopter::Engine.getCoreRelatedRPM(),
+			                            Helicopter::Motion.getAirDensity());
 
 
 		Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_TIME, 0);

@@ -16,9 +16,14 @@ namespace Helicopter
 		//GEARS_C,
 		//GEARS_L,
 		//GEARS_R,
-		MAX,
+		MAX_FORCE_COMPONENT,
 	};
 
+	enum MomentComponents
+	{
+		MAIN_ROTOR_MOMENT = 0,
+		MAX_MOMENT_COMPONENT,
+	};
 }
 
 #endif // __CH53__

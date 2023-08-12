@@ -193,11 +193,6 @@ namespace Helicopter
 			inertia.z = moment_of_inertia_z;
 		}
 
-		double getMassState() const
-		{
-			return mass_kg;
-		}
-
 		void getLocalForce(double &x,double &y,double &z,double &pos_x,double &pos_y,double &pos_z)
 		{
 			x = common_force.x;
@@ -378,6 +373,11 @@ namespace Helicopter
 		{
 			return mass_kg;
 		}
+		double getAirDensity() const
+		{
+			return ambientDensity_KgPerM3;
+		}
+
 	};
 }
 

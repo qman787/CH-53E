@@ -57,13 +57,13 @@
 #include "Engine/CH53Engine.h"					//Engine model functions
 #include "Engine/CH53FuelSystem.h"				//Fuel usage and tank usage functions
 #include "Airframe/CH53Airframe.h"				//Canopy, dragging chute, refuel slot, section damages..
-#include "Airframe/CH53MainRotor.h"				//Main Rotor dynamics impl.
-#include "Airframe/CH53TailRotor.h"				//Tail Rotor dynamics impl.
-#include "Airframe/CH53TailStabilizer.h"		//Tail Stabilizer dynamics impl.
 #include "Electrics/CH53ElectricSystem.h"		//Generators, battery etc.
 #include "Aerodynamics/CH53Aero.h"				//Aerodynamic model functions
 #include "EquationsOfMotion/CH53EquationsOfMotion.h"
-#include "Engine/CH53Gear.h"						//Gear model functions
+#include "Engine/CH53Gear.h"				    //Gear model functions
+#include "Airframe/CH53MainRotor.h"				//Main Rotor dynamics impl.
+#include "Airframe/CH53TailRotor.h"				//Tail Rotor dynamics impl.
+#include "Airframe/CH53TailStabilizer.h"		//Tail Stabilizer dynamics impl.
 #include "PID/pid.h"						//Gear model functions
 #include <chrono>
 
@@ -203,8 +203,17 @@ bool ed_fm_add_local_force_component (double & x,double &y,double &z,double & po
 	{
 		switch (uiCurForceComponentIndex)
 		{
-		case Helicopter::ForceComponents::MAIN_ROTOR:
-			Helicopter::MainRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
+		case Helicopter::ForceComponents::MAIN_ROTOR_0_OCLOCK:
+			Helicopter::MainRotor.getLocalForceComponent(Helicopter::ForceComponents::MAIN_ROTOR_0_OCLOCK, x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::MAIN_ROTOR_3_OCLOCK:
+			Helicopter::MainRotor.getLocalForceComponent(Helicopter::ForceComponents::MAIN_ROTOR_3_OCLOCK, x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::MAIN_ROTOR_6_OCLOCK:
+			Helicopter::MainRotor.getLocalForceComponent(Helicopter::ForceComponents::MAIN_ROTOR_6_OCLOCK, x, y, z, pos_x, pos_y, pos_z);
+			break;
+		case Helicopter::ForceComponents::MAIN_ROTOR_9_OCLOCK:
+			Helicopter::MainRotor.getLocalForceComponent(Helicopter::ForceComponents::MAIN_ROTOR_9_OCLOCK, x, y, z, pos_x, pos_y, pos_z);
 			break;
 		case Helicopter::ForceComponents::TAIL_ROTOR:
 			Helicopter::TailRotor.getLocalForceComponent(x, y, z, pos_x, pos_y, pos_z);
@@ -257,7 +266,7 @@ bool ed_fm_add_local_moment_component (double & x,double &y,double &z)
 	{
 		switch (uiCurMomentComponentIndex)
 		{
-		case Helicopter::MomentComponents::MAIN_ROTOR_MOMENT:
+		case Helicopter::MomentComponents::MAIN_ROTOR_TORQUE:
 			Helicopter::MainRotor.getLocalMomentComponent(x, y, z);
 			break;
 		default:
@@ -674,12 +683,12 @@ void ed_fm_simulate(double dt)
 
 
 		// Main rotor thrust/torque
-		Helicopter::MainRotor.vSimulate(Helicopter::PitchControl*(2.0/31.04), Helicopter::RollControl*(2.0/22.61), Helicopter::CollectiveControl,
+		Helicopter::MainRotor.vSimulate(Helicopter::Motion, Helicopter::PitchControl*(2.0/31.04), Helicopter::RollControl*(2.0/22.61), Helicopter::CollectiveControl,
 			                            Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCzTotal(), Helicopter::Engine.getCoreRelatedRPM(),
-			                            Helicopter::Motion.getAirDensity());
+			                            Helicopter::Motion.getAirDensity(), Helicopter::pitchRate_RPS, Helicopter::rollRate_RPS);
 		// Tail rotor thrust/torque
-		Helicopter::TailRotor.vSimulate(Helicopter::PedalControl*(2.0/12.95), Helicopter::CollectiveControl,
-			                            Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCzTotal(), Helicopter::Engine.getCoreRelatedRPM(),
+		Helicopter::TailRotor.vSimulate(Helicopter::Motion, Helicopter::PedalControl*(2.0/12.95), Helicopter::CollectiveControl,
+			                            Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCnTotal(), Helicopter::Engine.getCoreRelatedRPM(),
 			                            Helicopter::Motion.getAirDensity());
 
 
@@ -878,10 +887,10 @@ void ed_fm_set_command(int command, float value)
 		Helicopter::CollectiveInput = limit(((-Helicopter::collective_value + 1.0) / 2.0), 0.0, 1.0);
 		break;
     case pedalsLeft:
-        Helicopter::PedalInput = limit((Helicopter::PedalInput + 0.0025), -1.0, 1.0);
+        Helicopter::PedalInput = limit((Helicopter::PedalInput + 0.0015), -1.0, 1.0);
         break;
     case pedalsRight:
-        Helicopter::PedalInput = limit((Helicopter::PedalInput - 0.0025), -1.0, 1.0);
+        Helicopter::PedalInput = limit((Helicopter::PedalInput - 0.0015), -1.0, 1.0);
         break;
 	case trimUp:
 		Helicopter::pitchTrim += 0.0015;

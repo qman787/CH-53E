@@ -10,7 +10,10 @@ namespace Helicopter
 {
 	enum ForceComponents
 	{
-		MAIN_ROTOR      = 0,
+		MAIN_ROTOR_0_OCLOCK = 0,
+		MAIN_ROTOR_3_OCLOCK,
+		MAIN_ROTOR_6_OCLOCK,
+		MAIN_ROTOR_9_OCLOCK,
 		TAIL_ROTOR,
 		TAIL_STABILIZER,
 		//GEARS_C,
@@ -21,7 +24,7 @@ namespace Helicopter
 
 	enum MomentComponents
 	{
-		MAIN_ROTOR_MOMENT = 0,
+		MAIN_ROTOR_TORQUE = 0,
 		MAX_MOMENT_COMPONENT,
 	};
 }

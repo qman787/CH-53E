@@ -319,13 +319,13 @@ namespace Helicopter
 			// Cx force out the nose in Newtons (not including force from rotor)
 			Vec3 cx_force(Cx_total * mass_kg, 0, 0 );		
 			Vec3 cx_force_pos(0,0,0);
-			add_local_force(cx_force, cx_force_pos);
+			//add_local_force(cx_force, cx_force_pos);
 
 			// Longitudinal forces
 			// force from rotor
 			Vec3 cx_force_no_mass(Cx_total_no_mass, 0, 0);
 			Vec3 cx_force_pos_no_mass(0, 0, 0);
-			add_local_force(cx_force_no_mass, cx_force_pos_no_mass);
+			//add_local_force(cx_force_no_mass, cx_force_pos_no_mass);
 
 			
 			// Cz force down the bottom of the aircraft in Newtons
@@ -337,7 +337,7 @@ namespace Helicopter
 			// Cy	force out the right wing in Newtons 
 			Vec3 cy_force(0.0, 0.0, Cy_total * mass_kg);		 
 			Vec3 cy_force_pos(0,0,0); 
-			add_local_force(cy_force ,cy_force_pos);
+			//add_local_force(cy_force ,cy_force_pos);
 
 			// Cm	pitching moment in N*m
 			Vec3 cm_moment(0.0, 0.0, Cm_total * inertia.y);
@@ -378,6 +378,19 @@ namespace Helicopter
 			return ambientDensity_KgPerM3;
 		}
 
+		const Vec3& getInertia() const
+		{
+			return inertia;
+		}
+
+		const double getPitch() const
+		{
+			return pitch;
+		}
+		const double getRoll() const
+		{
+			return roll;
+		}
 	};
 }
 

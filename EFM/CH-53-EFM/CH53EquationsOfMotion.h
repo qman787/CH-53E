@@ -5,7 +5,7 @@
 #include <math.h>
 
 #include "include/ED_FM_Utility.h"		// Provided utility functions that were in the initial EFM example
-#include "include/CH53Constants.h"		// Common constants used throughout this DLL
+#include "CH53Constants.h"		// Common constants used throughout this DLL
 
 namespace Helicopter
 {

@@ -50,20 +50,20 @@
 #include "include/UtilityFunctions.h"
 
 #include "CH53.h"
-#include "include/CH53Constants.h"		// Common constants used throughout this DLL
-#include "Inputs/CH53Inputs.h"			// just list of inputs: can get potentially long list
+#include "CH53Constants.h"		// Common constants used throughout this DLL
+#include "CH53Inputs.h"			// just list of inputs: can get potentially long list
 
 // Model headers
-#include "Engine/CH53Engine.h"					//Engine model functions
-#include "Engine/CH53FuelSystem.h"				//Fuel usage and tank usage functions
-#include "Airframe/CH53Airframe.h"				//Canopy, dragging chute, refuel slot, section damages..
-#include "Electrics/CH53ElectricSystem.h"		//Generators, battery etc.
-#include "Aerodynamics/CH53Aero.h"				//Aerodynamic model functions
-#include "EquationsOfMotion/CH53EquationsOfMotion.h"
-#include "Engine/CH53Gear.h"				    //Gear model functions
-#include "Airframe/CH53MainRotor.h"				//Main Rotor dynamics impl.
-#include "Airframe/CH53TailRotor.h"				//Tail Rotor dynamics impl.
-#include "Airframe/CH53TailStabilizer.h"		//Tail Stabilizer dynamics impl.
+#include "CH53Engine.h"					//Engine model functions
+#include "CH53FuelSystem.h"				//Fuel usage and tank usage functions
+#include "CH53Airframe.h"				//Canopy, dragging chute, refuel slot, section damages..
+#include "CH53ElectricSystem.h"		//Generators, battery etc.
+#include "CH53Aero.h"				//Aerodynamic model functions
+#include "CH53EquationsOfMotion.h"
+#include "CH53Gear.h"				    //Gear model functions
+#include "CH53MainRotor.h"				//Main Rotor dynamics impl.
+#include "CH53TailRotor.h"				//Tail Rotor dynamics impl.
+#include "CH53TailStabilizer.h"		//Tail Stabilizer dynamics impl.
 #include "PID/pid.h"						//Gear model functions
 #include <chrono>
 

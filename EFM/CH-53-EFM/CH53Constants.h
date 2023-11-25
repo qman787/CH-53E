@@ -32,7 +32,7 @@ namespace Helicopter
 	static const double mass_aerodata = 34927 / 2.2;  //  34927 lbs.  in Kgs
 	static const double mass_mtow = 73000 / 2.2;  //  73000 lbs.  in Kgs
 	static const double main_rotor_diameter = 24.06;  //  meters... wikipedia
-	static const double rotor_blade_length = 12.03;	// 
+	static constexpr double rotor_blade_length = 12.03;	// 
 	static const double rotor_blade_chord = 0.66;	//  nasa cr-3144
 	static const double fom = 0.6;  //  figure of merit (no units) https://www.quora.com/Will-the-Disk-Loading-tell-me-the-power-required-to-make-the-helicopter-hover  benchmark plot
 	static const double solidity = 0.122;  // (total blade area/ disk area) = ((7 * (12.03 * 0.66))/ (2 * 3.1416 * (12.03 * 12.03))   https://aviation.stackexchange.com/questions/49167/what-is-the-relationship-between-speed-torque-and-pitch-in-a-helicopter

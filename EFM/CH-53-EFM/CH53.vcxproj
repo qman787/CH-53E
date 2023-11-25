@@ -18,7 +18,7 @@
     <ProjectGuid>{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>ED_FM_Template</RootNamespace>
-    <ProjectName>CH53</ProjectName>
+    <ProjectName>CH-53</ProjectName>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -26,21 +26,21 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='CH53 Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -128,22 +128,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Airframe\CH53Airframe.h" />
-    <ClInclude Include="Airframe\CH53MainRotor.h" />
-    <ClInclude Include="Airframe\CH53TailRotor.h" />
-    <ClInclude Include="Airframe\CH53TailStabilizer.h" />
+    <ClInclude Include="CH53Airframe.h" />
+    <ClInclude Include="CH53MainRotor.h" />
+    <ClInclude Include="CH53TailRotor.h" />
+    <ClInclude Include="CH53TailStabilizer.h" />
     <ClInclude Include="CH53.h" />
-    <ClInclude Include="Electrics\CH53ElectricSystem.h" />
-    <ClInclude Include="Engine\CH53Engine.h" />
-    <ClInclude Include="Engine\CH53FuelSystem.h" />
-    <ClInclude Include="Aerodynamics\CH53Aero.h" />
-    <ClInclude Include="Aerodynamics\CH53AeroData.h" />
-    <ClInclude Include="Engine\CH53Gear.h" />
-    <ClInclude Include="EquationsOfMotion\CH53EquationsOfMotion.h" />
+    <ClInclude Include="CH53ElectricSystem.h" />
+    <ClInclude Include="CH53Engine.h" />
+    <ClInclude Include="CH53FuelSystem.h" />
+    <ClInclude Include="CH53Aero.h" />
+    <ClInclude Include="CH53AeroData.h" />
+    <ClInclude Include="CH53Gear.h" />
+    <ClInclude Include="CH53EquationsOfMotion.h" />
     <ClInclude Include="include\ED_FM_Utility.h" />
-    <ClInclude Include="include\CH53Constants.h" />
+    <ClInclude Include="CH53Constants.h" />
     <ClInclude Include="include\FM\wHumanCustomPhysicsAPI.h" />
-    <ClInclude Include="Inputs\CH53Inputs.h" />
+    <ClInclude Include="CH53Inputs.h" />
     <ClInclude Include="PID\pid.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

@@ -79,6 +79,10 @@ namespace Helicopter
 		// using english units so airspeed is in feet/second here
 		Vec3	airspeed;
 		Vec3	airspeed_last;
+		Vec3    bodyAttitude_R;
+		Vec3    bodyAngularVelocity_RPS;
+		Vec3    bodyAngularAcceleration_RPS2;
+
 
 		double		ambientTemperature_DegK;	// Ambient temperature (kelvin)
 		double		ambientDensity_KgPerM3;		// Ambient density (kg/m^3)

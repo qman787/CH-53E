@@ -8,8 +8,8 @@ namespace Helicopter
 	const double		wingSpan_FT				= 72.33;		//  wing-span (ft)
 	const double		wingArea_FT2			= 96.9;			//  wing area (ft^2)
 	const double		diskArea				= 4098.778;		// main rotor disk area (ft^2)
-	const double		pi						= acos(-1.0);	// Pi (3.14159....) - use value from math.h
-	const double		degtorad				= pi/180.0;	// 
+	const constexpr double	pi					= 3.14159;
+	const constexpr double	degtorad			= 0.01745329;	// 
 	const double		radiansToDegrees		= 180.0/pi;		// Conversion factor from radians to degrees - use value from math.h
 	const double		inertia_Ix_KGM2			= 55076.0;		// Reference moment of inertia (kg/m^2) 446.0;
 	const double		inertia_Iy_KGM2			= 267549.0;		// Reference moment of inertia (kg/m^2) 1219.6;

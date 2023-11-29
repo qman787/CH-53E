@@ -2,88 +2,183 @@
 #define _CH53MAIN_ROTOR_H_
 
 #include "ED_FM_Utility.h"
+#include "CH53LUT.h"
+#include "CH53AFCS.h"
 #include <Math.h>
+#include <vector>
 
 namespace Helicopter
 {
     class CH53MainRotor
     {
+       struct SimulationPoint
+       {
+          // vars
+          double       velocity;
+          double       pitch;
+          double       aoa;
+          double       Cl;
+          double       Cd;
+          double       thrust;
+          Vec3         force;
+
+          // consts
+          double       azimuth;
+          double       area;
+          Vec3         pos;
+
+          SimulationPoint()
+          {
+             this->velocity = 0;
+             this->pitch    = 0;
+             this->aoa      = 0;
+             this->Cl       = 0;
+             this->Cd       = 0;
+             this->thrust   = 0;
+             this->force    = Vec3(0, 0, 0);
+             this->azimuth  = 0;
+             this->area     = 0;
+             this->pos      = Vec3(0, 0, 0);
+          }
+
+          SimulationPoint(double velocity, double pitch, double aoa, double Cl, double Cd, double thrust, Vec3& force, const double azimuth, const double area, const Vec3& pos)
+          {
+              this->velocity = velocity;
+              this->pitch    = pitch;
+              this->aoa      = aoa;
+              this->Cl       = Cl;
+              this->Cd       = Cd;
+              this->thrust   = thrust;
+              this->force    = force;
+              this->azimuth  = azimuth;
+              this->area     = area;
+              this->pos      = pos;
+          }
+       };
+
     public:
-        static constexpr double pitchTilt          = 5.0;                 // Degrees 
-        static constexpr double bladeArea          = 9.15;                // m^2
-        static constexpr double bladeMass          = 200.0;               // Kg
-        static constexpr double numBlades          = 7;                   
-        static constexpr double rotorArea          = bladeArea*numBlades; // 64.05 // m^2
-        static constexpr double rotorMass          = bladeMass*numBlades;  // Kg;
-        static constexpr double CnFactor           = 0.7;
-        static constexpr double pitchFactor        = 1.1;
-        static constexpr double rollFactor         = 0.5;
-        static constexpr double modelScaleFactor   = 0.85;
-        static constexpr double bladeLenght        = Helicopter::rotor_blade_length*modelScaleFactor;
-        static constexpr UINT32 numSimPoints       = 4;
-        Vec3                    location[CH53MainRotor::numSimPoints] = 
-            {Vec3( bladeLenght *cos(CH53MainRotor::pitchTilt*degtorad), 4.6 - bladeLenght * sin(CH53MainRotor::pitchTilt * degtorad),  0.0),  //MAIN_ROTOR_0_OCLOCK
-             Vec3( 0.0,                                                 4.6,  bladeLenght),                                                   //MAIN_ROTOR_3_OCLOCK
-             Vec3(-bladeLenght *cos(CH53MainRotor::pitchTilt*degtorad), 4.6 + bladeLenght * sin(CH53MainRotor::pitchTilt * degtorad),  0.0),  //MAIN_ROTOR_6_OCLOCK
-             Vec3( 0.0,                                                 4.6, -bladeLenght)};                                                  //MAIN_ROTOR_9_OCLOCK
+        // consts
+        static constexpr double   pitchTilt_DEG    = 5.0;                 // Degrees 
+        static constexpr double   pitchTilt_RAD    = pitchTilt_DEG*degtorad; // Radians 
+        static constexpr double   bladeArea        = 3.94;                // m^2
+        static constexpr double   bladeMass        = 200.0;               // Kg
+        static constexpr double   numBlades        = 7;                   
+        static constexpr double   rotorArea        = bladeArea*numBlades; // 64.05 // m^2
+        static constexpr double   rotorMass        = bladeMass*numBlades;  // Kg;
+        const            Vec3     rotorPosition    = Vec3(0.0, 4.6, 0.0);
+        static constexpr double   CnFactor         = 0.7;
+        static constexpr double   pitchFactor      = 1.1;
+        static constexpr double   rollFactor       = 0.5;
+        static constexpr double   modelScaleFactor = 0.85;
+        static constexpr double   bladeLenght      = Helicopter::rotor_blade_length*modelScaleFactor;
+        static constexpr UINT32   numSimPoints     = 4;
+        const std::vector<double> ClAlpha          = { 0.0,0.029134532992288176,0.05826906598457546,0.08740359897686363,0.1165381319691518,0.14567266496144,0.17480719795372726,0.20394173094601545,0.2330762639383036,0.2622107969305909,0.29134532992287904,0.3204798629151672,0.3496143959074545,0.3787489288997427,0.4078834618920309,0.437017994884319,0.4661525278766063,0.4952870608688945,0.5244215938611827,0.5535561268534709,0.5826906598457581,0.6118251928380463,0.6409597258303344,0.6700942588226217,0.6992287918149099,0.7283633248071981,0.756469580163496,0.7701799486159382,0.7838903170683805,0.7976006855208229,0.7877840616966583,0.7634035989717223,0.7017069408740346,0.683784061696658,0.68,0.6875346214487147,0.6953627995772496,0.7031909777057841,0.7102125844347901,0.7169218195813197,0.7236310547278492,0.7303402898743787,0.7370495250209084,0.7389532133676092,0.7400637532133676,0.741174293059126,0.7422848329048843,0.7433953727506427,0.7428757497857755,0.740407883461868,0.7379400171379605,0.7354721508140531,0.7330042844901457,0.7305364181662382,0.7280685518423308,0.7198578102159383,0.7114829864380462,0.703220278090617,0.6952594189790489,0.6872985598674807,0.6793377007559125,0.6713768416443445,0.6634159825327763,0.6496171600760924,0.6349309671909511,0.6202447743058098,0.6055585814206683,0.5908723885355267,0.5761861956503858,0.5615000027652441,0.5468138098801026,0.5321276169949614,0.5174414241098201,0.5027552312246786,0.4880690383395373,0.4733828454543958,0.45698200514138815,0.43754755784061705,0.4181131105398457,0.3986786632390746,0.3792442159383032,0.3598097686375321,0.34037532133676074,0.32094087403598964,0.30150642673521855,0.2800822622107968,0.2578714652956298,0.2356606683804625,0.21344987146529557,0.19123907455012829,0.1690282776349613,0.14681748071979436,0.12460668380462708,0.10226221079691515,0.07820051413881725,0.05413881748071972,0.03007712082262219,0.006015424164524288,-0.022557840616966553,-0.05263496143958893,-0.08271208226221084,-0.11278920308483323,-0.14187660668380475,-0.16964010282776343,-0.19740359897172255,-0.22516709511568123,-0.25293059125964035,-0.280694087403599,-0.30845758354755815,-0.3362210796915168,-0.3639845758354755,-0.3890295629820053,-0.41332262210796916,-0.4376156812339334,-0.46190874035989726,-0.48620179948586145,-0.5104948586118253,-0.5347879177377892,-0.5590809768637534,-0.5825496862642674,-0.6009074273669924,-0.6192651684697172,-0.637622909572442,-0.6559806506751672,-0.674338391777892,-0.6926961328806172,-0.711053873983342,-0.729411615086067,-0.7477693561887919,-0.7661270972915167,-0.7844848383942418,-0.8028425794969667,-0.8212003205996917,-0.8342455150636248,-0.8441965889577122,-0.8541476628517995,-0.8640987367458869,-0.8740498106399744,-0.8841194681634962,-0.8945879978951158,-0.9050565276267355,-0.9116281062553556,-0.91471293916024,-0.9177977720651244,-0.9208826049700086,-0.923967437874893,-0.9270522707797773,-0.9299383033419023,-0.9285501285347044,-0.9271619537275064,-0.9257737789203084,-0.9243856041131105,-0.9229974293059126,-0.9171186343062552,-0.9087320903679521,-0.9003455464296487,-0.8919590024913453,-0.8835724585530418,-0.874096110782905,-0.8643108881299485,-0.8545256654769922,-0.85,-0.8631432577705072,-0.9156940874035997,-0.97547557840617,-0.9939845758354755,-0.9884318765974291,-0.971293916001028,-0.9541559554046273,-0.9286632390308482,-0.8922450727943441,-0.8558269065578399,-0.8194087403213368,-0.7829905740848326,-0.7465724078483285,-0.7101542416118254,-0.6737360753753212,-0.637317909138817,-0.6008997429023129,-0.5644815766658098,-0.5280634104293056,-0.49164524419280137,-0.4552270779562983,-0.4188089117197942,-0.38239074548329,-0.3459725792467857,-0.30955441301028275,-0.27313624677377857,-0.23671808053727428,-0.20029991430077132,-0.16388174806426714,-0.12746358182776285,-0.09104541559125989,-0.054627249354755714,-0.018209083118251423,0.01820908311825265,0.054627249354755714,0.09104541559125989,0.12746358182776407,0.16388174806426714,0.20029991430077132,0.2367180805372755,0.2731362467737797,0.30955441301028275,0.3459725792467869,0.3823907454832911,0.4188089117197942,0.45522707795629835,0.49164524419280253,0.5280634104293067,0.5644815766658098,0.600899742902314,0.6373179091388181,0.6737360753753212,0.7101542416118254,0.7465724078483296,0.7829905740848337,0.8194087403213368,0.855826906557841,0.8922450727943452,0.9286632390308482,0.9541559554046273,0.9712939160010285,0.9884318765974297,0.9939845758354755,0.9754755784061694,0.9156940874035974,0.8631432577705072,0.85,0.8545256654769924,0.8643108881299488,0.874096110782905,0.8835724585530421,0.8919590024913455,0.9003455464296487,0.9087320903679521,0.9171186343062555,0.9229974293059126,0.9243856041131105,0.9257737789203085,0.9271619537275064,0.9285501285347044,0.9299383033419024,0.9270522707797771,0.923967437874893,0.9208826049700086,0.9177977720651243,0.9147129391602399,0.9116281062553556,0.9050565276267352,0.8945879978951154,0.8841194681634962,0.8740498106399742,0.8640987367458868,0.8541476628517993,0.8441965889577121,0.8342455150636247,0.8212003205996912,0.8028425794969667,0.7844848383942415,0.7661270972915164,0.7477693561887914,0.7294116150860668,0.7110538739833416,0.6926961328806166,0.674338391777892,0.655980650675167,0.6376229095724418,0.6192651684697167,0.6009074273669922,0.5825496862642671,0.5590809768637527,0.5347879177377892,0.510494858611825,0.48620179948586073,0.4619087403598965,0.437615681233933,0.41332262210796955,0.38902956298200453,0.36398457583547555,0.33622107969151555,0.3084575835475573,0.280694087403599,0.25293059125963907,0.2251670951156808,0.19740359897172255,0.16964010282776257,0.1418766066838043,0.11278920308483323,0.08271208226220991,0.05263496143958847,0.022557840616967015,-0.006015424164525029,-0.03007712082262219,-0.05413881748072083,-0.07820051413881798,-0.10226221079691515,-0.12460668380462811,-0.14681748071979472,-0.16902827763496134,-0.1912390745501293,-0.21344987146529593,-0.2356606683804625,-0.2578714652956305,-0.28008226221079713,-0.30150642673521827,-0.32094087403599025,-0.340375321336761,-0.35980976863753183,-0.3792442159383038,-0.3986786632390746,-0.41811311053984657,-0.4375475578406174,-0.45698200514138815,-0.47338284545439646,-0.4880690383395375,-0.5027552312246786,-0.5174414241098205,-0.5321276169949616,-0.5468138098801026,-0.5615000027652446,-0.5761861956503858,-0.5908723885355267,-0.6055585814206688,-0.6202447743058098,-0.6349309671909518,-0.6496171600760928,-0.6634159825327763,-0.6713768416443447,-0.6793377007559127,-0.6872985598674807,-0.6952594189790492,-0.7032202780906172,-0.7114829864380462,-0.7198578102159385,-0.7280685518423308,-0.7305364181662382,-0.7330042844901458,-0.7354721508140531,-0.7379400171379606,-0.7404078834618681,-0.7428757497857755,-0.7433953727506426,-0.7422848329048843,-0.741174293059126,-0.7400637532133676,-0.7389532133676092,-0.7370495250209084,-0.7303402898743785,-0.7236310547278492,-0.7169218195813197,-0.71021258443479,-0.7031909777057841,-0.6953627995772496,-0.6875346214487145,-0.68,-0.6837840616966588,-0.7017069408740366,-0.7634035989717223,-0.7877840616966587,-0.7976006855208224,-0.7838903170683805,-0.7701799486159379,-0.756469580163496,-0.7283633248071981,-0.699228791814909,-0.6700942588226219,-0.6409597258303346,-0.6118251928380455,-0.5826906598457582,-0.5535561268534691,-0.5244215938611818,-0.49528706086889457,-0.4661525278766055,-0.4370179948843182,-0.40788346189203095,-0.3787489288997419,-0.3496143959074546,-0.3204798629151673,-0.2913453299228782,-0.26221079693059096,-0.23307626393830372,-0.20394173094601464,-0.17480719795372734,-0.14567266496144005,-0.11653813196915097,-0.08740359897686367,-0.0582690659845746,-0.0291345329922873,0.0 };
+        const std::vector<double> CdAlpha          = { 1.0,1.0000579976393802,1.0001159952787606,1.0001739929181408,1.0002319905575212,1.0002899881969014,1.0003479858362818,1.000405983475662,1.0004639811150422,1.0005219787544226,1.0005799763938028,1.0006379740331832,1.0006959716725634,1.0007539693119438,1.000811966951324,1.0008699645907042,1.0009279622300846,1.0009859598694648,1.0010439575088452,1.0011019551482254,1.0011599527876058,1.001217950426986,1.004424002713372,1.0260191895188349,1.0784312638899145,1.197855799787269,1.3419667283567958,1.4860776569263228,1.5931355521363952,1.6453740490716489,1.6976125460069027,1.7498510429421565,1.800531914893617,1.8138297872340425,1.827127659574468,1.8404255319148937,1.8537234042553192,1.8670212765957448,1.8803191489361701,1.8936170212765957,1.9069148936170213,1.9202127659574468,1.9335106382978724,1.9468085106382977,1.9601063829787235,1.9734042553191489,1.9867021276595744,2.0 };
+        LUT                       Cl               = LUT(ClAlpha, -180.0, 180.0);
+
     private:
-        double point_thrust[CH53MainRotor::numSimPoints];
-        Vec3 thrust[CH53MainRotor::numSimPoints];
-        Vec3 torque;
+        SimulationPoint  simPoints[CH53MainRotor::numSimPoints];
+        bool             bInitialized;
     public:
-        void vSimulate(CH53Motion& rMotion, double pitchControl, double rollControl, double collectiveControl, double airspeed_KTS, double Cz_total, double rpm, double airDencity_KgM3,
-                       double pitchRate_RPS, double rollRate_RPS)
+        CH53MainRotor()
         {
-           point_thrust[MAIN_ROTOR_0_OCLOCK] = -Cz_total*(1 - pitchFactor*pitchControl)*(rotorArea/numSimPoints)*airDencity_KgM3*pow(rpm*Helicopter::rotor_blade_length, 2);
-           thrust[MAIN_ROTOR_0_OCLOCK] = Vec3(point_thrust[MAIN_ROTOR_0_OCLOCK] * sin(CH53MainRotor::pitchTilt*degtorad),
-                                              point_thrust[MAIN_ROTOR_0_OCLOCK] * cos(CH53MainRotor::pitchTilt*degtorad),
-                                              0.0);
-           point_thrust[MAIN_ROTOR_3_OCLOCK] = -Cz_total*(1 -  rollFactor*rollControl)*(rotorArea/numSimPoints)*airDencity_KgM3*pow(rpm*Helicopter::rotor_blade_length, 2);
-           thrust[MAIN_ROTOR_3_OCLOCK] = Vec3(point_thrust[MAIN_ROTOR_3_OCLOCK] * sin(CH53MainRotor::pitchTilt*degtorad),
-                                              point_thrust[MAIN_ROTOR_3_OCLOCK] * cos(CH53MainRotor::pitchTilt*degtorad),
-                                              0.0);
-           point_thrust[MAIN_ROTOR_6_OCLOCK] = -Cz_total*(1 +  pitchFactor*pitchControl)*(rotorArea/numSimPoints)*airDencity_KgM3*pow(rpm*Helicopter::rotor_blade_length, 2);
-           thrust[MAIN_ROTOR_6_OCLOCK] = Vec3(point_thrust[MAIN_ROTOR_6_OCLOCK] * sin(CH53MainRotor::pitchTilt*degtorad),
-                                              point_thrust[MAIN_ROTOR_6_OCLOCK] * cos(CH53MainRotor::pitchTilt*degtorad),
-                                              0.0);
-           point_thrust[MAIN_ROTOR_9_OCLOCK] = -Cz_total*(1 +  rollFactor*rollControl)*(rotorArea/numSimPoints)*airDencity_KgM3*pow(rpm*Helicopter::rotor_blade_length, 2);
-           thrust[MAIN_ROTOR_9_OCLOCK] = Vec3(point_thrust[MAIN_ROTOR_9_OCLOCK] * sin(CH53MainRotor::pitchTilt*degtorad),
-                                              point_thrust[MAIN_ROTOR_9_OCLOCK] * cos(CH53MainRotor::pitchTilt*degtorad),
-                                              0.0);
+            for (int i = 0; i < CH53MainRotor::numSimPoints; ++i)
+            {
+                if (CH53MainRotor::numSimPoints > 0)
+                {
+                    double azimuth = i * 360.0 / CH53MainRotor::numSimPoints;
+                    simPoints[i] = SimulationPoint(0, 0, 0, 0, 0, 0, Vec3(0, 0, 0), azimuth, rotorArea/CH53MainRotor::numSimPoints,
+                        Vec3(rotorPosition.x + bladeLenght*std::cos(azimuth*degtorad)*std::cos(CH53MainRotor::pitchTilt_RAD),
+                             rotorPosition.y - bladeLenght*std::cos(azimuth*degtorad)*std::sin(CH53MainRotor::pitchTilt_RAD),
+                             rotorPosition.z + bladeLenght*std::sin(azimuth*degtorad)));
+                }
+            }
 
-           torque.x = thrust[MAIN_ROTOR_0_OCLOCK].x + thrust[MAIN_ROTOR_3_OCLOCK].x + thrust[MAIN_ROTOR_6_OCLOCK].x + thrust[MAIN_ROTOR_9_OCLOCK].x;
-           torque.y = thrust[MAIN_ROTOR_0_OCLOCK].y + thrust[MAIN_ROTOR_3_OCLOCK].y + thrust[MAIN_ROTOR_6_OCLOCK].y + thrust[MAIN_ROTOR_9_OCLOCK].y;
-           torque.z = thrust[MAIN_ROTOR_0_OCLOCK].z + thrust[MAIN_ROTOR_3_OCLOCK].z + thrust[MAIN_ROTOR_6_OCLOCK].z + thrust[MAIN_ROTOR_9_OCLOCK].z;
+        }
+
+        void vSimulate(CH53Aero& rAero, CH53Motion& rMotion, CH53Engine& rEngine, CH53AFCS& rAFCS)
+        {
+           //torque.x = force[MAIN_ROTOR_0_OCLOCK].x + force[MAIN_ROTOR_3_OCLOCK].x + force[MAIN_ROTOR_6_OCLOCK].x + force[MAIN_ROTOR_9_OCLOCK].x;
+           //torque.y = force[MAIN_ROTOR_0_OCLOCK].y + force[MAIN_ROTOR_3_OCLOCK].y + force[MAIN_ROTOR_6_OCLOCK].y + force[MAIN_ROTOR_9_OCLOCK].y;
+           //torque.z = force[MAIN_ROTOR_0_OCLOCK].z + force[MAIN_ROTOR_3_OCLOCK].z + force[MAIN_ROTOR_6_OCLOCK].z + force[MAIN_ROTOR_9_OCLOCK].z;
 
 
-           // Pitch compenstation moment N*m
-           Vec3 pitch_compensation_moment(0.0, 0.0, (-1.3*rMotion.getPitch() - 0.7*pitchRate_RPS)*rMotion.getInertia().z);
-           rMotion.add_local_moment(pitch_compensation_moment);
+           //// Pitch compenstation moment N*m
+           //Vec3 pitch_compensation_moment(0.0, 0.0, (-1.3*rMotion.getPitch() - 0.7*pitchRate_RPS)*rMotion.getInertia().z);
+           //rMotion.add_local_moment(pitch_compensation_moment);
 
-           // Roll compenstation moment N*m
-           Vec3 roll_compensation_moment((-1.4*rMotion.getRoll() - 0.8*rollRate_RPS)*rMotion.getInertia().x, 0.0, 0.0);
-           rMotion.add_local_moment(roll_compensation_moment);
+           //// Roll compenstation moment N*m
+           //Vec3 roll_compensation_moment((-1.4*rMotion.getRoll() - 0.8*rollRate_RPS)*rMotion.getInertia().x, 0.0, 0.0);
+           //rMotion.add_local_moment(roll_compensation_moment);
 
+            double rpm             = rEngine.getTurbineRPM();
+            double airDencity_KgM3 = rMotion.getAirDensity();
+            double airspeed_KTS    = rMotion.airspeed_KTS;
+            double Cz_total        = rAero.getCzTotal();
+
+            // blade sim point - linear velocity
+            for (int i = 0; i < CH53MainRotor::numSimPoints; ++i)
+            {
+                simPoints[i].velocity = Helicopter::rotor_blade_length*rpm*0.10472; //~{130, 210) m/s
+                simPoints[i].pitch    = limit((rAFCS.getCollectiveControl()*(Helicopter::blade_pitch_max - Helicopter::blade_pitch_min) + Helicopter::blade_pitch_min) -
+                                              (rAFCS.getCyclicControl().z*(Helicopter::blade_pitch_max*0.3))*cos(simPoints[i].azimuth*degtorad) -
+                                              (rAFCS.getCyclicControl().x*(Helicopter::blade_pitch_max*0.3))*sin(simPoints[i].azimuth*degtorad),
+                                               Helicopter::blade_pitch_min, Helicopter::blade_pitch_max);
+                simPoints[i].aoa      = simPoints[i].pitch; // fake
+                simPoints[i].Cl       = Cl(simPoints[i].aoa);
+                simPoints[i].thrust   = 0.5*simPoints[i].Cl*airDencity_KgM3*simPoints[i].area*pow(simPoints[i].velocity, 2);
+                simPoints[i].force    = Vec3(simPoints[i].thrust*std::sin(CH53MainRotor::pitchTilt_RAD), simPoints[i].thrust*std::cos(CH53MainRotor::pitchTilt_RAD), 0.0);
+            }
+
+            //LOG("att=(%06.3f, %06.3f, %06.3f), pitchControl=%06.3f, rollControl=%06.3f, collectiveControl=%05.1f, rpm=%05.1f, velocity=%05.1f, pitch=%05.1f, Cl=%05.1f, thrust=%07.1f\r", 
+            //    rMotion.bodyAttitude_R.x*radiansToDegrees, rMotion.bodyAttitude_R.y*radiansToDegrees, rMotion.bodyAttitude_R.z*radiansToDegrees,
+            //    pitchControlAugmented, rollControlAugmented, collectiveControl, rpm, simPoints[0].velocity, simPoints[0].pitch, simPoints[0].Cl, simPoints[0].thrust);
+
+        }
+
+        void init()
+        {
+            bInitialized = true;
+        }
+
+        void release()
+        {
+            bInitialized = false;
         }
 
         void getLocalForceComponent(UINT32 point, double& force_x, double& force_y, double& force_z, double& pos_x, double& pos_y, double& pos_z)
         {
-            if (point < numSimPoints)
+            if (point < CH53MainRotor::numSimPoints)
             {
-                force_x = thrust[point].x;
-                force_y = thrust[point].y;
-                force_z = thrust[point].z;
-                pos_x = location[point].x;
-                pos_y = location[point].y;
-                pos_z = location[point].z;
+                //if (point == 1)
+                //{
+                    force_x = simPoints[point].force.x;
+                    force_y = simPoints[point].force.y;
+                    force_z = simPoints[point].force.z;
+                    pos_x   = simPoints[point].pos.x;
+                    pos_y   = simPoints[point].pos.y;
+                    pos_z   = simPoints[point].pos.z;
+                //}
+                //else
+                //{
+                //    force_x = 0;
+                //    force_y = 0;
+                //    force_z = 0;
+                //    pos_x   = 0;
+                //    pos_y   = 0;
+                //    pos_z   = 0;
+                //}
             }
         }
 
         void getLocalMomentComponent(double& x, double& y, double& z)
         {
-            x = -CnFactor * torque.x;
-            y = -CnFactor * torque.y;
-            z = -CnFactor * torque.z;
+            //x = -CnFactor * torque.x;
+            //y = -CnFactor * torque.y;
+            //z = -CnFactor * torque.z;
+            x = 0;
+            y = 0;
+            z = 0;
         }
 
     };

@@ -114,9 +114,19 @@ public:
 		isStarterPressed = false;
 	}
 
+	double getCoreRPM()
+	{
+		return N1_RPM;
+	}
+
 	double getCoreRelatedRPM()
 	{
 		return N1_RPM / 100;
+	}
+
+	double getTurbineRPM()
+	{
+		return N2_RPM;
 	}
 
 	void spinRotor(const double frameTime)

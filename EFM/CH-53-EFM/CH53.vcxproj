@@ -75,7 +75,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ED_FM_TEMPLATE_EXPORTS;FM_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ED_FM_TEMPLATE_EXPORTS;FM_EXPORTS;DEBUG_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -128,7 +128,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CH53AFCS.h" />
     <ClInclude Include="CH53Airframe.h" />
+    <ClInclude Include="CH53LUT.h" />
     <ClInclude Include="CH53MainRotor.h" />
     <ClInclude Include="CH53TailRotor.h" />
     <ClInclude Include="CH53TailStabilizer.h" />
@@ -139,7 +141,7 @@
     <ClInclude Include="CH53Aero.h" />
     <ClInclude Include="CH53AeroData.h" />
     <ClInclude Include="CH53Gear.h" />
-    <ClInclude Include="CH53EquationsOfMotion.h" />
+    <ClInclude Include="CH53Motion.h" />
     <ClInclude Include="include\ED_FM_Utility.h" />
     <ClInclude Include="CH53Constants.h" />
     <ClInclude Include="include\FM\wHumanCustomPhysicsAPI.h" />

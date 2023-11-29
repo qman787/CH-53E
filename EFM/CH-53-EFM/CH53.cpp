@@ -59,8 +59,9 @@
 #include "CH53Airframe.h"				//Canopy, dragging chute, refuel slot, section damages..
 #include "CH53ElectricSystem.h"		//Generators, battery etc.
 #include "CH53Aero.h"				//Aerodynamic model functions
-#include "CH53EquationsOfMotion.h"
+#include "CH53Motion.h"
 #include "CH53Gear.h"				    //Gear model functions
+#include "CH53AFCS.h"
 #include "CH53MainRotor.h"				//Main Rotor dynamics impl.
 #include "CH53TailRotor.h"				//Tail Rotor dynamics impl.
 #include "CH53TailStabilizer.h"		//Tail Stabilizer dynamics impl.
@@ -177,6 +178,7 @@ namespace Helicopter
    CH53FuelSystem Fuel;
    CH53GearSystem Gears;
    CH53Airframe Airframe;
+   CH53AFCS AFCS;
    CH53MainRotor MainRotor;
    CH53TailRotor TailRotor;
    CH53TailStabilizer TailStabilizer;
@@ -613,9 +615,10 @@ void ed_fm_simulate(double dt)
       double control_pedal = limit((Helicopter::PedalInput + Helicopter::autopilot_yaw_differential + Helicopter::autopilot_hdg_differential),-1,1) ;
       double control_collective = limit((Helicopter::CollectiveInput + Helicopter::autopilot_radalt_collective_differential + Helicopter::autopilot_baralt_collective_differential),0,1) ;
 
-      Helicopter::RollControl = control_roll * (22.61 / 2.0);
-      Helicopter::PitchControl = control_pitch * (31.04 / 2.0);
-      Helicopter::PedalControl = control_pedal * (12.95 / 2.0);
+      //Helicopter::RollControl = control_roll * (22.61 / 2.0);
+      //Helicopter::PitchControl = control_pitch * (31.04 / 2.0);
+      //Helicopter::PedalControl = control_pedal * (12.95 / 2.0);
+      Helicopter::PedalControl = control_pedal;
       Helicopter::CollectiveControl = control_collective * (Helicopter::blade_pitch_max - Helicopter::blade_pitch_min) + Helicopter::blade_pitch_min;
 
       Helicopter::cockpitAPI.setParamNumber(PITCH_INPUT, control_pitch);
@@ -682,14 +685,13 @@ void ed_fm_simulate(double dt)
       Helicopter::Motion.updateAeroForces(Helicopter::Aero.getCxTotal(), Helicopter::Aero.getCxTotalNoMass(), Helicopter::Aero.getCzTotal(), Helicopter::Aero.getCmTotal(), Helicopter::Aero.getCyTotal(), Helicopter::Aero.getClTotal(), Helicopter::Aero.getCnTotal());
 
 
+      // AFCS 
+      Helicopter::AFCS.vSimulate(Helicopter::Motion, Helicopter::Engine, Helicopter::PitchControl, Helicopter::RollControl, Helicopter::PedalControl, Helicopter::CollectiveInput);
+
       // Main rotor thrust/torque
-      Helicopter::MainRotor.vSimulate(Helicopter::Motion, Helicopter::PitchControl*(2.0/31.04), Helicopter::RollControl*(2.0/22.61), Helicopter::CollectiveControl,
-                                     Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCzTotal(), Helicopter::Engine.getCoreRelatedRPM(),
-                                     Helicopter::Motion.getAirDensity(), Helicopter::pitchRate_RPS, Helicopter::rollRate_RPS);
+      Helicopter::MainRotor.vSimulate(Helicopter::Aero, Helicopter::Motion, Helicopter::Engine, Helicopter::AFCS);
       // Tail rotor thrust/torque
-      Helicopter::TailRotor.vSimulate(Helicopter::Motion, Helicopter::PedalControl*(2.0/12.95), Helicopter::CollectiveControl,
-                                     Helicopter::Motion.airspeed_KTS, Helicopter::Aero.getCnTotal(), Helicopter::Engine.getCoreRelatedRPM(),
-                                     Helicopter::Motion.getAirDensity());
+      Helicopter::TailRotor.vSimulate(Helicopter::Aero, Helicopter::Motion, Helicopter::Engine, Helicopter::AFCS);
 
 
       Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_PID_TIME, 0);
@@ -834,6 +836,12 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
    Helicopter::Motion.pitch = pitch;
    Helicopter::Motion.yaw = yaw;
    Helicopter::Motion.roll = roll;
+
+   Helicopter::Motion.bodyAttitude_R = Vec3(roll, yaw, pitch);
+   Helicopter::Motion.bodyAngularVelocity_RPS = Vec3(omegax, -omegay, omegaz);
+   Helicopter::Motion.bodyAngularAcceleration_RPS2 = Vec3(omegadotx, omegadoty, omegadotz);
+
+
 
    Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_BODY_PITCH, pitch * (180/3.14159));
    Helicopter::cockpitAPI.setParamNumber(TEST_PARAM_BODY_ROLL, roll * (180 / 3.14159));
@@ -1288,6 +1296,7 @@ void ed_fm_cold_start()
    Helicopter::Fuel.initCold();
    Helicopter::Electrics.initCold();
    Helicopter::Airframe.init();
+   Helicopter::MainRotor.init();
    double x= limit(60, 0, 1.0);
    InitLogFile();
 }
@@ -1298,6 +1307,7 @@ void ed_fm_hot_start()
    Helicopter::Fuel.initHot();
    Helicopter::Electrics.initHot();
    Helicopter::Airframe.init();
+   Helicopter::MainRotor.init();
 }
 
 void ed_fm_hot_start_in_air()

@@ -1,6 +1,12 @@
 #ifndef _CH53TAIL_ROTOR_H_
 #define _CH53TAIL_ROTOR_H_
 
+#include "ED_FM_Utility.h"
+#include "CH53LUT.h"
+#include "CH53AFCS.h"
+#include <Math.h>
+#include <vector>
+
 namespace Helicopter
 {
     class CH53TailRotor
@@ -8,34 +14,39 @@ namespace Helicopter
     public:
         static constexpr double rollTilt           = 20.0;                // Degrees
         static constexpr double bladeLength        = 3.048;               // m
-        static constexpr double bladeArea          = 14.15;               // m^2
+        static constexpr double bladeArea          = 0.7;               // m^2
         static constexpr double numBlades          = 4;                   
         static constexpr double rotorArea          = bladeArea*numBlades; // m^2
-        //Vec3                    location           = Vec3(-12.8, 4.6, -1.9);
-        Vec3                    location           = Vec3(-12.8, 5.1, -0.6);
+        //Vec3                    pos           = Vec3(-12.8, 4.6, -1.9);
+        Vec3                    pos                = Vec3(-12.8, 5.1, -0.6);
+        //Vec3                    pos                = Vec3(-12.8, 6.1, -0.6);
 
     private:
-        Vec3 thrust;
+        Vec3 force;
     public:
-        void vSimulate(CH53Motion& rMotion, double yawControl, double collectiveControl, double airspeed_KTS, double Cn_total, double rpm, double airDencity_KgM3)
+        void vSimulate(CH53Aero& rAero, CH53Motion& rMotion, CH53Engine& rEngine, CH53AFCS& rAFCS)
         {
-            double total_thrust = -45.0*Cn_total*(2 + yawControl)*rotorArea * airDencity_KgM3 * pow(rpm * CH53TailRotor::bladeLength, 2);
-            thrust = Vec3(0.0,
-                          total_thrust * sin((CH53TailRotor::rollTilt) * degtorad),
-                          total_thrust * cos((CH53TailRotor::rollTilt) * degtorad));
+            double rpm             = rEngine.getTurbineRPM();
+            double airDencity_KgM3 = rMotion.getAirDensity();
+            double airspeed_KTS    = rMotion.airspeed_KTS;
+            double Cn_total        = rAero.getCnTotal();
+
+            // fake simulation (test only)
+            double blade_tip_velocity = CH53TailRotor::bladeLength*rpm*0.10472;
+            double thrust = 145.0*numBlades*Cn_total*(rAFCS.getCyclicControl().y)*bladeArea*airDencity_KgM3*pow(blade_tip_velocity, 2);
+            force = Vec3(0.0,
+                          thrust * sin((CH53TailRotor::rollTilt)*degtorad),
+                          thrust * cos((CH53TailRotor::rollTilt)*degtorad));
         }
 
         void getLocalForceComponent(double& force_x, double& force_y, double& force_z, double& pos_x, double& pos_y, double& pos_z)
         {
-            force_x = thrust.x;
-            force_y = thrust.y;
-            force_z = thrust.z;
-            //force_x = 0;
-            //force_y = 0;
-            //force_z = 0;
-            pos_x   = location.x;
-            pos_y   = location.y;
-            pos_z   = location.z;
+            force_x = force.x;
+            force_y = force.y;
+            force_z = force.z;
+            pos_x   = pos.x;
+            pos_y   = pos.y;
+            pos_z   = pos.z;
         }
 
     };

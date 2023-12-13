@@ -295,22 +295,22 @@ double interpn(double **Xmat, const double *Y, const double *xPar, const ND_INFO
 
 
 
-// Simple upper and lower limiter
-double limit(double input, double lower_limit, double upper_limit)
-{
-	if(input > upper_limit)
-	{
-		return upper_limit;
-	}
-	else if(input < lower_limit)
-	{
-		return lower_limit;
-	}
-	else
-	{
-		return input;
-	}
-}
+//// Simple upper and lower limiter
+//double limit(double input, double lower_limit, double upper_limit)
+//{
+//	if(input > upper_limit)
+//	{
+//		return upper_limit;
+//	}
+//	else if(input < lower_limit)
+//	{
+//		return lower_limit;
+//	}
+//	else
+//	{
+//		return input;
+//	}
+//}
 
 
 

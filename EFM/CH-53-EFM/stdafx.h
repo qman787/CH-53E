@@ -21,9 +21,15 @@
 #include <malloc.h>
 #include <memory.h>
 
-extern FILE* pConsole;
 
 #ifdef DEBUG_CONSOLE
-#define LOG(s, ...) if ( pConsole != nullptr) fprintf(pConsole, s, __VA_ARGS__);
-#endif //
+extern FILE* pConsole;
+//#define LOG(s, ...) if ( pConsole != nullptr) { \
+//                       fprintf(pConsole, s, __VA_ARGS__); }
+#define LOG(n, s, ...) if ( pConsole != nullptr) { \
+                       COORD logCoord = {0, n}; \
+                       SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), logCoord); \
+                       fprintf(pConsole, s, __VA_ARGS__); }
+#endif //DEBUG_CONSOLE
+
 

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace Helicopter
+namespace CH53
 {
     class LUT
     {

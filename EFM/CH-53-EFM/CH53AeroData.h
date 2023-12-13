@@ -5,7 +5,7 @@
 // LCW reduced to 10 points as I didnt have data for anything under 0kts. I fudged some numbers for -20kts
 // 15876 kg
 
-namespace Helicopter
+namespace CH53
 {//							    -20,	  0,		20,		 30,		40,		60,		80,		100,	  120,	   130
 static double _XuData[10]  = { -0.0917, -0.0917, -0.0216, -0.0160, -0.0152, -0.0272, -0.0344, -0.0400, -0.0469, -0.0540 };		// forward speed affect on force out nose
 //							 {-0.0439, -0.0397, -0.0346, -0.0257, -0.0167, -0.0204, -0.0270, -0.0314, -0.0379, -0.0437, -0.0536, -0.0570 };		//Original

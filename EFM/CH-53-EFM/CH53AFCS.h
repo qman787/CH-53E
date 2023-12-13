@@ -1,60 +1,68 @@
 #ifndef _CH53_AFCS_
 #define _CH53_AFCS_
 
-#include "ED_FM_Utility.h"
-#include "CH53Aero.h"				//Aerodynamic model functions
-#include "CH53Motion.h"
-//#include "CH53MainRotor.h"				//Main Rotor dynamics impl.
-//#include "CH53TailRotor.h"				//Tail Rotor dynamics impl.
+#include "CH53SimModule.h"
 
-namespace Helicopter
+namespace CH53
 {
-    class CH53AFCS
+    ///
+    /// AFCS NOTES
+    /// Rudder pedal returns to a nuetral position if power to the system is lost
+    /// LBA extends/retracts to provid pilot better pitch stability at high speeds. as the speed gets higher the LBA extends and you need more pitch cyclic to make the helo pitch up or down
+    /// FAS does cyclic dampening, cyclic pitch trim, pitch autopilot (airspeed or altitude hold)
+    /// 
+    /// AFCS On = Compter pwr on and (Servo 1 or Servo 2 ON)
+    /// Push AFCS ON -> SAS on pitch,roll,yaw rate gyros. about a 10% affect
+    ///				 -> Hover augmentation is active when airspeed < 60kts and pitch between 4.4 nose down and  and 13.3 nose up.  dampens lateral and longtitudanl force. ie.. if helo moves left then cyclic moves right to counter act it ( a bit)
+    ///				 -> Gust augmentaion is Pitch and roll vertical axis? (so stops it bouncing up and down?) and is about 55% affective (seems to be always on with SAS anyway?)
+    ///	Desensitizers not implimented.. stops affects of pilot input at certain engine freqs
+    /// Turn coordination... depending on roll rate and lateral force..add a little yaw
+    /// Trim and trim save functions seem to be available?
+    /// Roll attitude HOLD  can rereferance (ie set it to a new value) by hiting a trim release button.. or using roll trim..which auto does it
+    /// Pitch attitude HOLD same as roll trim excpet for pitch and only les than 60 kts
+    /// Airspeed HOLD. above 60 kts, roll less than 35 degs. Adjust pitch cyclic to maintain speed. pitch trim can be used to adjust the speed.
+    /// Heading HOLD
+    /// Auto Turn ??!?
+    /// Auto BANK allows for re-refernce of roll at speeds > 60 kts
+    /// RADALT HOLD  +/- 7 ft
+    /// BARALT HOLD	 +/- 25 ft
+    /// 
+    //	
+
+    class AFCS : public SimModule
     {
     public:
-        CH53AFCS()
+        enum Augmentation
         {
-        }
+            AFCS_AUTOPILOT       = 0x00000001,
+            AFCS_ZERO_PITCH_RATE = 0x00000002,
+            AFCS_ZERO_ROLL_RATE  = 0x00000004,
+            AFCS_ATTITUDE_HOLD   = 0x00000008,
+            AFCS_VELVEC_HOLD     = 0x00000010,
+            AFCS_ALTITUDE_HOLD   = 0x00000020,
+            AFCS_AIRSPEED_HOLD   = 0x00000040,
+            AFCS_HEADING_HOLD    = 0x00000080,
+            AFCS_VRATE_COMMANDER = 0x00000100,
+        };
 
-        Vec3& getCyclicControl()
-        {
-
-            return augmentedCyclicControl;
-        }
-
-        double getCollectiveControl()
-        {
-            return augmentedCollectiveControl;
-        }
-
-        void vSimulate(CH53Motion rMotion, CH53Engine& rEngine, double pitchInput, double rollInput, double yawInput, double collectiveInput)
-        {
-            // ROLL AUGMENTATION
-            augmentedCyclicControl.x = limit(rollInput - 1.74*rMotion.bodyAttitude_R.x + 0.7*rMotion.bodyAngularVelocity_RPS.y
-                - 0.02*rMotion.bodyAngularVelocity_RPS.x, -1.0, 1.0);
-            //-1.72*rMotion.bodyAngularVelocity_RPS.x - 0.115*rMotion.bodyAngularAcceleration_RPS2.x, -1.0, 1.0);
-
-            // YAW AUGMENTAION
-            augmentedCyclicControl.y = limit(yawInput + 1.3*rMotion.bodyAngularVelocity_RPS.y, -1.0, 1.0);
-            //double yawControlAugmented = limit(yawControl, -1.0, 1.0);
-
-            // PITCH AUGMENTATION
-            augmentedCyclicControl.z = limit(pitchInput - 3.74*(/*CH53MainRotor::pitchTilt_RAD*/5.0*degtorad - rMotion.bodyAttitude_R.z)
-                + 0.02*rMotion.bodyAngularVelocity_RPS.z, -1.0, 1.0);
-            // -1.72*rMotion.bodyAngularVelocity_RPS.z - 0.115*rMotion.bodyAngularAcceleration_RPS2.z, -1.0, 1.0);
-
-            // COLLECTIVE AUGMENTATION
-            augmentedCollectiveControl = collectiveInput;
-
-            LOG("AFCS:: att=(%06.3f, %06.3f, %06.3f), pitchInput=%06.3f, rollInput=%06.3f, collectiveControl=%05.1f, rpm=%05.1f\r", 
-                rMotion.bodyAttitude_R.x*radiansToDegrees, rMotion.bodyAttitude_R.y*radiansToDegrees, rMotion.bodyAttitude_R.z*radiansToDegrees,
-                augmentedCyclicControl.z, augmentedCyclicControl.x, augmentedCollectiveControl, rEngine.getTurbineRPM());
-
-        }
+    public:
+        AFCS();
+        virtual ~AFCS();
+        virtual void vInit(bool hotStart, bool inAir);
+        virtual void vRelease();
+        virtual Vec3& getCyclicControl();
+        virtual double getCollectiveControl();
+        virtual void vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt);
 
     private:
-        Vec3   augmentedCyclicControl;
-        double augmentedCollectiveControl;
+        unsigned  augmentationMask;
+        Vec3      cyclicControlAugmented;
+        Vec3      cyclicControlAutopilot;
+        Vec3      cyclicControl;
+        double    collectiveControlAugmented;
+        double    collectiveControlAutopilot;
+        double    collectiveControl;
+
     };
 }
 

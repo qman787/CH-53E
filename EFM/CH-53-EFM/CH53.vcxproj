@@ -72,7 +72,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;ED_FM_TEMPLATE_EXPORTS;FM_EXPORTS;DEBUG_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -130,28 +130,50 @@
   <ItemGroup>
     <ClInclude Include="CH53AFCS.h" />
     <ClInclude Include="CH53Airframe.h" />
+    <ClInclude Include="CH53AFCSAutopilot.h" />
     <ClInclude Include="CH53LUT.h" />
     <ClInclude Include="CH53MainRotor.h" />
+    <ClInclude Include="CH53SimModule.h" />
     <ClInclude Include="CH53TailRotor.h" />
-    <ClInclude Include="CH53TailStabilizer.h" />
+    <ClInclude Include="CH53HTailStabilizer.h" />
     <ClInclude Include="CH53.h" />
-    <ClInclude Include="CH53ElectricSystem.h" />
+    <ClInclude Include="CH53Electrics.h" />
     <ClInclude Include="CH53Engine.h" />
     <ClInclude Include="CH53FuelSystem.h" />
     <ClInclude Include="CH53Aero.h" />
     <ClInclude Include="CH53AeroData.h" />
-    <ClInclude Include="CH53Gear.h" />
+    <ClInclude Include="CH53Gears.h" />
     <ClInclude Include="CH53Motion.h" />
+    <ClInclude Include="CH53Utility.h" />
+    <ClInclude Include="CH53VTailStabilizer.h" />
+    <ClInclude Include="ED_FM_TemplateAPI.h" />
     <ClInclude Include="include\ED_FM_Utility.h" />
     <ClInclude Include="CH53Constants.h" />
     <ClInclude Include="include\FM\wHumanCustomPhysicsAPI.h" />
-    <ClInclude Include="CH53Inputs.h" />
-    <ClInclude Include="PID\pid.h" />
+    <ClInclude Include="CH53AFCSInput.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UtilityFunctions.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CH53Aero.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="CH53AFCS.cpp" />
+    <ClCompile Include="CH53Airframe.cpp" />
+    <ClCompile Include="CH53AFCSAutopilot.cpp" />
+    <ClCompile Include="CH53Electrics.cpp" />
+    <ClCompile Include="CH53Engine.cpp" />
+    <ClCompile Include="CH53FuelSystem.cpp" />
+    <ClCompile Include="CH53Gears.cpp" />
+    <ClCompile Include="CH53HTailStabilizer.cpp" />
+    <ClCompile Include="CH53AFCSInput.cpp" />
+    <ClCompile Include="CH53MainRotor.cpp" />
+    <ClCompile Include="CH53Motion.cpp" />
+    <ClCompile Include="CH53SimModule.cpp" />
+    <ClCompile Include="CH53TailRotor.cpp" />
+    <ClCompile Include="CH53Utility.cpp" />
+    <ClCompile Include="CH53VTailStabilizer.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

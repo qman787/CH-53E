@@ -1,186 +1,114 @@
-#pragma once
- 
+#ifndef _CH53_FUEL_SYSTEM_
+#define _CH53_FUEL_SYSTEM_
+
+#include "CH53SimModule.h"
+
 // also calculation for the mass of the fuel and position of it
 
 // JP8 weight 6.65lbs/gal ?
 
-
-class CH53FuelTank
+namespace CH53
 {
-public:
 
-	double volume; // capacity of tank
-	double fuel; // amount of fuel in tank
+    class FuelTank
+    {
+    public:
 
-	double x;
-	double y;
-	double z;
+        double volume; // capacity of tank
+        double fuel; // amount of fuel in tank
 
-	CH53FuelTank(double _volume = 0, double _fuel = 0)
-		: volume(_volume)
-		, fuel(_fuel)
-		, x(0)
-		, y(0)
-		, z(0)
-	{}
-	~CH53FuelTank() {}
+        double x;
+        double y;
+        double z;
 
-	// add what is possible, return remaining if full
-	double addFuel(const double addition)
-	{
-		double space = volume - fuel;
-		if (space < addition)
-		{
-			fuel = volume; // set to max
-			return (addition - space); // overflow
-		}
-		fuel += addition;
-		return 0;
-	}
+        FuelTank(double _volume = 0, double _fuel = 0)
+            : volume(_volume)
+            , fuel(_fuel)
+            , x(0)
+            , y(0)
+            , z(0)
+        {}
+        ~FuelTank() {}
 
-	double decFuel(const double decrement)
-	{
-		if (fuel < decrement)
-		{
-			double tmp = decrement - fuel;
-			fuel = 0; // set to min
-			return tmp; // remaining
-		}
-		fuel -= decrement;
-		return 0;
-	}
+        // add what is possible, return remaining if full
+        double addFuel(const double addition)
+        {
+            double space = volume - fuel;
+            if (space < addition)
+            {
+                fuel = volume; // set to max
+                return (addition - space); // overflow
+            }
+            fuel += addition;
+            return 0;
+        }
 
-	double getSpace() const
-	{
-		return (volume - fuel);
-	}
-};
+        double decFuel(const double decrement)
+        {
+            if (fuel < decrement)
+            {
+                double tmp = decrement - fuel;
+                fuel = 0; // set to min
+                return tmp; // remaining
+            }
+            fuel -= decrement;
+            return 0;
+        }
 
-class CH53FuelSystem
-{
-protected:
-	bool is_unlimited_fuel;
-	double previous_usage;
+        double getSpace() const
+        {
+            return (volume - fuel);
+        }
+    };
 
-	CH53FuelTank MainTank; 
-	CH53FuelTank AuxTank; 
+    class FuelSystem : public SimModule
+    {
+    protected:
+        bool is_unlimited_fuel;
+        double previous_usage;
 
-public:
+        FuelTank MainTank;
+        FuelTank AuxTank;
 
-	bool isIdleCutoff; // true means no fuel flow
+    public:
 
-	bool isFuelFlow;
+        bool isIdleCutoff; // true means no fuel flow
 
-	CH53FuelSystem() 
-		: is_unlimited_fuel(false)
-		, previous_usage(0)
-		, MainTank(400 / 2.2046) // lb to kg
-		, AuxTank(400 / 2.2046)
-		, isIdleCutoff(false)
-		, isFuelFlow(false)
-	{}
-	~CH53FuelSystem() {}
+        bool isFuelFlow;
 
-	void initCold()
-	{
-		isIdleCutoff = true;
-		isFuelFlow = false;
-	}
-	void initHot()
-	{
-		isIdleCutoff = false;
-		isFuelFlow = true;
-	}
+        FuelSystem();
+        virtual ~FuelSystem();
+        virtual void vInit(bool hotStart, bool inAir);
+        virtual void vRelease();
 
-	/* 
-	// for weight-balance calculation,
-	// we need amount of fuel in each tank and position
-	double getFuelMass()
-{
-		// JP8 weight 6.65lbs/gal ?
-		//return getInternalFuel() * weightconstant;
-		return 0;
-	}
-	*/
+        /*
+        // for weight-balance calculation,
+        // we need amount of fuel in each tank and position
+        double getFuelMass()
+    {
+            // JP8 weight 6.65lbs/gal ?
+            //return getInternalFuel() * weightconstant;
+            return 0;
+        }
+        */
 
-	// is low fuel indication
-	bool isLowFuel() const
-	{
-		// check remining fuel
-		if (getInternalFuel() <= 45)
-		{
-			return true;
-		}
-		return false;
-	}
+        // is low fuel indication
+        virtual bool isLowFuel() const;
 
-	// called on initialization
-	void setInternalFuel(const double fuel) // <- in kg
-	{
-		MainTank.fuel = 0;
-		AuxTank.fuel = 0;
-		refuelAdd(fuel);
-	}
-	double getInternalFuel() const
-	{
-		return (MainTank.fuel + AuxTank.fuel);
-	}
+        // called on initialization
+        virtual void setInternalFuel(const double fuel);
+        virtual double getInternalFuel() const;
+        virtual void refuelAdd(const double fuel);
 
-	void refuelAdd(const double fuel) // <- in kg
-	{		// distribute fuel to each tank for weight balance
-		double addition = fuel;
-		addition = MainTank.addFuel(addition);
-		addition = AuxTank.addFuel(addition);
-	}
-
-	void setIdleCutOff(float value)
-	{
-		if (value == 1)
-		{
-			isIdleCutoff = true;
-			return;
-		}
-		isIdleCutoff = false;
-	}
+        virtual void setIdleCutOff(float value);
 
 
-	void setUnlimitedFuel(bool status)
-	{
-		is_unlimited_fuel = status;
-	}
+        virtual void setUnlimitedFuel(bool status);
 
-	double getUsageSinceLastFrame() const
-	{
-		return previous_usage;
-	}
-	void clearUsageSinceLastFrame()
-	{
-		previous_usage = 0;
-	}
+        virtual double getUsageSinceLastFrame() const;
+        virtual void clearUsageSinceLastFrame();
 
-	void update(const double rpm, const double frameTime)
-	{
-		if (is_unlimited_fuel == true)
-		{
-			isFuelFlow = true;
-			return;
-		}
-
-		double fueltmp =  rpm * 0.0364 * frameTime;
-		previous_usage += fueltmp; // add to usage since last time updated
-		// TODO: transfer of fuel between tanks
-
-		fueltmp = AuxTank.decFuel(fueltmp);
-		fueltmp = MainTank.decFuel(fueltmp);
-
-		if (getInternalFuel() > 0 && isIdleCutoff == false)
-		{
-			isFuelFlow = true;
-		}
-		else
-		{
-			isFuelFlow = false;
-		}
-	}
-
-};
+        virtual void vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt);
+    };
+}
+#endif //_CH53_FUEL_SYSTEM_

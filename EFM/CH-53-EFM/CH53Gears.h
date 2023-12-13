@@ -1,27 +1,34 @@
-#ifndef _CH53GEAR_H_
-#define _CH53GEAR_H_
+#ifndef _CH53_GEARS_H_
+#define _CH53_GEARS_H_
 
-//#include "../CH53_FM_Utility.h"
+#include "CH53SimModule.h"
 
-namespace Helicopter
+namespace CH53
 {
-
-    class CH53GearWheel
+    class Gear
     {
     private:
-        double yawPositionTarget = 0;
-        double movingStep = 0.003;
+        double yawPositionTarget     = 0;
+        double movingStep            = 0.003;
     public:
-        double GearStatus;
-        int Steering = 0;
+        double State;
+        double Steering              = 0;
         double BrakeStatusMultiPlier = 0;
-        int GearControlOveride = 0; // use for carrier launch operation
-        double weightOnWheel;
-        double currentYaw = 0;
+        double weightOnWheel         = 0;
+        double currentYaw            = 0;
+        Vec3   force                 = Vec3(0, 0, 0);
+        Vec3   pos                   = Vec3(0, 0, 0);
+
+        Gear(Vec3 pos)
+        {
+            this->pos.x = pos.x;
+            this->pos.y = pos.y;
+            this->pos.z = pos.z;
+        }
 
         void updateYawPosition(double inputRudder, double airspeed)
         {
-            if (GearStatus >= 0.8 && Steering == 1 && airspeed < 40)
+            if (State >= 0.8 && Steering == 1 && airspeed < 40)
             {   
                 yawPositionTarget = (- inputRudder) * (40 - airspeed)/40;
             }
@@ -73,52 +80,26 @@ namespace Helicopter
             }
         
         }
-
-        void getLocalForceComponent(double& force_x, double& force_y, double& force_z, double& pos_x, double& pos_y, double& pos_z)
-        {
-            force_x = 0;
-            force_y = 0;
-            force_z = 0;
-            pos_x = 0;
-            pos_y = 0;
-            pos_z = 0;
-        }
     };
 
-    class CH53GearSystem
+    class Gears : public SimModule
     {
     private:
         /* data */
 
     public:
-        CH53GearWheel nose;
-        CH53GearWheel left;
-        CH53GearWheel right;
-        int CarrierPos = 0;
+        static constexpr UINT32 numGears = 3;
+        std::vector<Gear> gear           = {Gear(Vec3(0, 0, 0)),   // NOSE
+                                            Gear(Vec3(0, 0, 0)),   // LEFT
+                                            Gear(Vec3(0, 0, 0))};  // RIGHT
 
-        void initial(int birth) // 0 for ground and 1 for air
-        {   
-            if (birth == 0)
-            {
-                nose.GearStatus = 1;
-                left.GearStatus = 1;
-                right.GearStatus = 1;
-            }
-            else
-            {
-                nose.GearStatus = 0;
-                left.GearStatus = 0;
-                right.GearStatus = 0;
-            }
-	        CarrierPos = 0;
-        }
+        Gears();
+        virtual ~Gears();
+        virtual void vInit(bool hotStart, bool inAir);
+        virtual void vRelease();
+        virtual void vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt);
+        virtual bool getLocalForceComponent(double& force_x, double& force_y, double& force_z, double& pos_x, double& pos_y, double& pos_z);
 
-        void setWheelBrakes(double value)
-        {
-            nose.BrakeStatusMultiPlier = value;
-            left.BrakeStatusMultiPlier = value;
-            right.BrakeStatusMultiPlier = value;
-        }
     };
 }
-#endif
+#endif //_CH53_GEARS_H_

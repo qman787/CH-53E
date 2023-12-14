@@ -207,11 +207,6 @@ void ed_fm_simulate(double dt)
     //cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_INC, inc);
     //cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, systems.pidIValue);
     cockpitAPI.setParamNumber(TEST_PARAM_AUTOPILOT_YAW, systems.Autopilot.autopilot_yaw_differential);
-
-
-    systems.Motion.updateFuelUsageMass(systems.Fuel.getUsageSinceLastFrame(), 0, 0, 0);
-    systems.Fuel.clearUsageSinceLastFrame();
-
 }
 
 /*
@@ -376,21 +371,13 @@ bool ed_fm_change_mass(double & delta_mass,
                   double & delta_mass_moment_of_inertia_z
                   )
 {
-   // TODO: better integration of fuel mass position and actual fuel usage calculation
-   if (systems.Motion.isMassChanged() == true)
-   {
-      systems.Motion.getMassMomentInertiaChange(delta_mass,
-                                 delta_mass_pos_x, 
-                                 delta_mass_pos_y, 
-                                 delta_mass_pos_z,
-                                 delta_mass_moment_of_inertia_x, 
-                                 delta_mass_moment_of_inertia_y, 
-                                 delta_mass_moment_of_inertia_z);
-      // Can't set to true...crashing right now :(
-      return false;
-   }
-
-   return false;
+    return systems.Fuel.processMassChangeEvent(delta_mass,
+                                               delta_mass_pos_x,
+                                               delta_mass_pos_y,
+                                               delta_mass_pos_z,
+                                               delta_mass_moment_of_inertia_x,
+                                               delta_mass_moment_of_inertia_y,
+                                               delta_mass_moment_of_inertia_z);
 }
 
 /*
@@ -399,13 +386,13 @@ bool ed_fm_change_mass(double & delta_mass,
 */
 void ed_fm_set_internal_fuel(double fuel)
 {
-   systems.Fuel.setInternalFuel(fuel);
+    systems.Fuel.setInternalFuelQuantity(KG_TO_LBS * fuel);
 }
 
 // get internal fuel volume 
 double ed_fm_get_internal_fuel()
 {
-   return systems.Fuel.getInternalFuel();
+    return LBS_TO_KG * systems.Fuel.getInternalFuelQuantity();
 }
 
 //set external fuel volume for each payload station , called for weapon init and on reload
@@ -421,7 +408,7 @@ double ed_fm_get_external_fuel()
 // called on ground refuel
 void ed_fm_refueling_add_fuel(double fuel)
 {
-   return systems.Fuel.refuelAdd(fuel);
+    return systems.Fuel.addFuelQuantity(KG_TO_LBS * fuel);
 }
 
 // external model draw arguments.  size: count of elements in array
@@ -539,8 +526,11 @@ double ed_fm_get_param(unsigned param_enum)
       return 0;
 
    case ED_FM_FUEL_INTERNAL_FUEL:
+       return LBS_TO_KG * systems.Fuel.getInternalFuelQuantity();
+       break;
    case ED_FM_FUEL_TOTAL_FUEL:
-      return systems.Fuel.getInternalFuel();
+       return LBS_TO_KG * systems.Fuel.getTotalFuelQuantity();
+       break;
    case ED_FM_FUEL_LOW_SIGNAL:
       return systems.Fuel.isLowFuel();
 
@@ -679,7 +669,7 @@ void ed_fm_set_immortal(bool value)
 // inform about unlimited fuel
 void ed_fm_unlimited_fuel(bool value)
 {
-   systems.Fuel.setUnlimitedFuel(value);
+    systems.Fuel.setFuelUnlimited(value);
 }
 
 // inform about simplified flight model request 

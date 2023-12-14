@@ -1,5 +1,5 @@
-#ifndef _CH53_FUEL_SYSTEM_
-#define _CH53_FUEL_SYSTEM_
+#ifndef _CH53_FUEL_SYSTEM_OBSOLETE_
+#define _CH53_FUEL_SYSTEM_OBSOLETE_
 
 #include "CH53SimModule.h"
 
@@ -111,4 +111,4 @@ namespace CH53
         virtual void vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt);
     };
 }
-#endif //_CH53_FUEL_SYSTEM_
+#endif //_CH53_FUEL_SYSTEM_OBSOLETE_

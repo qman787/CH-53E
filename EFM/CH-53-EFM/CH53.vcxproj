@@ -131,6 +131,7 @@
     <ClInclude Include="CH53AFCS.h" />
     <ClInclude Include="CH53Airframe.h" />
     <ClInclude Include="CH53AFCSAutopilot.h" />
+    <ClInclude Include="CH53Fuel.h" />
     <ClInclude Include="CH53LUT.h" />
     <ClInclude Include="CH53MainRotor.h" />
     <ClInclude Include="CH53SimModule.h" />
@@ -164,7 +165,10 @@
     <ClCompile Include="CH53AFCSAutopilot.cpp" />
     <ClCompile Include="CH53Electrics.cpp" />
     <ClCompile Include="CH53Engine.cpp" />
-    <ClCompile Include="CH53FuelSystem.cpp" />
+    <ClCompile Include="CH53Fuel.cpp" />
+    <ClCompile Include="CH53FuelSystem.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="CH53Gears.cpp" />
     <ClCompile Include="CH53HTailStabilizer.cpp" />
     <ClCompile Include="CH53AFCSInput.cpp" />

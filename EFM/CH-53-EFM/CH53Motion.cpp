@@ -12,7 +12,6 @@ namespace CH53
     {
         center_of_mass              = Vec3();
         moment_of_inertia           = Vec3();
-        fuel_mass_delta             = 0;
         weight_N                    = 0;
         mass_KG                     = 0;
         rho                         = 0;
@@ -62,49 +61,49 @@ namespace CH53
     //}
 
 
-    bool Motion::isMassChanged() const
-    {
-        if (fuel_mass_delta != 0)
-        {
-            return true;
-        }
+    //bool Motion::isMassChanged() const
+    //{
+    //    if (fuel_mass_delta != 0)
+    //    {
+    //        return true;
+    //    }
 
-        if (moment_of_inertia.x != CH53::Airframe::inertia_Ix_KGM2 || 
-            moment_of_inertia.y != CH53::Airframe::inertia_Iz_KGM2 || 
-            moment_of_inertia.z != CH53::Airframe::inertia_Iy_KGM2)
-        {
-            return true;
-        }
-        return false;
-    }
+    //    if (moment_of_inertia.x != CH53::Airframe::inertia_Ix_KGM2 || 
+    //        moment_of_inertia.y != CH53::Airframe::inertia_Iz_KGM2 || 
+    //        moment_of_inertia.z != CH53::Airframe::inertia_Iy_KGM2)
+    //    {
+    //        return true;
+    //    }
+    //    return false;
+    //}
 
-    void Motion::getMassMomentInertiaChange(double& delta_mass,
-                                            double& delta_mass_pos_x,
-                                            double& delta_mass_pos_y,
-                                            double& delta_mass_pos_z,
-                                            double& delta_mass_moment_of_inertia_x,
-                                            double& delta_mass_moment_of_inertia_y,
-                                            double& delta_mass_moment_of_inertia_z)
-    {
-        // TODO: change in amount of fuel -> change in mass -> set here
+    //void Motion::getMassMomentInertiaChange(double& delta_mass,
+    //                                        double& delta_mass_pos_x,
+    //                                        double& delta_mass_pos_y,
+    //                                        double& delta_mass_pos_z,
+    //                                        double& delta_mass_moment_of_inertia_x,
+    //                                        double& delta_mass_moment_of_inertia_y,
+    //                                        double& delta_mass_moment_of_inertia_z)
+    //{
+    //    // TODO: change in amount of fuel -> change in mass -> set here
 
-        delta_mass -= fuel_mass_delta;
-        //delta_mass = 0;
-        delta_mass_pos_x = 0.0;
-        delta_mass_pos_y = 0.0;
-        delta_mass_pos_z = 0.0;
+    //    delta_mass -= fuel_mass_delta;
+    //    //delta_mass = 0;
+    //    delta_mass_pos_x = 0.0;
+    //    delta_mass_pos_y = 0.0;
+    //    delta_mass_pos_z = 0.0;
 
-        //delta_mass_pos_x = -1.0;
-        //delta_mass_pos_y =  1.0;
-        //delta_mass_pos_z =  0;
+    //    //delta_mass_pos_x = -1.0;
+    //    //delta_mass_pos_y =  1.0;
+    //    //delta_mass_pos_z =  0;
 
-        delta_mass_moment_of_inertia_x = CH53::Airframe::inertia_Ix_KGM2 - moment_of_inertia.x;
-        delta_mass_moment_of_inertia_y = CH53::Airframe::inertia_Iy_KGM2 - moment_of_inertia.y;
-        delta_mass_moment_of_inertia_z = CH53::Airframe::inertia_Iz_KGM2 - moment_of_inertia.z;
+    //    delta_mass_moment_of_inertia_x = CH53::Airframe::inertia_Ix_KGM2 - moment_of_inertia.x;
+    //    delta_mass_moment_of_inertia_y = CH53::Airframe::inertia_Iy_KGM2 - moment_of_inertia.y;
+    //    delta_mass_moment_of_inertia_z = CH53::Airframe::inertia_Iz_KGM2 - moment_of_inertia.z;
 
-        // TODO: decrement this delta from moment_of_inertia now?
-        fuel_mass_delta = 0;
-    }
+    //    // TODO: decrement this delta from moment_of_inertia now?
+    //    fuel_mass_delta = 0;
+    //}
 
     void Motion::setAtmosphere(const double temperature, const double density, const double soundspeed, const double altitude, const double pressure)
     {
@@ -123,27 +122,6 @@ namespace CH53
     {
         surfaceAlt = surfaceHeight;
     }
-
-    //void Motion::setAirspeed(const double vx, const double vy, const double vz, const double wind_vx, const double wind_vy, const double wind_vz)
-    //{
-    //    velocity_world_cs.x = vx;
-    //    velocity_world_cs.y = vy;
-    //    velocity_world_cs.z = vz;
-
-    //    wind.x = wind_vx;
-    //    wind.y = wind_vy;
-    //    wind.z = wind_vz;
-
-    //    // Get the total absolute velocity acting on the aircraft with wind included m/s
-    //    // y and z acis corrected for normal aerodynamic usage
-    //    airspeed_last.x = airspeed.x;
-    //    airspeed_last.y = airspeed.y;
-    //    airspeed_last.z = airspeed.z;
-
-    //    airspeed.x = velocity_world_cs.x - wind.x;
-    //    airspeed.y = velocity_world_cs.z - wind.z;
-    //    airspeed.z = -(velocity_world_cs.y - wind.y);
-    //}
 
     //
     void  Motion::setCurrentMassState(double mass,
@@ -260,12 +238,6 @@ namespace CH53
         //Vec3 cweight_force_pos(0, 0, 0);
         //add_local_force(cweight_force, cweight_force_pos);
 #endif //0
-    }
-
-
-    void Motion::updateFuelUsageMass(double mass_delta, double posX, double posY, double posZ)
-    {
-        fuel_mass_delta = mass_delta;
     }
 
     double Motion::getWeightN() const

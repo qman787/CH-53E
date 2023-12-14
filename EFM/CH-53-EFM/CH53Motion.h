@@ -14,7 +14,6 @@ namespace CH53
         double      beta_DEG                         = 0.0;      // Slideslip angle (deg)
         double      beta_RAD                         = 0.0;      // Slideslip angle (rad)
         double		rho; // atmospheric density
-        double		fuel_mass_delta; // change in fuel mass since last frame
         double		weight_N; // Weight force of aircraft (N)
         double		mass_KG;
         Vec3        center_of_mass                   = Vec3(0, 0, 0);
@@ -55,10 +54,6 @@ namespace CH53
         double		altitudeAS;	 // above sea level
         double		altitudeAGL; // above ground level, includes buildings and objects
 
-        //double		pitch = 0.0;
-        //double		roll = 0.0;
-        //double		yaw = 0.0;
-
         Motion();
         virtual ~Motion();
         virtual void vInit(bool hotStart, bool inAir);
@@ -89,23 +84,19 @@ namespace CH53
         //                          double moment_of_inertia_y,
         //                          double moment_of_inertia_z);
 
-        virtual bool isMassChanged() const;
+        //virtual bool isMassChanged() const;
 
-        virtual void getMassMomentInertiaChange(double& delta_mass,
-                                                double& delta_mass_pos_x,
-                                                double& delta_mass_pos_y,
-                                                double& delta_mass_pos_z,
-                                                double& delta_mass_moment_of_inertia_x,
-                                                double& delta_mass_moment_of_inertia_y,
-                                                double& delta_mass_moment_of_inertia_z);
+        //virtual void getMassMomentInertiaChange(double& delta_mass,
+        //                                        double& delta_mass_pos_x,
+        //                                        double& delta_mass_pos_y,
+        //                                        double& delta_mass_pos_z,
+        //                                        double& delta_mass_moment_of_inertia_x,
+        //                                        double& delta_mass_moment_of_inertia_y,
+        //                                        double& delta_mass_moment_of_inertia_z);
 
         virtual void setAtmosphere(const double temperature, const double density, const double soundspeed, const double altitude, const double pressure);
         virtual void setSurface(const double surfaceHeight);
-        //virtual void setAirspeed(const double vx, const double vy, const double vz, const double wind_vx, const double wind_vy, const double wind_vz);
         virtual void vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt);
-
-
-        void updateFuelUsageMass(double mass_delta, double posX, double posY, double posZ);
 
         double getWeightN() const;
         double getMassKg() const;

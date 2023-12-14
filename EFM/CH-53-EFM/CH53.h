@@ -8,7 +8,8 @@
 
 #include "CH53Electrics.h"
 #include "CH53Motion.h"
-#include "CH53FuelSystem.h"
+//#include "CH53FuelSystem.h"
+#include "CH53Fuel.h"
 #include "CH53AFCS.h"
 #include "CH53AFCSInput.h"
 #include "CH53AFCSAutopilot.h"

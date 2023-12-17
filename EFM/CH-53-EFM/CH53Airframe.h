@@ -232,9 +232,13 @@ namespace CH53
         bool   isImmortal; // <- ignore damage
 
     public:
-        static constexpr double inertia_Ix_KGM2 = 55076.0;		// Reference moment of inertia (kg/m^2) 446.0;
-        static constexpr double inertia_Iy_KGM2 = 267549.0;		// Reference moment of inertia (kg/m^2) 1219.6;
-        static constexpr double inertia_Iz_KGM2 = 284943.0;		// Reference moment of inertia (kg/m^2) 979.1;
+        static constexpr double inertia_Ix_KGM2         = 55076.0;		// Reference moment of inertia (kg/m^2) 446.0;
+        static constexpr double inertia_Iy_KGM2         = 267549.0;		// Reference moment of inertia (kg/m^2) 1219.6;
+        static constexpr double inertia_Iz_KGM2         = 284943.0;		// Reference moment of inertia (kg/m^2) 979.1;
+        static constexpr double crossSectionArea_M2_x   = 8.2;
+        static constexpr double crossSectionArea_M2_y   = 24.0; 
+        static constexpr double crossSectionArea_M2_z   = 34.0;
+
 
         double rotorIntegrityFactor; // basic damage model to decrease lift if blades are missing
         double tailRotorIntegrityFactor;

@@ -4,6 +4,7 @@ namespace CH53
 {
     Airframe::Airframe()
     {
+        xForce.push_back(Force(Vec3(), Vec3()));
     }
 
     Airframe::~Airframe()
@@ -70,5 +71,15 @@ namespace CH53
 
     void Airframe::vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt)
     {
+        if (xForce.size() == Airframe::ForceComponent::AIRFRAME_MAX_NUM_FORCE_COMPONENTS)
+        {
+            double airDencity_KgM3 = systems.Motion.getAirDensity();
+
+            xForce[AIRFRAME_DRAG] = Force(Vec3(-0.5*crossSectionArea_M2_x*airDencity_KgM3*systems.Motion.bodyLinearVelocity_MS.x*std::abs(systems.Motion.bodyLinearVelocity_MS.x),
+                                               -0.5*crossSectionArea_M2_y*airDencity_KgM3*systems.Motion.bodyLinearVelocity_MS.y*std::abs(systems.Motion.bodyLinearVelocity_MS.y),
+                                               -0.5*crossSectionArea_M2_z*airDencity_KgM3*systems.Motion.bodyLinearVelocity_MS.z*std::abs(systems.Motion.bodyLinearVelocity_MS.z)),
+                                          Vec3(systems.Motion.center_of_mass.x, systems.Motion.center_of_mass.y, systems.Motion.center_of_mass.z));
+        }
+
     }
 }

@@ -54,22 +54,22 @@ namespace CH53
         if ((augmentationMask & AFCS::Augmentation::AFCS_ATTITUDE_HOLD) == AFCS::Augmentation::AFCS_ATTITUDE_HOLD)
         {
             // ROLL AUGMENTATION
-            cyclicControlAugmentation.x = limit(-0.840*systems.Motion.bodyAttitude_R.x                              // bank compensation 
-                                                -0.220*systems.Motion.bodyAngularVelocity_RPS.x                     // roll rate compensation
-                                                -0.005*systems.Motion.bodyAngularAcceleration_RPS2.x                // roll rate change factor
-                                                +0.480*systems.Motion.bodyAngularVelocity_RPS.y,                    // yaw-to-roll (tail rotor roll) compensation 
-                                                -2.0, 2.0);                                                         // roll input override enabled
+            cyclicControlAugmentation.x = limit(-0.840*systems.Motion.bodyAttitude_R.x                                        // bank compensation 
+                                                -0.220*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
+                                                -0.005*systems.Motion.bodyAngularAcceleration_RPS2.x                          // roll rate change factor
+                                                +0.480*systems.Motion.bodyAngularVelocity_RPS.y,                              // yaw-to-roll (tail rotor roll) compensation 
+                                                -2.0, 2.0);                                                                   // roll input override enabled
 
             // YAW AUGMENTAION
-            cyclicControlAugmentation.y = limit( 1.300*systems.Motion.bodyAngularVelocity_RPS.y,                     // yaw rate compensation
-                                                -4.840*systems.Motion.bodyAttitude_R.x                               //
+            cyclicControlAugmentation.y = limit( 1.300*systems.Motion.bodyAngularVelocity_RPS.y,                              // yaw rate compensation
+                                                -0.000*systems.Motion.bodyAttitude_R.x*systems.Motion.bodyLinearVelocity_MS.x //
                                                 -1.0, 1.0);
 
             // PITCH AUGMENTATION
-            cyclicControlAugmentation.z = limit(-3.740*(MainRotor::pitchTilt_RAD - systems.Motion.bodyAttitude_R.z) // pitch compensation
-                                                +0.340*systems.Motion.bodyAngularVelocity_RPS.z                     // pitch rate compensation
-                                                +0.005*systems.Motion.bodyAngularAcceleration_RPS2.z,               // pitch rate change factor
-                                                -2.0, 2.0);                                                         // pitch input override enabled 
+            cyclicControlAugmentation.z = limit(-3.740*(MainRotor::pitchTilt_RAD - systems.Motion.bodyAttitude_R.z)           // pitch compensation
+                                                +0.340*systems.Motion.bodyAngularVelocity_RPS.z                               // pitch rate compensation
+                                                +0.005*systems.Motion.bodyAngularAcceleration_RPS2.z,                         // pitch rate change factor
+                                                -2.0, 2.0);                                                                   // pitch input override enabled 
         }
 
         // COLLECTIVE AUGMENTATION

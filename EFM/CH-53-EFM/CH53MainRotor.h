@@ -75,7 +75,7 @@ namespace CH53
         static constexpr double   blade_pitch_max       = 24.4;	// guessed   this also matches the collective full travel  of 25.4 cm :)
         static constexpr double   rotor_blade_length    = 12.03;	// 
         static constexpr double   bladeLenght           = rotor_blade_length*modelScaleFactor;
-        static constexpr UINT32   numSimPoints          = 16;
+        static constexpr UINT32   numSimPoints          = 32;
 
         double                    thrust                = 0;
 

@@ -56,10 +56,10 @@ namespace CH53
 
     private:
         unsigned  augmentationMask;
-        Vec3      cyclicControlAugmented;
+        Vec3      cyclicControlAugmentation;
         Vec3      cyclicControlAutopilot;
         Vec3      cyclicControl;
-        double    collectiveControlAugmented;
+        double    collectiveControlAugmentation;
         double    collectiveControlAutopilot;
         double    collectiveControl;
 

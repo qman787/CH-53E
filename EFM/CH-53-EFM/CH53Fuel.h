@@ -44,7 +44,7 @@ namespace CH53
                                                       {0, 0, 0, 2040.0, Vec3(-1.0,  0.0,  2.3)}, //FUEL_TANK_NO_3,       300.0 gal, JP5
 
                                                       {0, 0, 0, 1281.8, Vec3( 1.0,  0.0, -2.3)}, //FUEL_TANK_NO_2_LEFT,  188.5 gal, JP5, cross-feed sections
-                                                      {0, 0, 0, 1281.8, Vec3( 1.0,  0.0, -2.3)}, //FUEL_TANK_NO_2_RIGHT, 188.5 gal, JP5, cross-feed sections
+                                                      {0, 0, 0, 1281.8, Vec3( 1.0,  0.0,  2.3)}, //FUEL_TANK_NO_2_RIGHT, 188.5 gal, JP5, cross-feed sections
 
                                                       {0, 0, 0, 3680.1, Vec3( 0.0,  0.0, -3.2)}, //FUEL_TANK_AUX_LEFT,   541.2 gal, JP5, (AUX)sponsons 
                                                       {0, 0, 0, 3680.1, Vec3( 0.0,  0.0,  3.2)}, //FUEL_TANK_AUX_RIGHT,  541.2 gal, JP5, (AUX)sponsons 

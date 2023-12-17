@@ -19,7 +19,7 @@ namespace CH53
         Vec3   force                 = Vec3(0, 0, 0);
         Vec3   pos                   = Vec3(0, 0, 0);
 
-        Gear(Vec3 pos)
+        Gear(Vec3& pos)
         {
             this->pos.x = pos.x;
             this->pos.y = pos.y;
@@ -89,9 +89,9 @@ namespace CH53
 
     public:
         static constexpr UINT32 numGears = 3;
-        std::vector<Gear> gear           = {Gear(Vec3(0, 0, 0)),   // NOSE
-                                            Gear(Vec3(0, 0, 0)),   // LEFT
-                                            Gear(Vec3(0, 0, 0))};  // RIGHT
+        std::vector<Gear> gear           = {Gear(Vec3( 5.312,  0.102,      0)),   // NOSE
+                                            Gear(Vec3(-2.371, -0.071, -1.808)),   // LEFT
+                                            Gear(Vec3(-2.371, -0.071,  1.808))};  // RIGHT
 
         Gears();
         virtual ~Gears();

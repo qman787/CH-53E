@@ -10,29 +10,41 @@ namespace CH53
     }
     void Motion::vInit(bool hotStart, bool inAir)
     {
-        center_of_mass              = Vec3();
-        moment_of_inertia           = Vec3();
-        weight_N                    = 0;
-        mass_KG                     = 0;
-        rho                         = 0;
-        wind                        = Vec3();
-        airspeed                    = Vec3();
-        ambientTemperature_DegK     = 0;
-        ambientDensity_KgPerM3      = 0;
-        dynamicPressure_LBFT2       = 0;
-        dynamicPressure_x           = 0;
-        dynamicPressure_y           = 0;
-        dynamicPressure_z           = 0;
-        dynamicPressure_Rotor       = 0;
-        speed_of_sound              = 0;
-        mach                        = 0;
-        altitude_FT                 = 0;
-        ps_LBFT2                    = 0;
-        totalVelocity_MPS           = 0;
-        airspeed_KTS                = 0;
-        surfaceAlt                  = 0;
-        altitudeAS                  = 0;
-        altitudeAGL                 = 0;
+        center_of_mass                  = Vec3();
+        moment_of_inertia               = Vec3();
+        weight_N                        = 0;
+        mass_KG                         = 0;
+        rho                             = 0;
+        wind                            = Vec3();
+        airspeed                        = Vec3();
+        ambientTemperature_DegK         = 0;
+        ambientTemperature_DegC         = 0;
+        ambientDensity_KgPerM3          = 0;
+        dynamicPressure_LBFT2           = 0;
+        dynamicPressure_x               = 0;
+        dynamicPressure_y               = 0;
+        dynamicPressure_z               = 0;
+        dynamicPressure_Rotor           = 0;
+        speed_of_sound                  = 0;
+        mach                            = 0;
+        altitude_FT                     = 0;
+        ps_LBFT2                        = 0;
+        totalVelocity_MPS               = 0;
+        airspeed_KTS                    = 0;
+        surfaceAlt                      = 0;
+        altitudeAS                      = 0;
+        altitudeAGL                     = 0;
+        bodyLinearAcceleration_MS2      = Vec3(0, 0, 0);
+        bodyAngularVelocity_RPS         = Vec3(0, 0, 0);
+        bodyAngularAcceleration_RPS2    = Vec3(0, 0, 0);
+        bodyLinearVelocity_MS           = Vec3(0, 0, 0);
+        bodyLinearVelocityLen_MS        = 0.0;
+        bodyLinearVelocityNormalized_MS = Vec3(0, 0, 0);
+        worldAngularAcceleration_RPS2   = Vec3(0, 0, 0);
+        worldAngularVelocity_RPS        = Vec3(0, 0, 0);
+        worldLinearVelocity_MS          = Vec3(0, 0, 0);
+        worldLinearAcceleration_MS2     = Vec3(0, 0, 0);
+
     }
 
     void Motion::vRelease()
@@ -238,6 +250,8 @@ namespace CH53
         //Vec3 cweight_force_pos(0, 0, 0);
         //add_local_force(cweight_force, cweight_force_pos);
 #endif //0
+
+        LOG(2, "moment_of_inertia=(%09.3f, %09.3f, %09.3f)\r", moment_of_inertia.x, moment_of_inertia.y, moment_of_inertia.z);
     }
 
     double Motion::getWeightN() const

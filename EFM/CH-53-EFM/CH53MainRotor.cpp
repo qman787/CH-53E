@@ -66,9 +66,14 @@ namespace CH53
         //double Cz_total               = rAero.getCzTotal();
         double bodyAirflowFactor      = 0.51;
         double tailRotorAirflowFactor = 0.012;
+        double cyclicBladePitchFactor = 0.7;
         double bladeTipVelocity       = rpm*0.10472*rotor_blade_length;
 
         collectivePitch_DEG           = systems.AFCS.getCollectiveControl()*(blade_pitch_max - blade_pitch_min) + blade_pitch_min;
+
+        // Induced rotor tilt
+        Vec3 inducedRotorTilt_RAD     = Vec3(2.5*pitchTilt_RAD*systems.AFCS.getCyclicControl().x, 0, 2.5*pitchTilt_RAD*systems.AFCS.getCyclicControl().z);
+        Vec3 totalRotorTilt_RAD       = Vec3(inducedRotorTilt_RAD.x, 0, pitchTilt_RAD + inducedRotorTilt_RAD.z);
 
         // CCW rotor sim point
         for (int i = 0; i < MainRotor::numSimPoints; ++i)
@@ -80,8 +85,8 @@ namespace CH53
                                     bladeTipVelocity*tailRotorAirflowFactor*exp(-5.0*pow(azimuth_RAD - PI, 2)); // tail induced airflow
 
             simPoints[i].pitch = limit(collectivePitch_DEG -
-                                      (systems.AFCS.getCyclicControl().z*(blade_pitch_max*0.3))*cos(azimuth_RAD) -
-                                      (systems.AFCS.getCyclicControl().x*(blade_pitch_max*0.3))*sin(azimuth_RAD),
+                                      (systems.AFCS.getCyclicControl().z*(blade_pitch_max*cyclicBladePitchFactor))*cos(azimuth_RAD) -
+                                      (systems.AFCS.getCyclicControl().x*(blade_pitch_max*cyclicBladePitchFactor))*sin(azimuth_RAD),
                                        blade_pitch_min, blade_pitch_max);
 
             simPoints[i].aoa = simPoints[i].pitch; // fake
@@ -92,17 +97,26 @@ namespace CH53
             
             if (i < xForce.size())
             {
-                xForce[i].vForce = Vec3(simPoints[i].lift*sin(MainRotor::pitchTilt_RAD),
-                                        simPoints[i].lift*cos(MainRotor::pitchTilt_RAD),
-                                        0.0);
+                xForce[i].vForce = Vec3(simPoints[i].lift*sin(totalRotorTilt_RAD.z),
+                                        simPoints[i].lift*cos(totalRotorTilt_RAD.z)*cos(totalRotorTilt_RAD.x),
+                                        simPoints[i].lift*sin(totalRotorTilt_RAD.x));
+
+                xForce[i].vPos = Vec3(rotorPosition.x + bladeLenght*cos(simPoints[i].azimuth*DEG_TO_RAD)*cos(totalRotorTilt_RAD.z),
+                                      rotorPosition.y - bladeLenght*(cos(simPoints[i].azimuth*DEG_TO_RAD)*sin(totalRotorTilt_RAD.z)*cos(totalRotorTilt_RAD.x) + sin(simPoints[i].azimuth*DEG_TO_RAD)*sin(totalRotorTilt_RAD.x)*cos(totalRotorTilt_RAD.z)),
+                                      rotorPosition.z + bladeLenght*sin(simPoints[i].azimuth*DEG_TO_RAD)*cos(totalRotorTilt_RAD.x));
+
             }
 
             thrust += simPoints[i].lift;
         }
 
-        LOG(2, "                    sp[0].lift=%09.1f\r", simPoints[0].lift);
-        LOG(3, "sp[3].lift=%09.1f                       sp[1].lift=%09.1f \r", simPoints[3].lift, simPoints[1].lift);
-        LOG(4, "                    sp[2].lift=%09.1f\r", simPoints[2].lift);
+        LOG(5, "                    sp[0].pitch=%09.1f\r", simPoints[0].pitch);
+        LOG(6, "sp[3].pitch=%09.1f                       sp[1].pitch=%09.1f \r", simPoints[3].pitch, simPoints[1].pitch);
+        LOG(7, "                    sp[2].pitch=%09.1f\r", simPoints[2].pitch);
+
+        //LOG(5, "                    sp[0].lift=%09.1f\r", simPoints[0].lift);
+        //LOG(6, "sp[3].lift=%09.1f                       sp[1].lift=%09.1f \r", simPoints[3].lift, simPoints[1].lift);
+        //LOG(7, "                    sp[2].lift=%09.1f\r", simPoints[2].lift);
 
         //    systems.Motion.bodyAttitude_R.x*RAD_TO_DEG, systems.Motion.bodyAttitude_R.y*RAD_TO_DEG, systems.Motion.bodyAttitude_R.z*RAD_TO_DEG,
         //    pitchControlAugmented, rollControlAugmented, collectiveControl, rpm, simPoints[0].velocity, simPoints[0].pitch, simPoints[0].Cl, simPoints[0].lift);

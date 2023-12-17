@@ -12,6 +12,13 @@ namespace CH53
 
     void AFCSInput::vInit(bool hotStart, bool inAir)
     {
+         cyclicTrimUpdateTimer     = 0.0;
+         cyclicInput               = Vec3();
+         cyclicTrim                = Vec3();
+         collective_value          = 0.0;
+         cyclicInputTrimed         = Vec3();
+         pedalInput                = 0.0;
+         collectiveInput           = 0.0;
     }
 
     void AFCSInput::vRelease()

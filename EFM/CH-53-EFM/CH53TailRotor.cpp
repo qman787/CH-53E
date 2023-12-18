@@ -4,7 +4,7 @@ namespace CH53
 {
     TailRotor::TailRotor()
     {
-        xForce.push_back(Force(Vec3(), rotorPosition));
+        xForce.push_back(Force(Vec3(), const_cast<Vec3&>(rotorPosition)));
     }
 
     TailRotor::~TailRotor()
@@ -17,6 +17,7 @@ namespace CH53
 
     void TailRotor::vRelease()
     {
+        SimModule::vRelease();
     }
 
     void TailRotor::vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt)
@@ -31,11 +32,11 @@ namespace CH53
         double thrust = 75.0*numBlades*(systems.AFCS.getCyclicControl().y)*bladeArea*airDencity_KgM3*pow(blade_tip_velocity, 2);
 
 
-        if (xForce.size() > 0)
+        if (xForce.size() == TailRotor::ForceComponent::TAIL_ROTOR_MAX_NUM_FORCE_COMPONENTS)
         {
-            xForce[0].vForce = Vec3(0.0,
-                                   thrust * sin((TailRotor::rollTilt)*DEG_TO_RAD),
-                                   thrust * cos((TailRotor::rollTilt)*DEG_TO_RAD));
+            xForce[TAIL_ROTOR_THRUST].vForce = Vec3(0.0,
+                                                    thrust*sin((TailRotor::rollTilt)*DEG_TO_RAD),
+                                                    thrust*cos((TailRotor::rollTilt)*DEG_TO_RAD));
         }
     }
 }

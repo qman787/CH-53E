@@ -25,6 +25,7 @@ namespace CH53
 
     void Airframe::vRelease()
     {
+        SimModule::vRelease();
     }
 
     // Scripts\Aircrafts\_Common\Damage.lua	 for element numbers

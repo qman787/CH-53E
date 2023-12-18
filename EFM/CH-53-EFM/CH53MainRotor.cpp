@@ -36,6 +36,8 @@ namespace CH53
     void MainRotor::vRelease()
     {
         bInitialized = false;
+
+        SimModule::vRelease();
     }
 
     double MainRotor::getCollectivePitch() const

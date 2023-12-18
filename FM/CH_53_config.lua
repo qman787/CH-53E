@@ -4,7 +4,7 @@ CH_53 = {
 	--moment_of_inertia = {198000,	33176162,	80778}, --{6170,	28982,	33441}, --{198000,	76162,	80778}, 
 	--moment_of_inertia = {126395,  308559, 192377}, 
 	--moment_of_inertia = {126395,  608559, 192377}, -- TESTED
-	moment_of_inertia = {826395,  3308559, 1192377},
+	moment_of_inertia = {226395,  1308559, 392377},
 
 	suspension =
 	{	

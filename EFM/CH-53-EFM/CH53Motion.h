@@ -13,8 +13,8 @@ namespace CH53
         double      alpha_RAD                        = 0.0;	     // Angle of attack (rad)
         double      beta_DEG                         = 0.0;      // Slideslip angle (deg)
         double      beta_RAD                         = 0.0;      // Slideslip angle (rad)
-        double		rho; // atmospheric density
-        double		weight_N; // Weight force of aircraft (N)
+        double		rho;                                         // atmospheric density
+        double		weight_N;                                    // Weight force of aircraft (N)
         double		mass_KG;
         Vec3        center_of_mass                   = Vec3(0, 0, 0);
         Vec3        moment_of_inertia                = Vec3(0, 0, 0);

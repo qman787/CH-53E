@@ -26,6 +26,7 @@
 extern FILE* pConsole;
 //#define LOG(s, ...) if ( pConsole != nullptr) { \
 //                       fprintf(pConsole, s, __VA_ARGS__); }
+//#define LOG(n, s, ...) 
 #define LOG(n, s, ...) if ( pConsole != nullptr) { \
                        COORD logCoord = {0, n}; \
                        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), logCoord); \

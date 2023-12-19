@@ -57,6 +57,8 @@ namespace CH53
         virtual double getCoreRPM() const;
         virtual double getCoreRelatedRPM() const;
         virtual double getTurbineRPM() const;
+        virtual double getTurbineRelatedRPM() const;
+
 
         virtual void spinRotor(const double frameTime);
         virtual void turnStarter(double frameTime);

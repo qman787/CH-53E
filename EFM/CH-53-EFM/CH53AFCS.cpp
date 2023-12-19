@@ -55,7 +55,7 @@ namespace CH53
         {
             // ROLL AUGMENTATION
             cyclicControlAugmentation.x = limit(-1.240*systems.Motion.bodyAttitude_R.x                                        // bank compensation 
-                                                -0.220*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
+                                                -0.420*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
                                                 -0.005*systems.Motion.bodyAngularAcceleration_RPS2.x                          // roll rate change factor
                                                 +0.480*systems.Motion.bodyAngularVelocity_RPS.y,                              // yaw-to-roll (tail rotor roll) compensation 
                                                 -2.0, 2.0);                                                                   // roll input override enabled
@@ -67,7 +67,7 @@ namespace CH53
 
             // PITCH AUGMENTATION
             cyclicControlAugmentation.z = limit(-3.740*(MainRotor::pitchTilt_RAD - systems.Motion.bodyAttitude_R.z)           // pitch compensation
-                                                +0.340*systems.Motion.bodyAngularVelocity_RPS.z                               // pitch rate compensation
+                                                +0.840*systems.Motion.bodyAngularVelocity_RPS.z                               // pitch rate compensation
                                                 +0.005*systems.Motion.bodyAngularAcceleration_RPS2.z,                         // pitch rate change factor
                                                 -2.0, 2.0);                                                                   // pitch input override enabled 
         }
@@ -84,7 +84,7 @@ namespace CH53
                 verticalVelocityCommand_MS = 4.5*2.0*(systems.Input.collectiveInput - 0.5);
             }
 
-            collectiveControlAugmentation = limit(0.43*(verticalVelocityCommand_MS - systems.Motion.worldLinearVelocity_MS.y) - 0.42*systems.Motion.worldLinearAcceleration_MS2.y, -0.2, 1);
+            collectiveControlAugmentation = limit(0.03*(verticalVelocityCommand_MS - systems.Motion.worldLinearVelocity_MS.y) - 0.12*systems.Motion.worldLinearAcceleration_MS2.y, -0.2, 1);
             //collectiveControlAugmentation = 0;
         }
 

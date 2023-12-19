@@ -251,7 +251,7 @@ namespace CH53
         //add_local_force(cweight_force, cweight_force_pos);
 #endif //0
 
-        LOG(2, "moment_of_inertia=(%09.3f, %09.3f, %09.3f)\r", moment_of_inertia.x, moment_of_inertia.y, moment_of_inertia.z);
+        LOG(2, "aoa=%05.1f, aos=%05.1f, moment_of_inertia=(%09.3f, %09.3f, %09.3f)\r", alpha_DEG, beta_DEG, moment_of_inertia.x, moment_of_inertia.y, moment_of_inertia.z);
     }
 
     double Motion::getWeightN() const

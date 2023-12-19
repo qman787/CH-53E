@@ -79,6 +79,11 @@ namespace CH53
 		return N2_RPM;
 	}
 
+	double Engine::getTurbineRelatedRPM() const
+	{
+		return N2_RPM / 100;
+	}
+
 	void Engine::spinRotor(const double dt)
 	{
 		rotorPosition += (N2_RPM /100) * dt; 

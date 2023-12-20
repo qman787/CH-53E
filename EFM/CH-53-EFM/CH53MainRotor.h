@@ -81,9 +81,8 @@ namespace CH53
         static constexpr double   blade_pitch_max      = 23.3;
         static constexpr double   rotor_blade_length   = 12.03; 
         static constexpr double   bladeLenght          = rotor_blade_length*modelScaleFactor;
-        static constexpr UINT32   numSimPoints         = 128;
+        static constexpr UINT32   numSimPoints         = 64;
         double                    thrust               = 0;
-
 
     private:
         double                    collectivePitch_DEG  = 0;
@@ -104,7 +103,7 @@ namespace CH53
         double swashPlateCollectiveActuator(double swashPlateCollective, double collectiveControl, double dt);
         Vec3   swashPlateCyclicActuator(Vec3& swashPlateCyclic, Vec3& cyclicControl, double dt);
         double getBladeAngleOfAttack(double bladePitch, double bladeVelocity, double sinkRate_MS) const;
-        double bladeFlexureDynamics(double bladeLift) const;
+        double getBladeFlaping(double bladeAzimuth, double bladeLift, double airspeedXZAbsolute_MPS, Vec3& airspeedXZNormalized) const;
         virtual void vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt);
 
 

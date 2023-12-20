@@ -29,7 +29,7 @@ namespace CH53
         mach                            = 0;
         altitude_FT                     = 0;
         ps_LBFT2                        = 0;
-        totalVelocity_MPS               = 0;
+        airspeedAbsolute_MPS               = 0;
         airspeed_KTS                    = 0;
         surfaceAlt                      = 0;
         altitudeAS                      = 0;
@@ -193,15 +193,17 @@ namespace CH53
         // Get the total absolute velocity acting on the aircraft with wind included
         airspeed = Vec3(bodyLinearVelocity_MS.x - wind.x, bodyLinearVelocity_MS.y - wind.y, bodyLinearVelocity_MS.z - wind.z);
 
-        totalVelocity_MPS = sqrt(airspeed.x * airspeed.x + airspeed.y * airspeed.y + airspeed.z * airspeed.z);
-        if (totalVelocity_MPS < 0.01)
-        {
-            totalVelocity_MPS = 0.01;
-        }
-        airspeed_KTS = totalVelocity_MPS * 1.943844;
+        airspeedAbsolute_MPS = sqrt(airspeed.x*airspeed.x + airspeed.y*airspeed.y + airspeed.z*airspeed.z);
+        airspeedAbsolute_MPS = (airspeedAbsolute_MPS > DOUBLE_MIN) ? airspeedAbsolute_MPS : DOUBLE_MIN;
+        airspeed_KTS = airspeedAbsolute_MPS * 1.943844;
+
+        airspeedXZAbsolute_MPS = sqrt(airspeed.x*airspeed.x + airspeed.z*airspeed.z);
+        airspeedXZAbsolute_MPS = (airspeedXZAbsolute_MPS > DOUBLE_MIN) ? airspeedXZAbsolute_MPS : DOUBLE_MIN;
+        airspeedXZNormalized   = (airspeedXZAbsolute_MPS > DOUBLE_MIN) ? Vec3(airspeed.x/airspeedXZAbsolute_MPS, 0, airspeed.z/airspeedXZAbsolute_MPS) : Vec3(1, 0, 0);
+
         // Call the atmosphere model to get mach and dynamic pressure
-        mach = totalVelocity_MPS / speed_of_sound;
-        dynamicPressure_LBFT2 = .5 * rho * pow(totalVelocity_MPS, 2);  // q = .5*rho*V^2
+        mach = airspeedAbsolute_MPS / speed_of_sound;
+        dynamicPressure_LBFT2 = .5 * rho * pow(airspeedAbsolute_MPS, 2);  // q = .5*rho*V^2
         dynamicPressure_x = .5 * rho * pow(airspeed.x, 2);  // q = .5*rho*V^2
         dynamicPressure_z = .5 * rho * pow(airspeed.z, 2);  // q = .5*rho*V^2
         dynamicPressure_y = .5 * rho * pow(airspeed.y, 2);  // q = .5*rho*V^2

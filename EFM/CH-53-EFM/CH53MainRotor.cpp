@@ -86,14 +86,26 @@ namespace CH53
         return aoa;
     }
 
-    double MainRotor::bladeFlexureDynamics(double bladeLift) const
+    double MainRotor::getBladeFlaping(double bladeAzimuth_RAD, double bladeLift, double airspeedXZAbsolute_MPS, Vec3& airspeedXZNormalized) const
     {
-        double bladeFlaping = 0;
+        double bladeFlaping           = 0;
+        double bladeFlapingAirspeed   = 0;
+        double bladeFlapingLift       = 0;
+
+        if (airspeedXZAbsolute_MPS > DOUBLE_MIN)
+        {
+            Vec3 bladeVectorNormalized     = Vec3(cos(bladeAzimuth_RAD), 0, sin(bladeAzimuth_RAD));
+            double bladeAirspeedAngle_RAD  = acos(airspeedXZNormalized.x*bladeVectorNormalized.x + airspeedXZNormalized.z*bladeVectorNormalized.z);
+            //bladeFlapingAirspeed           = (bladeFlapingMax_RAD/HALF_PI)*atan(airspeedXZAbsolute_MPS)*exp(-2.1*pow(bladeAirspeedAngle_RAD, 2));
+            bladeFlapingAirspeed           = (bladeFlapingMax_RAD/HALF_PI)*atan(airspeedXZAbsolute_MPS)*cos(bladeAirspeedAngle_RAD);
+        }
+
+        //aluminium alloy spar stress destribution 
         //bladeFlaping = (bladeFlapingMax_RAD/HALF_PI)*atan(0.0001*simPoint->lift/simPoint->area);
         //bladeFlaping = bladeFlapingMax_RAD*0.0384*simPoint->pitch;
-   
-        //aluminium alloy spar stress destribution 
-        bladeFlaping = bladeFlapingMax_RAD*(0.000024*pow(bladeLift, 3) + 0.02*bladeLift)/3E+7;
+        bladeFlapingLift = bladeFlapingMax_RAD*(0.000024*pow(bladeLift, 3) + 0.02*bladeLift)/3E+7;
+
+        bladeFlaping = 0.5*bladeFlapingLift + 0.5*bladeFlapingAirspeed;
 
         return bladeFlaping;
     }
@@ -122,8 +134,8 @@ namespace CH53
             SimulationPoint* simPoint = &simPoints[i];
             double azimuth_RAD        = simPoint->azimuth*DEG_TO_RAD;
             simPoint->velocity        = bladeTipVelocity +                                                          // blade tip velocity
-                                        bodyAirflowFactor*systems.Motion.bodyLinearVelocity_MS.x*sin(azimuth_RAD) - // body airflow
-                                        bodyAirflowFactor*systems.Motion.bodyLinearVelocity_MS.z*cos(azimuth_RAD) + // body airflow
+                                        bodyAirflowFactor*systems.Motion.airspeed.x*sin(azimuth_RAD) -              // body airflow
+                                        bodyAirflowFactor*systems.Motion.airspeed.z*cos(azimuth_RAD) +              // body airflow
                                         bladeTipVelocity*tailRotorAirflowFactor*exp(-5.0*pow(azimuth_RAD - PI, 2)); // tail rotor induced airflow
 
             simPoint->pitch           = limit(collectiveBladePitchFactor*collectivePitch_DEG -
@@ -131,33 +143,27 @@ namespace CH53
                                               cyclicBladePitchFactor*blade_pitch_max*swashPlateCyclic.x*sin(azimuth_RAD),
                                               blade_pitch_min, blade_pitch_max);
 
-            simPoint->aoa             = getBladeAngleOfAttack(simPoint->pitch, simPoint->velocity, systems.Motion.bodyLinearVelocity_MS.y);
+            simPoint->aoa             = getBladeAngleOfAttack(simPoint->pitch, simPoint->velocity, systems.Motion.airspeed.y);
             simPoint->Cl              = Cl(simPoint->aoa);
             simPoint->Cd              = 0.02*Cd(simPoint->aoa);
             simPoint->lift            = 0.5*simPoint->Cl*airDencity_KgM3*simPoint->area*pow(simPoint->velocity, 2);
             simPoint->drag            = 0.5*simPoint->Cd*airDencity_KgM3*simPoint->area*pow(simPoint->velocity, 2);
-            simPoint->flaping         = bladeFlexureDynamics(simPoint->lift/simPoint->area);
+            simPoint->flaping         = getBladeFlaping(azimuth_RAD, simPoint->lift/simPoint->area, systems.Motion.airspeedXZAbsolute_MPS, systems.Motion.airspeedXZNormalized);
 
             
             if (i < xForce.size())
             {
-                //xForce[i].vForce = Vec3(simPoint->lift*sin(totalRotorTilt_RAD.z),
-                //                        simPoint->lift*cos(totalRotorTilt_RAD.z)*cos(totalRotorTilt_RAD.x),
-                //                        simPoint->lift*sin(totalRotorTilt_RAD.x));
-                //xForce[i].vPos = Vec3(rotorPosition.x + bladeLenght*cos(simPoint->azimuth*DEG_TO_RAD)*cos(totalRotorTilt_RAD.z),
-                //                      rotorPosition.y - bladeLenght*(cos(simPoint->azimuth*DEG_TO_RAD)*sin(totalRotorTilt_RAD.z)*cos(totalRotorTilt_RAD.x) + sin(simPoint->azimuth*DEG_TO_RAD)*sin(totalRotorTilt_RAD.x)*cos(totalRotorTilt_RAD.z)),
-                //                      rotorPosition.z + bladeLenght*sin(simPoint->azimuth*DEG_TO_RAD)*cos(totalRotorTilt_RAD.x));
+                xForce[i].vPos   = Vec3(rotorPosition.x + bladeLenght*cos(azimuth_RAD)*cos(pitchTilt_RAD)              *cos(simPoint->flaping),
+                                        rotorPosition.y - bladeLenght*cos(azimuth_RAD)*sin(pitchTilt_RAD) + bladeLenght*sin(simPoint->flaping),
+                                        rotorPosition.z + bladeLenght*sin(azimuth_RAD)                                 *cos(simPoint->flaping));
 
-                xForce[i].vPos = Vec3(rotorPosition.x + bladeLenght*cos(simPoint->flaping)* cos(azimuth_RAD)*cos(pitchTilt_RAD),
-                                      //rotorPosition.y - bladeLenght*(cos(azimuth_RAD)*sin(pitchTilt_RAD) + sin(azimuth_RAD)*cos(pitchTilt_RAD)),
-                                      rotorPosition.y - bladeLenght*cos(azimuth_RAD)*sin(pitchTilt_RAD) + bladeLenght*sin(simPoint->flaping),
-                                      rotorPosition.z + bladeLenght*cos(simPoint->flaping)* sin(azimuth_RAD));
+                xForce[i].vForce = Vec3(simPoint->lift*cos(azimuth_RAD)*sin(-simPoint->flaping),
+                                        simPoint->lift                 *cos( simPoint->flaping),
+                                        simPoint->lift*sin(azimuth_RAD)*sin(-simPoint->flaping));
 
-                xForce[i].vForce = Vec3(simPoint->lift*sin(pitchTilt_RAD),
-                                        simPoint->lift*cos(pitchTilt_RAD)*cos(simPoint->flaping),
-                                        simPoint->lift*sin(-simPoint->flaping));
-                //xForce[i].vForce = Vec3();
-
+                xForce[i].vForce = Vec3( cos(pitchTilt_RAD)*xForce[i].vForce.x + sin(pitchTilt_RAD)*xForce[i].vForce.y,
+                                        -sin(pitchTilt_RAD)*xForce[i].vForce.x + cos(pitchTilt_RAD)*xForce[i].vForce.y,
+                                        xForce[i].vForce.z);
             }
 
             thrust += simPoint->lift;

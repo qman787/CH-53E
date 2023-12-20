@@ -22,7 +22,7 @@ namespace CH53
 
     void VTailStabilizer::vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt)
     {
-        double lateralLift = 0.5*Cl(systems.Motion.beta_DEG)*systems.Motion.getAirDensity()*vTailArea*pow(systems.Motion.totalVelocity_MPS, 2);
+        double lateralLift = 0.5*Cl(systems.Motion.beta_DEG)*systems.Motion.getAirDensity()*vTailArea*pow(systems.Motion.airspeedAbsolute_MPS, 2);
         if (xForce.size() == VTailStabilizer::ForceComponent::VTAIL_MAX_NUM_FORCE_COMPONENTS)
         {
             xForce[VTAIL_STABILIZER].vForce = Vec3(0, 0, -lateralLift);

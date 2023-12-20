@@ -56,8 +56,9 @@ namespace CH53
             // ROLL AUGMENTATION
             cyclicControlAugmentation.x = limit(-1.240*systems.Motion.bodyAttitude_R.x                                        // bank compensation 
                                                 -0.420*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
-                                                -0.005*systems.Motion.bodyAngularAcceleration_RPS2.x                          // roll rate change factor
-                                                +0.480*systems.Motion.bodyAngularVelocity_RPS.y,                              // yaw-to-roll (tail rotor roll) compensation 
+                                                -0.015*systems.Motion.bodyAngularAcceleration_RPS2.x                          // roll rate change factor
+                                                +0.480*systems.Motion.bodyAngularVelocity_RPS.y                               // yaw-to-roll (tail rotor roll) compensation 
+                                                -0.012*systems.Motion.bodyLinearVelocity_MS.z,                                // side-slip compensation
                                                 -2.0, 2.0);                                                                   // roll input override enabled
 
             // YAW AUGMENTAION

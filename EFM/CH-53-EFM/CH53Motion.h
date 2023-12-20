@@ -22,6 +22,7 @@ namespace CH53
         Vec3        bodyAttitude_R                   = Vec3(0, 0, 0);
         Vec3        airspeed                         = Vec3(0, 0, 0);
         Vec3        airspeed_last                    = Vec3(0, 0, 0);
+        Vec3        airspeedXZNormalized             = Vec3(0, 0, 0);
         //Vec2        bodyLinearVelocityVector_R       = Vec2(0, 0);
         Vec3        bodyLinearAcceleration_MS2       = Vec3(0, 0, 0);
         Vec3        bodyAngularVelocity_RPS          = Vec3(0, 0, 0);
@@ -47,7 +48,9 @@ namespace CH53
 
         double		altitude_FT;		// Absolute altitude MSL (ft)
         double		ps_LBFT2;			// Ambient calculated pressure (lb/ft^2)
-        double		totalVelocity_MPS;	// Total velocity (always positive) (m/s)
+        double		airspeedAbsolute_MPS;	// Total velocity (always positive) (m/s)
+        double      airspeedXZAbsolute_MPS; 
+        double      airspeedXZAzimuth_RAD;
         double		airspeed_KTS;		// total airspeed (always positive) (knots)
 
         double		surfaceAlt;  // height of surface under aircraft

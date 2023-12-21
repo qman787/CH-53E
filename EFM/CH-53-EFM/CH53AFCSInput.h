@@ -69,7 +69,7 @@ namespace CH53
 
 
         // debug  testing stuff
-        debugCommand_1 = 9000,
+        ToggleDebugInfo = 9000,
 
         Reserved // placeholder
     };

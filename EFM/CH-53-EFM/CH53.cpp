@@ -627,7 +627,14 @@ bool ed_fm_make_balance (double & ax,//linear acceleration component in world co
 // enable debug information like force vector visualization and velocity vector visualization
 bool ed_fm_enable_debug_info()
 {
-   return true;
+    bool boDebugInfoEnabled = false;
+    void* hDebugInfoEnabled = cockpitAPI.getParamHandle("DEBUG_INFO_ENABLED");
+    if (hDebugInfoEnabled != nullptr)
+    {
+        boDebugInfoEnabled = (cockpitAPI.getParamNumber(hDebugInfoEnabled) > 0) ? true : false;
+    }
+
+    return boDebugInfoEnabled;
 }
 
 // path to your plugin installed

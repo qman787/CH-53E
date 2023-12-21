@@ -67,6 +67,10 @@ keyCommands = {
     {pressed = EFM_commands.autopilotBARALT_DEC, name = _('BarAlt Dec'), category = _('Autopilot')},
     {pressed = EFM_commands.autopilotHDGHOLD_INC, name = _('HdgHold Inc'), category = _('Autopilot')},
     {pressed = EFM_commands.autopilotHDGHOLD_DEC, name = _('HdgHold Dec'), category = _('Autopilot')},
+
+-- Debug
+    {down    = EFM_commands.ToggleDebugInfo,      name = _('Debug Info - ON/OFF'),  category = {_('Control Stick'), _('Debug')}},
+
 -- Gun turret
 { pressed = Keys.GunturretUp, name = _('Target Turret Up'), category = _('Weapons')},
 { pressed = Keys.GunturretDown, name = _('Target Turret Down'), category = _('Weapons')},

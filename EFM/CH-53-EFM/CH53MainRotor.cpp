@@ -105,7 +105,7 @@ namespace CH53
         //bladeFlaping = bladeFlapingMax_RAD*0.0384*simPoint->pitch;
         bladeFlapingLift = bladeFlapingMax_RAD*(0.000024*pow(bladeLift, 3) + 0.02*bladeLift)/3E+7;
 
-        bladeFlaping = 0.5*bladeFlapingLift + 0.5*bladeFlapingAirspeed;
+        bladeFlaping = 0.35*bladeFlapingLift + 0.65*bladeFlapingAirspeed;
 
         return bladeFlaping;
     }

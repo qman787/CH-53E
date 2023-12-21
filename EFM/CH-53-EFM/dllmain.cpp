@@ -23,7 +23,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             freopen_s(&pConsole, "CONOUT$", "w", stdout);
             SetConsoleTitleA("CH-53 EFM Debug Console");
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_BLUE);
-            LOG(0, "DLL_PROCESS_ATTACH\r");
+            //LOG(0, "DLL_PROCESS_ATTACH\r");
         }
 #endif //DEBUG_CONSOLE
         break;

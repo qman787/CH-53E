@@ -441,7 +441,49 @@ void ed_fm_set_fc3_cockpit_draw_args(EdDrawArgument* drawargs, size_t size)
     else
     {
         drawargs[4].f = (float)systems.Engine.throttleInput;
+
     }
+
+    // 1 stick pitch
+    // 2 stick roll 
+    // 3 collective
+    // 6 pedals
+    // 14 master-arm
+    // 17 displays on/off
+    // 22 refueling probe extend/retract
+//    
+    // 118 percent RPM (both indicators)
+    // 119 low radar alt
+    // 121 exhaust temp
+    // 148 magnetic heading
+
+    // 124 oil temp
+    // 222 oil presure left-right
+    // 223 hydraulics
+
+    // 301 batery discharge signal
+    // 302 batery charge signal
+    // 303 batery voltage
+
+    //304 panel shaking left-right 
+    //305 panel shaking up-down
+    //306 panel shaking roll left-right
+
+    //440   left clock hours
+    // left clock minutes
+    //drawargs[441].f = 
+    // left clock seconds
+    //drawargs[442].f = 
+ 
+    // right clock hours
+    //drawargs[443].f = 
+    // right clock minutes
+    //drawargs[444].f = 
+
+    // fuel gauges
+    //drawargs[500].f = 
+    // fuel flow
+    //drawargs[500].f = 
 }
 
 // shake level amplitude for head simulation  

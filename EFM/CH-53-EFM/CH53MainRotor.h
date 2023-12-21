@@ -65,7 +65,7 @@ namespace CH53
         // consts
         static constexpr double   pitchTilt_DEG        = 5.0;                      // Degrees 
         static constexpr double   pitchTilt_RAD        = pitchTilt_DEG*DEG_TO_RAD; // Radians
-        static constexpr double   bladeFlapingMax_DEG  = 7.5;
+        static constexpr double   bladeFlapingMax_DEG  = 12.7;//7.5;
         static constexpr double   bladeFlapingMax_RAD  = bladeFlapingMax_DEG*DEG_TO_RAD;
         static constexpr double   bladeArea            = 3.94;                // m^2
         static constexpr double   bladeMass            = 200.0;               // Kg

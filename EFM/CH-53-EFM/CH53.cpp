@@ -185,7 +185,7 @@ void ed_fm_simulate(double dt)
     //cockpitAPI.setParamNumber(TEST_PARAM_PID_D, 0);
 
     //cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, systems.Aero.weight_factor * 100);
-    cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, systems.MainRotor.thrust);	//thrust available
+    cockpitAPI.setParamNumber(TEST_PARAM_THRUST_AVAILABLE, systems.MainRotor.totalThrust);	//thrust available
     //cockpitAPI.setParamNumber(TEST_PARAM_THRUST_REQUIRED, systems.Aero.getCmTotal());	//thrust available
     //cockpitAPI.setParamNumber(TEST_PARAM_THRUST_PRODUCED, systems.Aero.getCxTotal());
 
@@ -451,7 +451,7 @@ void ed_fm_set_fc3_cockpit_draw_args(EdDrawArgument* drawargs, size_t size)
     // 14 master-arm
     // 17 displays on/off
     // 22 refueling probe extend/retract
-//    
+    
     // 118 percent RPM (both indicators)
     // 119 low radar alt
     // 121 exhaust temp
@@ -465,41 +465,37 @@ void ed_fm_set_fc3_cockpit_draw_args(EdDrawArgument* drawargs, size_t size)
     // 302 batery charge signal
     // 303 batery voltage
 
-    //304 panel shaking left-right 
-    //305 panel shaking up-down
-    //306 panel shaking roll left-right
+    // 304 panel shaking left-right 
+    // 305 panel shaking up-down
+    // 306 panel shaking roll left-right
 
-    //440   left clock hours
-    // left clock minutes
-    //drawargs[441].f = 
-    // left clock seconds
-    //drawargs[442].f = 
+    // 440  left clock hours
+    // 441 left clock minutes
+    // 442 left clock seconds
  
-    // right clock hours
-    //drawargs[443].f = 
-    // right clock minutes
-    //drawargs[444].f = 
+    // 443 right clock hours
+    // 444 right clock minutes
 
-    // fuel gauges
-    //drawargs[500].f = 
-    // fuel flow
-    //drawargs[500].f = 
+    // 500 fuel gauges
+    // 501 fuel flow
 }
 
 // shake level amplitude for head simulation  
 double ed_fm_get_shake_amplitude ()
 {
    // LCW
-   double shake = 0.0;
-   double shake_threshold_kts = 150.0;	// cruise is 150
-   double max_kts = 170.0;	
-   if (systems.Motion.airspeed_KTS > shake_threshold_kts) {
-      shake = ((systems.Motion.airspeed_KTS - shake_threshold_kts) / (max_kts - shake_threshold_kts));
-   }
-   if (shake > 1)shake = 1; // safety
-   return shake; 
+   double shakeAmplitude = 0.0;
 
-   // return 0;
+   //double shake_threshold_kts = 150.0;	// cruise is 150
+   //double max_kts = 170.0;	
+   //if (systems.Motion.airspeed_KTS > shake_threshold_kts) {
+   //   shake = ((systems.Motion.airspeed_KTS - shake_threshold_kts) / (max_kts - shake_threshold_kts));
+   //}
+   //if (shake > 1)shake = 1; // safety
+
+   shakeAmplitude = systems.MainRotor.rotorDeparture/100.0;
+
+   return shakeAmplitude;
 }
 
 /*

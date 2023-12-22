@@ -95,9 +95,9 @@ namespace CH53
         if (airspeedXZAbsolute_MPS > DOUBLE_MIN)
         {
             Vec3 bladeVectorNormalized     = Vec3(cos(bladeAzimuth_RAD), 0, sin(bladeAzimuth_RAD));
-            double bladeAirspeedAngle_RAD  = acos(airspeedXZNormalized.x*bladeVectorNormalized.x + airspeedXZNormalized.z*bladeVectorNormalized.z);
+            double bladeToAirspeedAngle_RAD  = acos(airspeedXZNormalized.x*bladeVectorNormalized.x + airspeedXZNormalized.z*bladeVectorNormalized.z);
             //bladeFlapingAirspeed           = (bladeFlapingMax_RAD/HALF_PI)*atan(airspeedXZAbsolute_MPS)*exp(-2.1*pow(bladeAirspeedAngle_RAD, 2));
-            bladeFlapingAirspeed           = (bladeFlapingMax_RAD/HALF_PI)*atan(airspeedXZAbsolute_MPS)*cos(bladeAirspeedAngle_RAD);
+            bladeFlapingAirspeed           = (bladeFlapingMax_RAD/HALF_PI)*atan(airspeedXZAbsolute_MPS)*cos(bladeToAirspeedAngle_RAD);
         }
 
         //aluminium alloy spar stress destribution 
@@ -105,14 +105,13 @@ namespace CH53
         //bladeFlaping = bladeFlapingMax_RAD*0.0384*simPoint->pitch;
         bladeFlapingLift = bladeFlapingMax_RAD*(0.000024*pow(bladeLift, 3) + 0.02*bladeLift)/3E+7;
 
-        bladeFlaping = 0.35*bladeFlapingLift + 0.65*bladeFlapingAirspeed;
+        bladeFlaping = 0.60*bladeFlapingLift + 0.40*bladeFlapingAirspeed;
 
         return bladeFlaping;
     }
 
     void MainRotor::vSimulate(struct Systems& systems, EDPARAM& cockpitAPI, double dt)
     {
-        thrust                            = 0;
         double rpm                        = systems.Engine.getTurbineRPM();
         double airDencity_KgM3            = systems.Motion.getAirDensity();
         double airspeed_KTS               = systems.Motion.airspeed_KTS;
@@ -122,6 +121,10 @@ namespace CH53
         double cyclicBladePitchFactor     = 1.0; //0.7;
         double collectiveBladePitchFactor = 1.0; //0.7;
         double bladeTipVelocity           = rpm*0.10472*rotor_blade_length;
+        minimalBladeVelocity              = bladeTipVelocity;
+        totalThrust                       = 0;
+        rotorDeparture                    = 0;
+
 
         swashPlateCollective              = swashPlateCollectiveActuator(swashPlateCollective, systems.AFCS.getCollectiveControl(), dt);
         collectivePitch_DEG               = swashPlateCollective*(blade_pitch_max - blade_pitch_min) + blade_pitch_min;
@@ -166,19 +169,37 @@ namespace CH53
                                         xForce[i].vForce.z);
             }
 
-            thrust += simPoint->lift;
+            totalThrust += simPoint->lift;
+
+
+            // blade critical AoA check (potential VRS entry)
+            if (simPoint->aoa > CH53::MainRotor::bladeMaximalAoA_DEG)
+            {
+                // rotor blade departure 
+                rotorDeparture += 1.5*simPoint->area;
+            }
+
+            // Downwind blade airspeed check (rotor overspeed)
+            if (simPoint->velocity < CH53::MainRotor::bladeMinimalAirspeed)
+            {
+                // rotor blade departure 
+                rotorDeparture += 3.0*simPoint->area;
+            }
+
+            minimalBladeVelocity = std::min<double>(simPoint->velocity, minimalBladeVelocity);
         }
 
         UINT32 uiSimpointsIndex[4] = {0, (UINT32)(MainRotor::numSimPoints*0.25),(UINT32)(MainRotor::numSimPoints*0.50),(UINT32)(MainRotor::numSimPoints*0.75)};
         double simPointArea = simPoints[0].area;
         LOG( 5, "                           [%d]         aoa=%05.1f\r",                                        uiSimpointsIndex[0], simPoints[uiSimpointsIndex[0]].aoa);
         LOG( 6, "                           [%d].[lift=%09.1f flaping=%09.1f]\r",                              uiSimpointsIndex[0], simPoints[uiSimpointsIndex[0]].lift/simPointArea, simPoints[uiSimpointsIndex[0]].flaping*RAD_TO_DEG);
-        LOG( 7, "[%d]         aoa=%05.1f                                 [%d]         aoa=%05.1f\r",           uiSimpointsIndex[3], simPoints[uiSimpointsIndex[3]].aoa,               
+        LOG( 7, "[%d]         aoa=%05.1f                                        [%d]         aoa=%05.1f\r",    uiSimpointsIndex[3], simPoints[uiSimpointsIndex[3]].aoa,               
                                                                                                                uiSimpointsIndex[1], simPoints[uiSimpointsIndex[1]].aoa);
         LOG( 8, "[%d].[lift=%09.1f flaping=%09.1f]                       [%d].[lift=%09.1f flaping=%09.1f]\r", uiSimpointsIndex[3], simPoints[uiSimpointsIndex[3]].lift/simPointArea, simPoints[uiSimpointsIndex[3]].flaping*RAD_TO_DEG,
                                                                                                                uiSimpointsIndex[1], simPoints[uiSimpointsIndex[1]].lift/simPointArea, simPoints[uiSimpointsIndex[1]].flaping*RAD_TO_DEG);
         LOG( 9, "                           [%d]         aoa=%05.1f\r",                                        uiSimpointsIndex[2], simPoints[uiSimpointsIndex[2]].aoa);
         LOG(10, "                           [%d].[lift=%09.1f flaping=%09.1f]\r",                              uiSimpointsIndex[2], simPoints[uiSimpointsIndex[2]].lift/simPointArea, simPoints[uiSimpointsIndex[2]].flaping*RAD_TO_DEG);
+        LOG(11, "rotorDeparture=%05.1f, minimalBladeVelocity=%05.1f\r", rotorDeparture, minimalBladeVelocity);
 
         //    systems.Motion.bodyAttitude_R.x*RAD_TO_DEG, systems.Motion.bodyAttitude_R.y*RAD_TO_DEG, systems.Motion.bodyAttitude_R.z*RAD_TO_DEG,
         //    pitchControlAugmented, rollControlAugmented, collectiveControl, rpm, simPoints[0].velocity, simPoints[0].pitch, simPoints[0].Cl, simPoints[0].lift);

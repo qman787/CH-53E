@@ -34,15 +34,11 @@ namespace CH53
     public:
         enum Augmentation
         {
-            AFCS_AUTOPILOT       = 0x00000001,
-            AFCS_ZERO_PITCH_RATE = 0x00000002,
-            AFCS_ZERO_ROLL_RATE  = 0x00000004,
-            AFCS_ATTITUDE_HOLD   = 0x00000008,
-            AFCS_VELVEC_HOLD     = 0x00000010,
-            AFCS_ALTITUDE_HOLD   = 0x00000020,
-            AFCS_AIRSPEED_HOLD   = 0x00000040,
-            AFCS_HEADING_HOLD    = 0x00000080,
-            AFCS_VRATE_COMMANDER = 0x00000100,
+            AFCS_SAS              = 0x00000001,
+            AFCS_VRATE_COMMANDER  = 0x00000002,
+            AFCS_AUTOPILOT        = 0x00000004,
+            AFCS_ATTITUDE_HOLD    = 0x00000008,
+            AFCS_VELVEC_HOLD      = 0x00000010,
         };
 
     public:

@@ -16,7 +16,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-#ifdef DEBUG_CONSOLE
+#ifdef _DEBUG
         boConsoleAllocated = AllocConsole();
         if (boConsoleAllocated)
         {
@@ -25,7 +25,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_BLUE);
             //LOG(0, "DLL_PROCESS_ATTACH\r");
         }
-#endif //DEBUG_CONSOLE
+#endif //_DEBUG
         break;
 
     case DLL_THREAD_ATTACH:

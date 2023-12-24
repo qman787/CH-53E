@@ -13,8 +13,7 @@ namespace CH53
 
     void AFCS::vInit(bool hotStart, bool inAir)
     {
-        augmentationMask              = AFCS::Augmentation::AFCS_ATTITUDE_HOLD |
-                                        AFCS::Augmentation::AFCS_ALTITUDE_HOLD |
+        augmentationMask              = AFCS::Augmentation::AFCS_SAS |
                                         AFCS::Augmentation::AFCS_VRATE_COMMANDER;
         cyclicControlAugmentation     = Vec3(0, 0, 0);
         cyclicControlAutopilot        = Vec3(0, 0, 0);
@@ -50,8 +49,8 @@ namespace CH53
 
         double verticalVelocityCommand_MS = 0;
 
-        // CYCLIC AUGMENTATION
-        if ((augmentationMask & AFCS::Augmentation::AFCS_ATTITUDE_HOLD) == AFCS::Augmentation::AFCS_ATTITUDE_HOLD)
+        // CYCLIC STABILITY AUGMENTATION (SAS)
+        if ((augmentationMask & AFCS::Augmentation::AFCS_SAS) == AFCS::Augmentation::AFCS_SAS)
         {
             // ROLL AUGMENTATION
             cyclicControlAugmentation.x = limit(-1.240*systems.Motion.bodyAttitude_R.x                                        // bank compensation 
@@ -73,7 +72,7 @@ namespace CH53
                                                 -2.0, 2.0);                                                                   // pitch input override enabled 
         }
 
-        // COLLECTIVE AUGMENTATION
+        // COLLECTIVE VRATE AUGMENTATION
         if ((augmentationMask & AFCS::Augmentation::AFCS_VRATE_COMMANDER) == AFCS::Augmentation::AFCS_VRATE_COMMANDER)
         {
             if ((systems.Input.collectiveInput > 0.38) && (systems.Input.collectiveInput < 0.42))

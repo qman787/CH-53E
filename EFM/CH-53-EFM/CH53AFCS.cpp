@@ -15,6 +15,7 @@ namespace CH53
     {
         augmentationMask              = AFCS::Augmentation::AFCS_SAS |
                                         AFCS::Augmentation::AFCS_VRATE_COMMANDER;
+        //augmentationMask              = AFCS::Augmentation::AFCS_SAS;
         cyclicControlAugmentation     = Vec3(0, 0, 0);
         cyclicControlAutopilot        = Vec3(0, 0, 0);
         cyclicControl                 = Vec3(0, 0, 0);
@@ -54,7 +55,7 @@ namespace CH53
         {
             // ROLL AUGMENTATION
             cyclicControlAugmentation.x = limit(-1.240*systems.Motion.bodyAttitude_R.x                                        // bank compensation 
-                                                -0.420*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
+                                                -1.420*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
                                                 -0.015*systems.Motion.bodyAngularAcceleration_RPS2.x                          // roll rate change factor
                                                 +0.480*systems.Motion.bodyAngularVelocity_RPS.y                               // yaw-to-roll (tail rotor roll) compensation 
                                                 -0.012*systems.Motion.bodyLinearVelocity_MS.z,                                // side-slip compensation
@@ -67,7 +68,7 @@ namespace CH53
 
             // PITCH AUGMENTATION
             cyclicControlAugmentation.z = limit(-3.740*(MainRotor::pitchTilt_RAD - systems.Motion.bodyAttitude_R.z)           // pitch compensation
-                                                +0.840*systems.Motion.bodyAngularVelocity_RPS.z                               // pitch rate compensation
+                                                +1.840*systems.Motion.bodyAngularVelocity_RPS.z                               // pitch rate compensation
                                                 +0.005*systems.Motion.bodyAngularAcceleration_RPS2.z,                         // pitch rate change factor
                                                 -2.0, 2.0);                                                                   // pitch input override enabled 
         }
@@ -103,8 +104,8 @@ namespace CH53
         cyclicControl.z   = limit(systems.Input.cyclicInputTrimed.z + cyclicControlAugmentation.z + cyclicControlAutopilot.z, -1, 1);
         collectiveControl = limit(systems.Input.collectiveInput + collectiveControlAugmentation + collectiveControlAutopilot,  0, 1);
 
-        LOG(3, "cyclicInputTrimed.z=%06.3f, cyclicControlAugmentation.z=%06.3f, cyclicControl.z=%06.3f\r",
-            systems.Input.cyclicInputTrimed.z, cyclicControlAugmentation.z, cyclicControl.z);
+        LOG(3, "cyclicInputTrimed.z=%06.3f, cyclicControlAugmentation.z=%06.3f, cyclicControl.z=%06.3f, sim_dt=%06.3f\r",
+            systems.Input.cyclicInputTrimed.z, cyclicControlAugmentation.z, cyclicControl.z, dt);
         LOG(4, "collectiveInput=%06.3f, collectiveControlAugmentation=%06.3f, verticalVelocityCommand_MS=%06.3f\r",
             systems.Input.collectiveInput, collectiveControlAugmentation, verticalVelocityCommand_MS);
 

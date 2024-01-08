@@ -161,6 +161,6 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 	pedalsLeft          = 3038,
 	pedalsRight         = 3039,
 
-	debugCommand_1		= 9000,
+	ToggleDebugInfo		= 9000,
 }
 

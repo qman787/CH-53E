@@ -27,6 +27,7 @@ namespace CH53
 
     void AFCSInput::setCommand(int command, float value)
     {
+        LOG(0, "setCommand: command=%d, command=%2.1f\r", command, value);
         switch (command)
         {
         case JoystickRoll:
@@ -59,10 +60,20 @@ namespace CH53
             collectiveInput = limit(((-collective_value + 1.0) / 2.0), 0.0, 1.0);
             break;
         case pedalsLeft:
-            pedalInput = limit((pedalInput + 0.0015), -1.0, 1.0);
+        case rudderleft:
+        case pedalsLeftRudderStart:
+            pedalInput = limit((pedalInput + 0.0035), -1.0, 1.0);
             break;
         case pedalsRight:
-            pedalInput = limit((pedalInput - 0.0015), -1.0, 1.0);
+        case rudderright:
+        case pedalsRightRudderStart:
+            pedalInput = limit((pedalInput - 0.0035), -1.0, 1.0);
+            break;
+        case pedalsLeftRudderStop:
+        case pedalsRightRudderStop:
+        case rudderleftend:
+        case rudderrightend:
+            pedalInput = 0;
             break;
         case trimUp:
             systems.Input.cyclicTrim.z += 0.0015;

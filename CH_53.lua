@@ -3,7 +3,7 @@
 CH_53 =  {
         
 	Name 				=   'CH_53',
-	DisplayName			= _('Sikorsky CH-53E Super Stallion'),
+	DisplayName			= _('CH-53E'),
 	--ViewSettings        = ViewSettings,
 	
 	HumanCockpit 		= true,

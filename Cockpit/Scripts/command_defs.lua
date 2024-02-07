@@ -162,5 +162,11 @@ EFM_commands = 	-- commands for use in EFM (make sure to copy to inputs.h)
 	pedalsRight         = 3039,
 
 	ToggleDebugInfo		= 9000,
+
+    pedalsLeftRudderStart  = 10012,
+    pedalsLeftRudderStop   = 10014,
+    pedalsRightRudderStart = 10013,
+    pedalsRightRudderStop  = 10015,
+
 }
 

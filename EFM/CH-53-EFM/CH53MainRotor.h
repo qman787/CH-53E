@@ -67,7 +67,7 @@ namespace CH53
         static constexpr double   pitchTilt_RAD          = pitchTilt_DEG*DEG_TO_RAD; // Radians
         static constexpr double   bladeFlapingMax_DEG    = 7.5;
         static constexpr double   bladeFlapingMax_RAD    = bladeFlapingMax_DEG*DEG_TO_RAD;
-        static constexpr double   bladeArea              = 3.94;                // m^2
+        static constexpr double   bladeArea              = 7.82; //3.94;             // m^2
         static constexpr double   bladeMass              = 200.0;               // Kg
         static constexpr double   bladeMinimalAirspeed   = 107.0;               // m/s
         static constexpr double   bladeMaximalAoA_DEG    = 22.3;
@@ -83,7 +83,7 @@ namespace CH53
         static constexpr double   blade_pitch_max        = 23.3;
         static constexpr double   rotor_blade_length     = 12.03; 
         static constexpr double   bladeLenght            = rotor_blade_length*modelScaleFactor;
-        static constexpr UINT32   numSimPoints           = 64;
+        static constexpr UINT32   numSimPoints           = 4;//64;
 
         // vars
         double                    totalThrust            = 0;

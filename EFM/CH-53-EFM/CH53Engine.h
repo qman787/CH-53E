@@ -27,8 +27,8 @@ namespace CH53
 
     public:
         static constexpr int    number_of_engines = 3;	// natops
-        static constexpr double rpm_125_percent = 231;
-        static constexpr double rpm_100_percent = 185;
+        static constexpr double rpm_125_percent = 221;
+        static constexpr double rpm_100_percent = 177;
         double                  rotorPosition;          // animation position
         double                  throttleInput;          // Throttle input command 
         double                  N1_RPM;                 // gas producer/core

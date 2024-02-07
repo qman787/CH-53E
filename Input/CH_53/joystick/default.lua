@@ -39,8 +39,8 @@ keyCommands = {
 	{pressed = EFM_commands.trimRight, name = _('Cyclic Trim Right'), category = _('Systems')},
 	{down = EFM_commands.trimReset, name = _('Cyclic Trim Reset'), category = _('Systems')},
 	{down = EFM_commands.trimSave, name = _('Cyclic Trim Save'), category = _('Systems')},
-	{pressed = EFM_commands.pedalsLeft, name = _('Pedals Left'), category = _('Systems')},
-	{pressed = EFM_commands.pedalsRight, name = _('Pedals Right'), category = _('Systems')},
+	{pressed = EFM_commands.pedalsLeftRudderStart,  up = EFM_commands.pedalsLeftRudderStop,  name = _('Pedals Left'),  category = _('Systems')},
+	{pressed = EFM_commands.pedalsRightRudderStart, up = EFM_commands.pedalsRightRudderStop, name = _('Pedals Right'), category = _('Systems')},
 
     {pressed = EFM_commands.pidPUp, name = _('PID P Up'), category = _('Systems')},
     {pressed = EFM_commands.pidPDown, name = _('PID P Down'), category = _('Systems')},

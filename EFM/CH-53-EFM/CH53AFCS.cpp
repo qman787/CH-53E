@@ -13,12 +13,13 @@ namespace CH53
 
     void AFCS::vInit(bool hotStart, bool inAir)
     {
-        augmentationMask              = AFCS::Augmentation::AFCS_SAS |
-                                        AFCS::Augmentation::AFCS_VRATE_COMMANDER;
-        //augmentationMask              = AFCS::Augmentation::AFCS_SAS;
+        //augmentationMask              = AFCS::Augmentation::AFCS_SAS |
+        //                                AFCS::Augmentation::AFCS_VRATE_COMMANDER;
+        augmentationMask              = AFCS::Augmentation::AFCS_SAS;
         cyclicControlAugmentation     = Vec3(0, 0, 0);
         cyclicControlAutopilot        = Vec3(0, 0, 0);
         cyclicControl                 = Vec3(0, 0, 0);
+        bodyAttitudeHold_R            = systems.Motion.bodyAttitude_R;
         collectiveControlAugmentation = 0;
         collectiveControlAutopilot    = 0;
         collectiveControl             = 0;
@@ -49,28 +50,29 @@ namespace CH53
         collectiveControlAutopilot    = 0;
 
         double verticalVelocityCommand_MS = 0;
+        double SASAugFactor           = 1.0;
 
         // CYCLIC STABILITY AUGMENTATION (SAS)
         if ((augmentationMask & AFCS::Augmentation::AFCS_SAS) == AFCS::Augmentation::AFCS_SAS)
         {
             // ROLL AUGMENTATION
-            cyclicControlAugmentation.x = limit(-1.240*systems.Motion.bodyAttitude_R.x                                        // bank compensation 
-                                                -1.420*systems.Motion.bodyAngularVelocity_RPS.x                               // roll rate compensation
-                                                -0.015*systems.Motion.bodyAngularAcceleration_RPS2.x                          // roll rate change factor
-                                                +0.480*systems.Motion.bodyAngularVelocity_RPS.y                               // yaw-to-roll (tail rotor roll) compensation 
-                                                -0.012*systems.Motion.bodyLinearVelocity_MS.z,                                // side-slip compensation
-                                                -2.0, 2.0);                                                                   // roll input override enabled
+            cyclicControlAugmentation.x = limit(-1.240*SASAugFactor*systems.Motion.bodyAttitude_R.x                                         // bank compensation 
+                                                -1.420*SASAugFactor*systems.Motion.bodyAngularVelocity_RPS.x                                // roll rate compensation
+                                                -0.015*SASAugFactor*systems.Motion.bodyAngularAcceleration_RPS2.x                           // roll rate change factor
+                                                +0.480*SASAugFactor*systems.Motion.bodyAngularVelocity_RPS.y                                // yaw-to-roll (tail rotor roll) compensation 
+                                                -0.012*SASAugFactor*systems.Motion.bodyLinearVelocity_MS.z,                                 // side-slip compensation
+                                                -2.0, 2.0);                                                                                 // roll input override enabled
 
             // YAW AUGMENTAION
-            cyclicControlAugmentation.y = limit( 1.300*systems.Motion.bodyAngularVelocity_RPS.y,                              // yaw rate compensation
-                                                -0.000*systems.Motion.bodyAttitude_R.x*systems.Motion.bodyLinearVelocity_MS.x //
+            cyclicControlAugmentation.y = limit( 0.300*SASAugFactor*systems.Motion.bodyAngularVelocity_RPS.y                            // yaw rate compensation
+                                                -0.112*SASAugFactor*systems.Motion.bodyLinearVelocity_MS.x*sin(systems.Motion.beta_RAD),// minimize side slip in forward motion
                                                 -1.0, 1.0);
 
             // PITCH AUGMENTATION
-            cyclicControlAugmentation.z = limit(-3.740*(MainRotor::pitchTilt_RAD - systems.Motion.bodyAttitude_R.z)           // pitch compensation
-                                                +1.840*systems.Motion.bodyAngularVelocity_RPS.z                               // pitch rate compensation
-                                                +0.005*systems.Motion.bodyAngularAcceleration_RPS2.z,                         // pitch rate change factor
-                                                -2.0, 2.0);                                                                   // pitch input override enabled 
+            cyclicControlAugmentation.z = limit(-1.740*SASAugFactor*(MainRotor::pitchTilt_RAD - systems.Motion.bodyAttitude_R.z)            // pitch compensation
+                                                +1.840*SASAugFactor*systems.Motion.bodyAngularVelocity_RPS.z                                // pitch rate compensation
+                                                +0.005*SASAugFactor*systems.Motion.bodyAngularAcceleration_RPS2.z,                          // pitch rate change factor
+                                                -2.0, 2.0);                                                                                 // pitch input override enabled 
         }
 
         // COLLECTIVE VRATE AUGMENTATION

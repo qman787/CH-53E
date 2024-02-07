@@ -55,6 +55,7 @@ namespace CH53
         Vec3      cyclicControlAugmentation;
         Vec3      cyclicControlAutopilot;
         Vec3      cyclicControl;
+        Vec3      bodyAttitudeHold_R;
         double    collectiveControlAugmentation;
         double    collectiveControlAutopilot;
         double    collectiveControl;

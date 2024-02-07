@@ -71,6 +71,12 @@ namespace CH53
         // debug  testing stuff
         ToggleDebugInfo = 9000,
 
+        pedalsLeftRudderStart  = 10012,
+        pedalsLeftRudderStop   = 10014,
+        pedalsRightRudderStart = 10013,
+        pedalsRightRudderStop  = 10015,
+
+
         Reserved // placeholder
     };
 

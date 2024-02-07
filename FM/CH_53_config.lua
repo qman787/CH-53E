@@ -1,7 +1,8 @@
 CH_53 = { 
 	--center_of_mass		= {0.0, -0.274, 0},	--x,y,z {0.0, -0.274, 0}
 	--center_of_mass		= {0.0, 0.674, 0},
-	center_of_mass		= {0.0, 1.174, 0},
+	--center_of_mass		= {0.0, 1.174, 0},
+	center_of_mass		= {0.0, 2.174, 0},
 	--moment_of_inertia = {198000,	33176162,	80778}, --{6170,	28982,	33441}, --{198000,	76162,	80778}, 
 	--moment_of_inertia = {126395,  308559, 192377}, 
 	--moment_of_inertia = {126395,  608559, 192377}, -- TESTED

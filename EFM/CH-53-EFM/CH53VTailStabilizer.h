@@ -20,7 +20,7 @@ namespace CH53
         LUT                 Cd             = LUT(VTailStabilizer::CdBeta, -180.0, 180.0);
 
     public:
-        static constexpr double vTailArea  = 4.7; 
+        static constexpr double vTailArea  = 9.7; 
         const Vec3           vTailposition = Vec3(-11.8, 3.6, 0.0);
 
         VTailStabilizer();
